@@ -1,0 +1,7 @@
+
+Allex (allex.wxn@gmail.com)
+--------------------------------------------------
+
+git remote add origin git@github.com:allex/.etc.git
+git push -u origin master
+
