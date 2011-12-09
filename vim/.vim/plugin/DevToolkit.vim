@@ -7,7 +7,7 @@
 " Description:   Toolkit with codes format, compressor for web develop etc,.
 "                (javascript, java, c#, css)
 "
-" Last Modified: Thu Dec 01, 2011 11:56AM
+" Last Modified: Fri Dec 09, 2011 05:03PM
 "
 " ======================================================================================
 
@@ -126,7 +126,7 @@ function! s:Format(line1, line2, ...)
             endfor
         else
             " defaut output indented code w/o mangle variable names.
-            let params .= ' -b -nm -ns'
+            let params .= ' -b -nm -ns --unpack'
         endif
         call s:Exec(cmd, params, '', a:line1, a:line2)
     endif
