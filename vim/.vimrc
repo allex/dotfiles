@@ -7,7 +7,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Thu Dec 08, 2011 06:42PM
+" Last Modified: Sat Dec 10, 2011 09:09PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -180,8 +180,6 @@ if !exists(":DiffOrig")
                 \ | wincmd p | diffthis
 endif
 
-let mapleader=","
-
 "
 " Set color scheme
 " For more colorschemes http://vimcolorschemetest.googlecode.com/svn/
@@ -203,10 +201,25 @@ else
     set tw=75
 endif
 
+let mapleader=","
+
+" locale
+let $LANG='en_US.UTF-8'
+
+" windows {{{
 if has("win32")
 
+    " reset the current language to en
+    language messages en
+    " language time en
+    set langmenu=none
+
+    " To try out your translations you first have to remove all menus.
+    source $VIMRUNTIME/delmenu.vim
+    source $VIMRUNTIME/menu.vim
+
+    " Set options and add mapping such that Vim behaves a lot like MS-Windows
     source $VIMRUNTIME/mswin.vim
-    " set shell=$ComSpec
 
     " Highlight the screen line of the cursor with CursorLine
     " set cursorline
@@ -232,28 +245,9 @@ if has("win32")
         hi PmenuSel guifg=#000000 guibg=#cae682 gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
         hi Search guifg=#C0c000 guibg=Red gui=underline ctermfg=NONE ctermbg=NONE cterm=underline
     endif
-
     " }}}
 
-endif " end windows
-
-" }}}
-
-" locale {{{
-let $LANG='en_US.UTF-8'
-
-if has("gui_win32")
-    " reset the current language to en
-    language messages en
-    " language time en
-    set langmenu=none
-    " set langmenu=en_gb.utf-8
-
-    " To try out your translations you first have to remove all menus.
-    source $VIMRUNTIME/delmenu.vim
-    source $VIMRUNTIME/menu.vim
-endif
-" }}}
+endif " end windows }}}
 
 " encoding {{{
 let &termencoding=&encoding
@@ -326,6 +320,7 @@ let Tlist_Use_SingleClick=1
 " NERD Commenter settings, 05-17-2009
 " Add a space after the left delimiter and before the right delimiter, like this: /* int foo=2; */
 let NERDSpaceDelims=1
+
 " }}}
 
 " mappings {{{

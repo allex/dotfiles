@@ -1,0 +1,8 @@
+#!/bin/sh
+
+FG="$HOME/.wine/bin/freegate/fg721p.exe"
+if [ -f "$(which wine)" ]; then
+    nohup wine $FG >/dev/null 2>&1 &
+else
+   echo 'Wine loader not install yet.'
+fi

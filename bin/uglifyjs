@@ -339,7 +339,7 @@ function unpack(text) {
             buffer[++j] = eval('String(' + match[0].slice(5, -2) + ')');
             text = text.substring(offset + match[0].length);
         } else {
-            buffer.push(text);
+            buffer[++j] = text;
             text = '';
         }
     }
