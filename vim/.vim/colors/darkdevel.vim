@@ -68,6 +68,7 @@ let g:Darkdevel.comment.guibg   = 'NONE'
   "highlight MatchParen
   highlight NonText         ctermfg=Gray        guifg=#777777     ctermbg=NONE        guibg=#000000
   highlight Normal          ctermfg=Gray        guifg=#F0F0F0     ctermbg=NONE        guibg=#000000
+  highlight Search term=reverse ctermfg=0 ctermbg=3 guifg=gray10 guibg=gold2
 
 " Popup menu style
 " ================
@@ -77,9 +78,9 @@ let g:Darkdevel.comment.guibg   = 'NONE'
   highlight PmenuThumb      ctermfg=Gray        guifg=#F0F0F0     ctermbg=NONE        guibg=NONE
 
   "highlight Question
-  "highlight Search
+  " highlight Search
   "highlight SpecialKey
-  "highlight Error                     guifg=#FFFFFF   guibg=#990000
+  highlight Error                     guifg=#FFFFFF   guibg=#990000
 
 " Spelling style
 " ==============

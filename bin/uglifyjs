@@ -12,6 +12,7 @@ var options = {
         ast: false,
         mangle: true,
         mangle_toplevel: false,
+        no_mangle_functions: false,
         squeeze: true,
         make_seqs: true,
         dead_code: true,
@@ -60,6 +61,10 @@ out: while (args.length > 0) {
             case "-mt":
             case "--mangle-toplevel":
                 options.mangle_toplevel = true;
+                break;
+            case "-nmf":
+            case "--no-mangle-functions":
+                options.no_mangle_functions = true;
                 break;
             case "--no-mangle":
             case "-nm":
@@ -287,9 +292,10 @@ function squeeze_it(code) {
                 }
                 if (options.mangle) ast = time_it("mangle", function(){
                         return pro.ast_mangle(ast, {
-                                toplevel: options.mangle_toplevel,
-                                defines: options.defines,
-                                except: options.reserved_names
+                                toplevel     : options.mangle_toplevel,
+                                defines      : options.defines,
+                                except       : options.reserved_names,
+                                no_functions : options.no_mangle_functions
                         });
                 });
                 if (options.squeeze) ast = time_it("squeeze", function(){
@@ -329,14 +335,14 @@ function time_it(name, cont) {
  * Unpack the codes which packed by Dean Edwards' Packer
  * Add by allex_wang (allex.wxn@gmail.com)
  */ 
-var rePacker = /eval\(function\(p,a,c,k,e,r\){.*?\.split\('\|'\),0,\{\}\)\);/;
+var rePacker = /eval\(function\(p,a,c,k,e,r\){.+?\.split\('\|'\),0,\{\}\)\)(?=;?)/;
 function unpack(text) {
     var match, offset = 0, j = -1, buffer = [];
     while (text) {
         if (match = text.match(rePacker)) {
             offset = match.index;
             buffer[++j] = text.substring(0, offset);
-            buffer[++j] = eval('String(' + match[0].slice(5, -2) + ')');
+            buffer[++j] = eval('String(' + match[0].slice(5, -1) + ')');
             text = text.substring(offset + match[0].length);
         } else {
             buffer[++j] = text;

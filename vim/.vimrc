@@ -7,7 +7,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sat Dec 10, 2011 09:09PM
+" Last Modified: Sun Dec 11, 2011 07:51PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -61,7 +61,7 @@ set ruler                       " ashow the cursor position all the time
 " Highlighted the matched string is when typing a search command,
 set incsearch
 set magic
-set iskeyword+=_,$,@,%
+set iskeyword+=_,$,@,%,-
 
 " Ignore case when searching
 " set ignorecase
