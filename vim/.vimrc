@@ -457,7 +457,7 @@ if has("autocmd")
             let timeStampLeader = 'Last Modified: '
             let pos = getpos('.')
             0
-            let searchPos = search(timeStampLeader, '', 40, 500)
+            let searchPos = search(timeStampLeader, '', 40)
             if searchPos > 0
                 keepjumps exe searchPos . 's#^\(.\{,10}' . timeStampLeader . '\).*#\1' .
                             \ strftime('%a %b %d, %Y %I:%M%p') . '#e'

@@ -16,7 +16,9 @@
 #     fi
 # fi
 
-# set PATH so it includes user's private bin if it exists
+# User specific environment and startup programs
+
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
+    export PATH
 fi

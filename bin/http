@@ -9,7 +9,15 @@ if [ "$WHOAMI" != "root" ] ; then
    exit 1
 else
     service apache2 stop
+    sleep 2
     /bin/echo -e ' * Deleting apache logs in /var/log/apache/*'
     rm /var/log/apache2/* -f
     service apache2 start
 fi
+
+
+# httpd -k stop
+# sleep 1
+# rm /var/log/apache2/*
+# httpd -k start
+
