@@ -1,0 +1,27 @@
+[user]
+	name = Allex
+	email = allex.wxn@gmail.com
+
+[core]
+    editor = "/usr/bin/vim"
+    ; autocrlf = true
+    pager = less -R
+
+[diff]
+    tool = "git-diff"
+    ; external = git_diff
+
+; [merge]
+;     tool = vimdiff
+
+; [pager]
+;     diff =
+
+[difftool "git-diff"]
+    cmd = "/usr/bin/vimdiff -f -n \"$LOCAL\" \"$REMOTE\""
+
+[difftool]
+	prompt = false
+
+[color]
+    ui = auto
