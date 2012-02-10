@@ -1,7 +1,7 @@
 /* vim: set ft=javascript: */
 
 // Author: Allex (allex.wxn@gmail.com)
-// Last Modified: Fri Feb 10, 2012 04:27PM
+// Last Modified: Fri Feb 10, 2012 04:52PM
 //
 // see also:
 //   http://findproxyforurl.com/pac_file_examples.html
@@ -29,15 +29,15 @@ var debug = debugNone;
 // Add any good networks here. Format is network folowed by a comma and
 // optional white space, and then the netmask.
 var resolvesIPs = [
-	['10.0.0.0', '255.0.0.0'],
-	['127.0.0.0', '255.255.255.0'],
-	['172.16.0.0', '255.240.0.0'],
+    ['10.0.0.0', '255.0.0.0'],
+    ['127.0.0.0', '255.255.255.0'],
+    ['172.16.0.0', '255.240.0.0'],
     ['192.168.0.0', '255.255.0.0']
 ];
 
 function isResolveHost(host) {
-	var resolved_ip = dnsResolve(host), length = resolvesIPs.length, arr;
-// corp public proxy server name.
+    var resolved_ip = dnsResolve(host), length = resolvesIPs.length, arr;
+    // corp public proxy server.
     if (resolved_ip === '192.168.100.221') return false;
     while (length--) {
         arr = resolvesIPs[length];

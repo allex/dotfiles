@@ -13,12 +13,9 @@
  * Css beautify for nodejs
  * @author Allex Wang (allex.wxn@gmail.com)
  */
-
-"use strict";
-
-require.paths.unshift("./");
-
 (function() {
+
+    "use strict";
 
     var fs = require("fs"),
         sys = require("sys"),

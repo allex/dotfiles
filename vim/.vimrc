@@ -7,7 +7,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sun Dec 11, 2011 07:51PM
+" Last Modified: Fri Feb 10, 2012 04:46PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -335,8 +335,9 @@ nmap <leader>f :find<CR>
 
 " Fast saving
 nmap <leader>w :w!<CR>
-nmap <leader>s :w !sudo tee %<CR>
-" map <silent> <C-s> :w !sudo tee %
+if executable('sudo')
+    nmap <silent> <leader>s :w !sudo tee %<CR>
+endif
 
 " Vertical split then hop to new buffer
 nmap <leader>h :new<CR>
@@ -399,7 +400,7 @@ nmap <silent> <leader>l :set list!<CR>
 imap <silent> <s-tab> <c-v><tab>
 
 " Change directory to the file being edited.
-cmap ,cd :cd %:p:h<CR>:pwd<CR>
+cmap <silent> ,cd :cd %:p:h<CR>:pwd<CR>
 
 " Set abbreviations
 
@@ -481,18 +482,8 @@ if has("autocmd")
         au!
         au BufNewFile,BufRead *.java,*.cs       inoremap <buffer> $pr private
         au BufNewFile,BufRead *.java,*.cs       inoremap <buffer> $pu public
-        au BufNewFile,BufRead *.java,*.cs       inoremap <buffer> $po protected
-        au BufNewFile,BufRead *.j*,*.c*         inoremap <buffer> $r return
-        au BufNewFile,BufRead *.java            inoremap <buffer> $i import
-        au BufNewFile,BufRead *.cs              inoremap <buffer> $u using
-        au BufNewFile,BufRead *.java            inoremap <buffer> $b boolean
-        au BufNewFile,BufRead *.cs              inoremap <buffer> $b bool
-        au BufNewFile,BufRead *.j*,*.cs         inoremap <buffer> $v void
-        au BufNewFile,BufRead *.j*,*.c*         inoremap <buffer> $s String
-        au BufNewFile,BufRead *.cs,*.as*        inoremap <buffer> $s string
-        au BufNewFile,BufRead *.js,*.php        inoremap <buffer> $f function
-        au BufNewFile,BufRead *.java            inoremap <buffer> out( System.out.print();
-        au BufNewFile,BufRead *.java            inoremap <buffer> outl( System.out.println();
+        au BufNewFile,BufRead *.java            inoremap <buffer> $print( System.out.print();
+        au BufNewFile,BufRead *.java            inoremap <buffer> $println( System.out.println();
 
         " Map auto complete of (, ", ', [
         au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap " ""<ESC>:let leavechar='"'<CR>i
@@ -503,6 +494,7 @@ if has("autocmd")
         au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap } <c-r>=ClosePair('}')<CR>
         au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap [ []<ESC>i
         au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap ] <c-r>=ClosePair(']')<CR>
+
         " inoremap < <><ESC>i
         " inoremap > <c-r>=ClosePair('>')<CR>
     augroup END
@@ -539,11 +531,13 @@ if has("autocmd")
     "     endfun
     " augroup END
 
-    " Saves the current session, and map F6 to restores the session.
-    set ssop=buffers,sesdir,tabpages,winpos,winsize
-    let $VIMSESSION = '~/.session.vim'
-    au VimLeave * mks! $VIMSESSION
-    nmap <F6> :so $VIMSESSION<CR>
+    if has("gui_running") == 0
+        " Saves the current session, and map F6 to restores the session.
+        set ssop=buffers,sesdir,tabpages,winpos,winsize
+        let $VIMSESSION = '~/.session.vim'
+        au VimLeave * mks! $VIMSESSION
+        nmap <F6> :so $VIMSESSION<CR>
+    endif
 
 endif
 " }}}

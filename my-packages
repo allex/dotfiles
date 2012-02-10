@@ -660,6 +660,7 @@ libgmp10					install
 libgnome-bluetooth8				install
 libgnome-control-center1			install
 libgnome-desktop-3-2				install
+libgnome-keyring-common				install
 libgnome-keyring0				install
 libgnome-media-profiles-3.0-0			install
 libgnome-menu-3-0				install
@@ -829,6 +830,7 @@ libldap-2.4-2					install
 liblightdm-gobject-1-0				install
 liblircclient0					install
 libllvm2.9					install
+libllvm3.0					install
 liblocale-gettext-perl				install
 liblockfile1					install
 liblouis-data					install
@@ -854,6 +856,7 @@ libmetacity-private0				install
 libmhash2					install
 libmimic0					install
 libminiupnpc5					install
+libminiupnpc8					install
 libmission-control-plugins0			install
 libmjpegtools-1.9				install
 libmms0						install
@@ -1220,6 +1223,7 @@ libx11-xcb1					install
 libx264-116					install
 libx86-1					install
 libxapian22					install
+libxatracker1					install
 libxau6						install
 libxaw7						install
 libxcb-dri2-0					install
@@ -1280,10 +1284,10 @@ light-themes					install
 lightdm						install
 linux-firmware					install
 linux-generic					install
-linux-headers-3.0.0-14				install
-linux-headers-3.0.0-14-generic			install
+linux-headers-3.0.0-15				install
+linux-headers-3.0.0-15-generic			install
 linux-headers-generic				install
-linux-image-3.0.0-14-generic			install
+linux-image-3.0.0-15-generic			install
 linux-image-generic				install
 linux-libc-dev					install
 linux-sound-base				install
@@ -1446,6 +1450,7 @@ python-farsight					install
 python-gconf					install
 python-gdbm					install
 python-gi					install
+python-glade2					install
 python-gnomekeyring				install
 python-gnupginterface				install
 python-gobject					install
@@ -1576,14 +1581,11 @@ thunderbird-gnome-support			install
 thunderbird-locale-en				install
 thunderbird-locale-en-gb			install
 thunderbird-locale-en-us			install
-thunderbird-locale-zh-hans			install
 time						install
 tomboy						install
 toshset						install
-totem						install
+totem						deinstall
 totem-common					install
-totem-mozilla					install
-totem-plugins					install
 transmission-common				install
 transmission-gtk				install
 tsconf						install

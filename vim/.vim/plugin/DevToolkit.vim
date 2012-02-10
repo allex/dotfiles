@@ -7,7 +7,7 @@
 " Description:   Toolkit with codes format, compressor for web develop etc,.
 "                (javascript, java, c#, css)
 "
-" Last Modified: Fri Dec 09, 2011 05:03PM
+" Last Modified: Tue Feb 07, 2012 04:52PM
 "
 " ======================================================================================
 
@@ -23,8 +23,16 @@ endif
 augroup DevToolkit
     au!
 
-    " Shortcut for edit current file with notepad.
-    nnoremap <silent> <leader>,n :exec ':!start notepad %' <cr>
+    " Shortcut for edit current file with notepad/gedit
+    let editor = ''
+    if has('win32')
+        let editor = 'notepad'
+    elseif has('gui_gtk2')
+        let editor = 'gedit'
+    endif
+    if editor != ''
+        nnoremap <silent> <leader>,n :exec ':silent !' . editor . ' %' <CR>
+    endif
 
     " Html tidy definitions.
     if !&cp && !exists(":Tidy") && has("user_commands")

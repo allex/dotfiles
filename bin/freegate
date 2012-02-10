@@ -1,8 +1,12 @@
 #!/bin/sh
 
-FG="$HOME/.wine/bin/freegate/fg721p.exe"
-if [ -f "$(which wine)" ]; then
-    nohup wine $FG >/dev/null 2>&1 &
+FG="$HOME/freegate/fg723p.exe"
+if [ -f "$FG" ]; then
+    if [ -f "$(which wine)" ]; then
+        nohup wine $FG >/dev/null 2>&1 &
+    else
+        echo 'Wine loader not install yet.'
+    fi
 else
-   echo 'Wine loader not install yet.'
+    echo 'freegate.exe not found.'
 fi

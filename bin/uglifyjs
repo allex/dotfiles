@@ -17,7 +17,7 @@ var options = {
         make_seqs: true,
         dead_code: true,
         verbose: false,
-        show_copyright: true,
+        show_copyright: false,
         out_same_file: false,
         max_line_length: 32 * 1024,
         unsafe: false,
