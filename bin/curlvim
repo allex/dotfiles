@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ -z "$1" -o "$1" = "-h" -o "$1" = "--help" ]; then cat <<EOF
+curlvim - v0.5 - 3/7/2011
+http://benalman.com/
+
+echo "Usage: `basename "$0"` [curl_options...] url"
+
+Curl a remote file into vim, setting the filename based on the URL's filename.
+If a file extension can't be determined from the URL, .html will be used by
+default. If you're just specifying a domain without scheme (eg. benalman.com),
+use a trailing / to keep curlvim from using the TLD as the file extension.
+
+The vim executable will be auto-magically determined by stripping any leading
+"curl" off this script's filename. For example, call this script "curlgvim"
+and gvim will be run. If this naming convention isn't used, the executable
+will default to "vim".
+
+Copyright (c) 2011 "Cowboy" Ben Alman
+Dual licensed under the MIT and GPL licenses.
+http://benalman.com/about/license/
+EOF
+exit; fi
+
+# Determine vim executable name from this script's name or default to "vim".
+BIN=`basename "$0" | perl -pe 's#^curl## or $_ = "vim";'`
+
+# Get remote URL (the first parameter not starting with -).
+for URL; do [[ "$URL" != -* ]] && break; done
+
+# Strip querystring / fragment from URL.
+URL=`echo "$URL" | perl -pe 's/[?#].*$//'`
+
+# Determine file extension from the URL or default to "html"
+EXT=`echo "$URL" | perl -pe 's#^.*[^/]+\.([^/]+)$#$1# or $_ = "html";'`
+
+# Determine file name based on URL and determined extension.
+FILE=`echo "$URL" | perl -pe 's#.*?([^/]+)/?$#$1#'`
+FILE=`basename $FILE ".$EXT"`.$EXT
+
+# Actually curl file into vim.
+curl "$@" | $BIN -c ":f $FILE" -c ":filetype detect" -
