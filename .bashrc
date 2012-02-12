@@ -84,3 +84,7 @@ fi
 # if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 #     . /etc/bash_completion
 # fi
+
+# Make cd command arguments case insensitive
+bind "set completion-ignore-case on"
+
