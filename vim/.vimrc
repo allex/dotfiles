@@ -7,7 +7,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri Feb 10, 2012 04:46PM
+" Last Modified: Mon Feb 13, 2012 12:01PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -440,6 +440,16 @@ nnoremap <silent> <F5> :exec ":!javac -encoding UTF-8 % & java -Dfile.encoding=G
 nnoremap <silent> <F8> :TlistToggle<CR>
 map <F10> :NERDTreeToggle<CR>
 map <F12> :q!<CR>
+
+" A function to clear the undo history
+command -nargs=0 Reset call <SID>ForgetUndo()
+func! <SID>ForgetUndo()
+    let old_ul = &undolevels
+    set undolevels=-1
+    exe "silent normal a \<BS>\<Esc>"
+    let &undolevels = old_ul
+    unlet old_ul
+endfun
 
 "}}}
 
