@@ -39,4 +39,4 @@ FILE=`echo "$URL" | perl -pe 's#.*?([^/]+)/?$#$1#'`
 FILE=`basename $FILE ".$EXT"`.$EXT
 
 # Actually curl file into vim.
-curl -k "$@" | $BIN -c ":f $FILE" -c ":filetype detect" -
+curl -k -f "$@" | $BIN -c ":f $FILE" -c ":filetype detect" -

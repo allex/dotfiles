@@ -1,15 +1,15 @@
 /* vim: set ft=javascript: */
 
 // Author: Allex (allex.wxn@gmail.com)
-// Last Modified: Fri Feb 10, 2012 04:52PM
+// Last Modified: Thu Feb 16, 2012 04:17PM
 //
 // see also:
 //   http://findproxyforurl.com/pac_file_examples.html
 //   http://findproxyforurl.com/pac_functions_explained.html
 
 var DIRECT      = 'DIRECT';
-var CORPHOLE    = 'PROXY 192.168.100.221:80';
-var LOCALHOLE   = 'PROXY proxy:8888';
+var LOC_PROXY   = 'PROXY proxy:8888';
+var PUB_PROXY   = 'PROXY 192.168.100.221:80';
 
 // Set debug to level you want status alerts for testing
 var debugNone     = 0;    // No debuging alerts.
@@ -50,6 +50,7 @@ function isBlockedDnsDomain(host) {
     return (0
         // || dnsDomainIs(host, '.twimg.com')
         || dnsDomainIs(host, '.twitter.com')
+        || dnsDomainIs(host, '.blogger.com')
     );
 }
 
@@ -58,6 +59,7 @@ function checkShExpMatch(url) {
         || shExpMatch(url, '*tw.yahoo.com/*')
         || shExpMatch(url, '*tw.*.yahoo.com/*')
         || shExpMatch(url, '*twitter.com*')
+        || shExpMatch(url, '*facebook.com*')
         || shExpMatch(url, '*abcdomain.com/folder/*')
         || shExpMatch(url, '*vpn.domain.com*')
     );
@@ -82,6 +84,18 @@ function isNumIpAddr(host) {
     }
 
     return isIPValid;
+}
+
+var isWorkspace = null;
+function getUnBlockProxy(host) {
+    isWorkspace !== null || (isWorkspace = !!isInNet(myIpAddress(), '192.168.131.0', '255.255.255.0'));
+    if (isWorkspace) {
+        if (!shExpMatch(host, '*twitter.com*') && !shExpMatch(host, '*facebook.com*')) {
+            return LOC_PROXY;
+        }
+        return PUB_PROXY;
+    }
+    return LOC_PROXY;
 }
 
 function log(s) {}
@@ -123,10 +137,10 @@ function FindProxyForURL(url, host) {
     }
 
 // Check blocked dns domain.
-    if (isBlockedDnsDomain(host)) return LOCALHOLE;
+    if (isBlockedDnsDomain(host)) return getUnBlockProxy(host);
 
 // Attempt to match hostname or URL to a specified shell expression.
-    if (checkShExpMatch(url)) return LOCALHOLE;
+    if (checkShExpMatch(url)) return getUnBlockProxy(host);
 
     return DIRECT;
 }

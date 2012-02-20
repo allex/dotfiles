@@ -22,6 +22,7 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias md='mkdir -p'
+alias curl='/usr/bin/curl -k'
 
 # enable sudo current user's private bin
 alias sud='/usr/bin/sudo env PATH=$PATH'

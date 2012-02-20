@@ -7,7 +7,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Mon Feb 13, 2012 12:01PM
+" Last Modified: Mon Feb 20, 2012 01:38PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -54,7 +54,7 @@ set bsdir=last
 set history=400                 " keep 400 lines of command line history
 set title                       " set terminal title to filename
 set showcmd                     " display incomplete commands
-set foldminlines=1
+set foldminlines=1              " (default 1)
 set nu
 set ruler                       " ashow the cursor position all the time
 
@@ -595,7 +595,7 @@ func! JavaScriptFold()
         " clear fold from fillchars to set it up the way we want later
         let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
         let l:foldtext=getline(v:foldstart)
-        let l:foldtext=substitute(l:foldtext, '[\/\*]\+\s*', '', '')
+        let l:foldtext=substitute(l:foldtext, '\/[\/\*]\+\s*', '', '')
         return substitute(l:foldtext, '{.*', '{...}', '')
     endfun
     setlocal foldtext=MyFoldText()

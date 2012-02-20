@@ -230,7 +230,7 @@ function! s:GistList(user, token, gistls, page)
     silent put =res.content
   else
     silent %d _
-    exec 'silent r! curl -f -s' g:gist_curl_options url
+    exec 'silent r! curl -k -f -s' g:gist_curl_options url
   endif
 
   if v:shell_error != 0
@@ -289,7 +289,7 @@ endfunction
 
 function! s:GistGetFileName(gistid)
   let url = 'https://gist.github.com/'.a:gistid
-  let res = system('curl -s '.g:gist_curl_options.' '.url)
+  let res = system('curl -k -s '.g:gist_curl_options.' '.url)
   let res = matchstr(res, '^.*<a href="/raw/[^"]\+/\zs\([^"]\+\)\ze".*$')
   if res =~ '/'
     return ''
@@ -301,7 +301,7 @@ endfunction
 function! s:GistDetectFiletype(gistid)
   let url = 'https://gist.github.com/'.a:gistid
   let mx = '^.*<div class=".\{-}type-\zs\([^"]\+\)\ze">.*$'
-  let res = system('curl -s '.g:gist_curl_options.' '.url)
+  let res = system('curl -k -s '.g:gist_curl_options.' '.url)
   let res = matchstr(res, mx)
   let res = substitute(res, '-', '', 'g')
   if has_key(s:extmap, res)
@@ -342,7 +342,7 @@ function! s:GistGet(user, token, gistid, clipboard)
   set undolevels=-1
   filetype detect
   silent %d _
-  exec 'silent 0r! curl -f -s' g:gist_curl_options url
+  exec 'silent 0r! curl -k -f -s' g:gist_curl_options url
   if v:shell_error != 0
     let &undolevels = old_undolevels
     bw!
@@ -450,7 +450,7 @@ function! s:GistUpdate(user, token, content, gistid, gistnm, desc)
   echon 'Updating it to gist... '
   let quote = &shellxquote == '"' ?  "'" : '"'
   let url = 'https://gist.github.com/gists/'.action
-  let res = system('curl -i '.g:gist_curl_options.' -d @'.quote.file.quote.' '.url)
+  let res = system('curl -k -i '.g:gist_curl_options.' -d @'.quote.file.quote.' '.url)
   call delete(file)
   let headers = split(res, '\(\r\?\n\|\r\n\?\)')
   let loc = matchstr(headers, '^Location:')
@@ -486,7 +486,7 @@ function! s:GistGetPage(url, user, param, opt)
       return
     endif
     let url = 'https://gist.github.com/login?return_to=gist'
-    let res = system('curl -f -L -s '.g:gist_curl_options.' -c '.quote.cookie_file.quote.' '.quote.url.quote)
+    let res = system('curl -k -f -L -s '.g:gist_curl_options.' -c '.quote.cookie_file.quote.' '.quote.url.quote)
     let token = matchstr(res, '^.* name="authenticity_token" type="hidden" value="\zs\([^"]\+\)\ze".*$')
 
     let query = [
@@ -503,7 +503,7 @@ function! s:GistGetPage(url, user, param, opt)
     unlet query
 
     let file = tempname()
-    let command = 'curl -f -s '.g:gist_curl_options.' -i'
+    let command = 'curl -k -f -s '.g:gist_curl_options.' -i'
     let command .= ' -b '.quote.cookie_file.quote
     let command .= ' -c '.quote.cookie_file.quote
     let command .= ' '.quote.'https://gist.github.com/session'.quote
@@ -519,7 +519,7 @@ function! s:GistGetPage(url, user, param, opt)
       return ''
     endif
   endif
-  let command = 'curl -f -s '.g:gist_curl_options.' -i '.a:opt
+  let command = 'curl -k -f -s '.g:gist_curl_options.' -i '.a:opt
   if len(a:param)
     let command .= ' -d '.quote.a:param.quote
   endif
@@ -664,7 +664,7 @@ function! s:GistPost(user, token, content, private, desc)
   echon 'Posting it to gist... '
   let quote = &shellxquote == '"' ?  "'" : '"'
   let url = 'https://gist.github.com/gists'
-  let res = system('curl -f -i '.g:gist_curl_options.' -d @'.quote.file.quote.' '.url)
+  let res = system('curl -k -f -i '.g:gist_curl_options.' -d @'.quote.file.quote.' '.url)
   call delete(file)
   let headers = split(res, '\(\r\?\n\|\r\n\?\)')
   let loc = matchstr(headers, '^Location:')
@@ -731,7 +731,7 @@ function! s:GistPostBuffers(user, token, private, desc)
   echo "Posting it to gist... "
   let quote = &shellxquote == '"' ?  "'" : '"'
   let url = 'https://gist.github.com/gists'
-  let res = system('curl -i '.g:gist_curl_options.' -d @'.quote.file.quote.' '.url)
+  let res = system('curl -k -i '.g:gist_curl_options.' -d @'.quote.file.quote.' '.url)
   call delete(file)
   let headers = split(res, '\(\r\?\n\|\r\n\?\)')
   let loc = matchstr(headers, '^Location:')
