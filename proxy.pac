@@ -1,7 +1,7 @@
 /* vim: set ft=javascript: */
 
 // Author: Allex (allex.wxn@gmail.com)
-// Last Modified: Thu Feb 16, 2012 04:17PM
+// Last Modified: Sun Feb 26, 2012 08:58AM
 //
 // see also:
 //   http://findproxyforurl.com/pac_file_examples.html

@@ -7,7 +7,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Mon Feb 20, 2012 01:38PM
+" Last Modified: Sun Mar 04, 2012 08:15PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -368,7 +368,7 @@ if has("gui_running")
 endif
 
 " Grep command
-com -nargs=* Grep call s:Grep(<f-args>)
+com! -nargs=* Grep call s:Grep(<f-args>)
 func! s:Grep(...)
     if a:0 > 0
         let word = a:1
@@ -434,19 +434,20 @@ vnoremap X "_X
 vnoremap <silent> * :call VisualSearch('f')<CR>
 vnoremap <silent> # :call VisualSearch('b')<CR>
 
-nnoremap <silent> <F5> :exec ":!javac -encoding UTF-8 % & java -Dfile.encoding=GBK %:r" <CR>
+" nnoremap <silent> <F5> :exec ":!javac -encoding UTF-8 % & java -Dfile.encoding=GBK %:r" <CR>
 
 " Mapping for the <F8> key to toggle the taglist window.
 nnoremap <silent> <F8> :TlistToggle<CR>
 map <F10> :NERDTreeToggle<CR>
-map <F12> :q!<CR>
+map <F12> :conf qa!<CR>
 
 " A function to clear the undo history
-command -nargs=0 Reset call <SID>ForgetUndo()
+com! -nargs=0 Reset call <SID>ForgetUndo()
 func! <SID>ForgetUndo()
     let old_ul = &undolevels
     set undolevels=-1
     exe "silent normal a \<BS>\<Esc>"
+    w
     let &undolevels = old_ul
     unlet old_ul
 endfun
