@@ -9,12 +9,11 @@
 #umask 022
 
 # if running bash
-# if [ -n "$BASH_VERSION" ]; then
-#     # include .bashrc if it exists
-#     if [ -f "$HOME/.bashrc" ]; then
-#     . "$HOME/.bashrc"
-#     fi
-# fi
+if [ "$BASH" ]; then
+  if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+  fi
+fi
 
 # User specific environment and startup programs
 
@@ -22,3 +21,17 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
     export PATH
 fi
+
+if [ -d "$HOME/.lib" ] ; then
+    export LIB="$HOME/.lib"
+fi
+
+# JDK
+export JAVA_HOME=/usr/lib/jvm/java-6-sun
+
+# Ant
+export ANT_HOME=/usr/share/ant-1.8.2
+export PATH=${PATH}:${ANT_HOME}/bin
+
+# nodejs
+export NODE_PATH=${HOME}/.node_libraries:${HOME}/node_modules:$NODE_PATH
