@@ -7,7 +7,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sun Mar 04, 2012 08:15PM
+" Last Modified: Mon Mar 12, 2012 12:08AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -402,9 +402,8 @@ imap <silent> <s-tab> <c-v><tab>
 " Change directory to the file being edited.
 cmap <silent> ,cd :cd %:p:h<CR>:pwd<CR>
 
-" Set abbreviations
-
 " DATE FUNCTIONS (insert date in format "20 Aug, 2010")
+" au BufNewFile,BufRead *.\@<!php iab $date <C-R>=strftime("%d %B %Y, %X")<CR>
 iab $date <C-R>=strftime("%d %B %Y, %X")<CR>
 
 " STRIP -- EMPTY LINE ENDINGS
@@ -543,11 +542,21 @@ if has("autocmd")
     " augroup END
 
     if has("gui_running") == 0
+
         " Saves the current session, and map F6 to restores the session.
         set ssop=buffers,sesdir,tabpages,winpos,winsize
         let $VIMSESSION = '~/.session.vim'
         au VimLeave * mks! $VIMSESSION
         nmap <F6> :so $VIMSESSION<CR>
+
+        " Register Save command to save current session.
+        com! -nargs=* Save call s:Save(<f-args>)
+        func! s:Save(...)
+            let sessionfile = expand('%:p:h') . '/session.vim'
+            execute 'sil! mks! ' . sessionfile
+            echo 'session saved: ' . sessionfile
+        endfun
+
     endif
 
 endif
