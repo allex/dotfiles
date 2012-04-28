@@ -3,14 +3,14 @@
 # Closure compiler toolkit
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Sat Apr 28, 2012 01:45PM
+# Last Modified: Sat Apr 28, 2012 02:16PM
 
 COMPILER="$LIB/compiler.jar"
 JAVA_OPT="-Xms64m -Xmx128m -Djava.library.path=$LIB"
 
 if [ $# -gt 0 ]; then
-	SOURCE_FILE=$1
-	shift
+    SOURCE_FILE=$1
+    shift
 fi
 
 if [ -z "$SOURCE_FILE" ]; then
