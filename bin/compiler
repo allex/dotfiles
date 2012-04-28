@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Closure compiler toolkit
+
+# Author: Allex (allex.wxn@gmail.com)
+# Last Modified: Sat Apr 28, 2012 01:45PM
+
+COMPILER="$LIB/compiler.jar"
+JAVA_OPT="-Xms64m -Xmx128m -Djava.library.path=$LIB"
+
+if [ $# -gt 0 ]; then
+	SOURCE_FILE=$1
+	shift
+fi
+
+if [ -z "$SOURCE_FILE" ]; then
+    java $JAVA_OPT -jar $COMPILER --help 
+else
+    eval "java $JAVA_OPT -jar $COMPILER --charset UTF-8 --warning_level QUIET --js \"$SOURCE_FILE\" $@"
+fi

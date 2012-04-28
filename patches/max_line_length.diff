@@ -1,0 +1,67 @@
+Index: src/com/google/javascript/jscomp/AbstractCommandLineRunner.java
+===================================================================
+--- src/com/google/javascript/jscomp/AbstractCommandLineRunner.java	(revision 1931)
++++ src/com/google/javascript/jscomp/AbstractCommandLineRunner.java	(working copy)
+@@ -251,6 +251,9 @@
+     options.setCodingConvention(config.codingConvention);
+     options.setSummaryDetailLevel(config.summaryDetailLevel);
+ 
++    // set max-line-length
++    options.setLineLengthThreshold(config.lineLengthThreshold);
++
+     legacyOutputCharset = options.outputCharset = getLegacyOutputCharset();
+     outputCharset2 = getOutputCharset2();
+     inputCharset = getInputCharset();
+@@ -2024,6 +2027,16 @@
+       return this;
+     }
+ 
++    private int lineLengthThreshold = CodePrinter.DEFAULT_LINE_LENGTH_THRESHOLD;
++
++    /**
++     * Sets the LineLengthThreshold (max-line-length).
++     */
++    CommandLineConfig setLineLengthThreshold(
++        int lineLengthThreshold) {
++      this.lineLengthThreshold = lineLengthThreshold;
++      return this;
++    }
+   }
+ 
+   /**
+Index: src/com/google/javascript/jscomp/CommandLineRunner.java
+===================================================================
+--- src/com/google/javascript/jscomp/CommandLineRunner.java	(revision 1931)
++++ src/com/google/javascript/jscomp/CommandLineRunner.java	(working copy)
+@@ -199,6 +199,10 @@
+         + "is 1")
+     private int summary_detail_level = 1;
+ 
++    @Option(name = "--max_line_length",
++        usage = "(default 32k characters) -- add a newline after around 32K characters")
++    private int max_line_length = CodePrinter.DEFAULT_LINE_LENGTH_THRESHOLD;
++
+     @Option(name = "--output_wrapper",
+         usage = "Interpolate output into this string at the place denoted"
+         + " by the marker token %output%. See --output_wrapper_marker")
+@@ -713,6 +717,7 @@
+           .setPropertyMapOutputFile(flags.property_map_output_file)
+           .setCodingConvention(conv)
+           .setSummaryDetailLevel(flags.summary_detail_level)
++          .setLineLengthThreshold(flags.max_line_length)
+           .setOutputWrapper(flags.output_wrapper)
+           .setModuleWrapper(flags.module_wrapper)
+           .setModuleOutputPathPrefix(flags.module_output_path_prefix)
+Index: src/com/google/javascript/jscomp/CodePrinter.java
+===================================================================
+--- src/com/google/javascript/jscomp/CodePrinter.java	(revision 1931)
++++ src/com/google/javascript/jscomp/CodePrinter.java	(working copy)
+@@ -34,7 +34,7 @@
+  */
+ class CodePrinter {
+   // The number of characters after which we insert a line break in the code
+-  static final int DEFAULT_LINE_LENGTH_THRESHOLD = 500;
++  static final int DEFAULT_LINE_LENGTH_THRESHOLD = 32 * 1024;
+ 
+ 
+   // There are two separate CodeConsumers, one for pretty-printing and
