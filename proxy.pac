@@ -1,30 +1,56 @@
-/* vim: set ft=javascript: */
+/* vim: set ft=javascript tw=75 sw=4: */
+/*--------------------------------------------------------------------
 
-// Author: Allex (allex.wxn@gmail.com)
-// Last Modified: Sun Feb 26, 2012 08:58AM
-//
-// see also:
-//   http://findproxyforurl.com/pac_file_examples.html
-//   http://findproxyforurl.com/pac_functions_explained.html
+    Author: Allex (allex.wxn@gmail.com)
+    Last Modified: Sun May 06, 2012 10:18PM
 
-var DIRECT      = 'DIRECT';
-var LOC_PROXY   = 'PROXY proxy:8888';
-var PUB_PROXY   = 'PROXY 192.168.100.221:80';
+    see also:
+    http://findproxyforurl.com/pac_file_examples.html
+    http://findproxyforurl.com/pac_functions_explained.html
 
-// Set debug to level you want status alerts for testing
-var debugNone     = 0;    // No debuging alerts.
-var debugGeneral  = 0x01; // Show alert when file is loaded.
-var debugShowPass = 0x02; // Show all URLS that pass and why.
-var debugShowFail = 0x04; // Show all URLS that fail and why.
-var debugRegxGen  = 0x08; // Show Regx expressions generated.
-var debugModURL   = 0x10; // Show removal of CGI args and anchors from URL.
-var debugShowIP   = 0x20; // Show when we find an IP numeric address.
-var debugNormal   = debugGeneral | debugShowFail;
-var debugAll      = debugGeneral | debugShowPass | debugShowFail | debugRegxGen | debugModURL | debugShowIP;
+--------------------------------------------------------------------*/
+<?php
+
+function checkproxy($server, $port) {
+    $verbinding = @fsockopen($server, $port, $errno, $errstr, 2);
+    if ($verbinding) {
+        fclose($verbinding);
+        $url = "http://$server:$port";
+        list($status) = get_headers($url);
+        if (strpos($status, '404') !== FALSE) {
+            // URL is 404ing
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+header('Content-Type: text/javascript; charset=utf-8');
+$ip = exec(getenv('bin').'/ip');
+if (!$ip) {
+    $ip = '127.0.0.1';
+}
+
+$dp = 'DIRECT';
+$fp = '192.168.100.221:80';
+if (checkproxy('proxy', 8580)) {
+    $dp = 'proxy:8888';
+    $fp = 'proxy:8580';
+}
+
+?>
+
+var LAN_IP       = '<?=$ip?>';
+var LAN_PROXY_IP = '192.168.100.221';
+var DIRECT       = 'DIRECT';
+var PROXY_LAN    = 'PROXY ' + LAN_PROXY_IP + ':80';
+var PROXY_FREE   = 'PROXY <?=$fp?>';
+var PROXY_DEBUG  = 'PROXY <?=$dp?>';
 
 // WARNING:  Opera, Konqueror, AND Safari USERS MUST NEVER SET DEBUG TO
 // ANYTHING OTHER THAN debugNone.  THE alert() CALL CAUSES THEM TO FAIL!
-var debug = debugNone;
+var debug = 0;
 
 // Add any good networks here. Format is network folowed by a comma and
 // optional white space, and then the netmask.
@@ -38,7 +64,9 @@ var resolvesIPs = [
 function isResolveHost(host) {
     var resolved_ip = dnsResolve(host), length = resolvesIPs.length, arr;
     // corp public proxy server.
-    if (resolved_ip === '192.168.100.221') return false;
+    if (resolved_ip === LAN_PROXY_IP) {
+        return false;
+    }
     while (length--) {
         arr = resolvesIPs[length];
         if (isInNet(resolved_ip, arr[0], arr[1])) return true;
@@ -46,16 +74,37 @@ function isResolveHost(host) {
     return false;
 }
 
-function isBlockedDnsDomain(host) {
+function isDebugMatch(url) {
     return (0
-        // || dnsDomainIs(host, '.twimg.com')
-        || dnsDomainIs(host, '.twitter.com')
-        || dnsDomainIs(host, '.blogger.com')
+        || shExpMatch(url, '*.127.com/*')
+        || shExpMatch(url, '*.163.com/*')
+        || shExpMatch(url, '*m.sinaimg.cn/*')
+        || shExpMatch(url, '*.sina.com.cn/*')
+        || shExpMatch(url, '*.sinaimg.cn/*')
+        || shExpMatch(url, '*.weibo.com/*')
     );
 }
 
-function checkShExpMatch(url) {
+function isBlockedDnsDomain(host) {
     return (0
+        || dnsDomainIs(host, '.twimg.com')
+        || dnsDomainIs(host, '.twitter.com')
+        || dnsDomainIs(host, '.google.com')
+        || dnsDomainIs(host, '.googleusercontent.com')
+        || dnsDomainIs(host, '.blogger.com')
+        || dnsDomainIs(host, '.blogspot.com')
+        || dnsDomainIs(host, '.youtube.com')
+        || dnsDomainIs(host, '.ytimg.com')
+        || dnsDomainIs(host, 't.co')
+        || dnsDomainIs(host, 'delicious.com')
+        || dnsDomainIs(host, 'lesscss.org')
+        || dnsDomainIs(host, 'dropbox.com')
+    );
+}
+
+function isBlockedUrl(url, host) {
+    return (0
+        || isBlockedDnsDomain(host)
         || shExpMatch(url, '*tw.yahoo.com/*')
         || shExpMatch(url, '*tw.*.yahoo.com/*')
         || shExpMatch(url, '*twitter.com*')
@@ -68,7 +117,6 @@ function checkShExpMatch(url) {
 var re_IpAddrRegx = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 function isNumIpAddr(host) {
     var ipArr = host.match(re_IpAddrRegx), isIPValid = false;
-
     if (ipArr) {
         isIPValid = true;
         for (var i = 1; i <= 4; i++) {
@@ -78,53 +126,45 @@ function isNumIpAddr(host) {
             }
         }
     }
-
-    if (debug & debugShowIP && isIPValid) {
-        log('Found a IP host address: ' + host);
-    }
-
     return isIPValid;
 }
 
-var isWorkspace = null;
 function getUnBlockProxy(host) {
-    isWorkspace !== null || (isWorkspace = !!isInNet(myIpAddress(), '192.168.131.0', '255.255.255.0'));
-    if (isWorkspace) {
-        if (!shExpMatch(host, '*twitter.com*') && !shExpMatch(host, '*facebook.com*')) {
-            return LOC_PROXY;
+    if (isInNet(LAN_IP, '10.221.131.1', '255.255.255.0')) {
+        if (!(0
+            || shExpMatch(host, '*.google.com*')
+            || shExpMatch(host, '*twitter.com*')
+            || shExpMatch(host, '*facebook.com*')
+        )) {
+            return PROXY_LAN;
         }
-        return PUB_PROXY;
     }
-    return LOC_PROXY;
+    return PROXY_FREE;
 }
-
-function log(s) {}
 
 function FindProxyForURL(url, host) {
 
     if (url.substr(0, 4) == 'ftp:') return DIRECT;
 
-//Ignore Local Servers
+    // Ignore Local Servers
     if (isPlainHostName(host)) return DIRECT;
 
-    var result,
-        isNumIP = isNumIpAddr(host),
-        hasIPv4Address = true,
-        iPv4Address,
-        str = url.match(/^[^\?#]*/);
+    var result, isNumIP = isNumIpAddr(host), hasIPv4Address = true, str = url.match(/^[^\?#]*/);
 
     if (str != url) {
-        if (debug & debugModURL) {
+        if (debug) {
             log('URL modified:\n' + url + '\n' + str);
         }
         url = str;
     }
 
-    if (isNumIP) {
-        iPv4Address = host;
-    } else {
+    // debug proxy
+    if (isDebugMatch(url)) {
+        return PROXY_DEBUG;
+    }
 
-// If IP address is internal or hostname resolves to internal IP, send direct.
+    if (!isNumIP) {
+        // If IP address is internal or hostname resolves to internal IP, send direct.
         if (isResolvable(host)) {
             iPv4Address = dnsResolve(host);
         } else {
@@ -136,11 +176,16 @@ function FindProxyForURL(url, host) {
         return DIRECT;
     }
 
-// Check blocked dns domain.
-    if (isBlockedDnsDomain(host)) return getUnBlockProxy(host);
-
-// Attempt to match hostname or URL to a specified shell expression.
-    if (checkShExpMatch(url)) return getUnBlockProxy(host);
+    // Check blocked dns domain.
+    // Attempt to match hostname or URL to a specified shell expression.
+    if (isBlockedUrl(url, host)) {
+        return getUnBlockProxy(host);
+    }
 
     return DIRECT;
 }
+
+function log(s) {
+    alert(s);
+}
+

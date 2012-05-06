@@ -25,3 +25,7 @@
 
 [color]
     ui = auto
+
+[github]
+    user = allex
+    token = 02bd1965c363f7a3e6049748c719c5d9

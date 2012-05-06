@@ -7,7 +7,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Mon Mar 12, 2012 12:08AM
+" Last Modified: Fri May 04, 2012 05:46PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -437,8 +437,8 @@ vnoremap <silent> # :call VisualSearch('b')<CR>
 
 " Mapping for the <F8> key to toggle the taglist window.
 nnoremap <silent> <F8> :TlistToggle<CR>
-map <F10> :NERDTreeToggle<CR>
-map <F12> :conf qa!<CR>
+map <silent> <F10> :NERDTreeToggle<CR>
+map <silent> <F12> :conf qa!<CR>
 
 " A function to clear the undo history
 com! -nargs=0 Reset call <SID>ForgetUndo()
@@ -457,31 +457,25 @@ endfun
 if has("autocmd")
 
     " Last Modified {{{
-    " If buffer modified, update any 'Last Modified: ' in the first 20 lines.
+    " If buffer modified, update any 'Last modified: ' in the first 20 lines.
     " 'Last modified: ' can have up to 10 characters before (they are retained).
-    " Restores cursor and window position using pos variable.
-    function! LastModified()
+    " Restores cursor and window position using save_cursor variable. ('ul' is alias
+    " for 'undolevels').
+    function! UpdateLastModified()
         if exists('b:nomod') && b:nomod
             return
         end
         if &modified
             let timeStampLeader = 'Last Modified: '
-            let pos = getpos('.')
-            0
-            let searchPos = search(timeStampLeader, '', 40)
-            if searchPos > 0
-                keepjumps exe searchPos . 's#^\(.\{,10}' . timeStampLeader . '\).*#\1' .
-                            \ strftime('%a %b %d, %Y %I:%M%p') . '#e'
-                call histdel('search', -1)
-                let @/ = histget('/', -1)
-            endif
-            call setpos('.', pos)
+            let save_cursor = getpos('.')
+            let n = min([20, line('$')])
+            keepjumps exe '1,' . n . 's#^\(.\{,10}' . timeStampLeader . '\).*#\1' . strftime('%a %b %d, %Y %I:%M%p') . '#e'
+            call histdel('/', -1)
+            let @/ = histget('/', -1)
+            call setpos('.', save_cursor)
         endif
     endfun
-
-    autocmd BufWritePre * call LastModified()
-
-    " Modify the commands
+    autocmd BufWritePre * call UpdateLastModified()
     com! -nargs=0 NOMOD :let b:nomod = 1
     com! -nargs=0 MOD   :let b:nomod = 0
     " }}}
@@ -505,10 +499,7 @@ if has("autocmd")
         au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap [ []<ESC>i
         au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap ] <c-r>=ClosePair(']')<CR>
 
-        " inoremap < <><ESC>i
-        " inoremap > <c-r>=ClosePair('>')<CR>
     augroup END
-
     " }}}
 
     " Auto fold javascript, vim ect. {{{
@@ -525,21 +516,6 @@ if has("autocmd")
 
     " Enable tab switch
     autocmd VimEnter * call BufPos_Initialize()
-
-    " Remove the newline at end of file
-    " augroup EOL
-    "     autocmd BufWritePre * call EolSavePre()
-    "     autocmd BufWritePost * call EolSavePost()
-    "     func! EolSavePre()
-    "         let b:save_bin=&bin
-    "         if ! &eol
-    "             let &l:bin=1
-    "         endif
-    "     endfun
-    "     func! EolSavePost()
-    "         let &l:bin=b:save_bin
-    "     endfun
-    " augroup END
 
     if has("gui_running") == 0
 
