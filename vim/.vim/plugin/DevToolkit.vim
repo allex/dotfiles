@@ -2,12 +2,12 @@
 " ======================================================================================
 "
 " File Name:     DevToolkit.vim
-" Author:        Allex Wang <x-niu@msn.com>
+" Author:        Allex Wang <allex.wxn@gmail.com>
 " Version:       1.2
 " Description:   Toolkit with codes format, compressor for web develop etc,.
 "                (javascript, java, c#, css)
 "
-" Last Modified: Tue Feb 07, 2012 04:52PM
+" Last Modified: Mon May 07, 2012 10:16AM
 "
 " ======================================================================================
 

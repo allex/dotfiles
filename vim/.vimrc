@@ -1,13 +1,12 @@
 " .vimrc file {{{
-"
-" vim: set ft=vim fdm=marker et ff=unix:
+" vim: set ft=vim fdm=marker et ff=unix tw=100 sw=4:
 "
 " =================================================================================
 " Vim configuration file
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri May 04, 2012 05:46PM
+" Last Modified: Fri May 11, 2012 11:06AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -113,8 +112,6 @@ set suffixes+=.class,.tmp,.log,.aux
 " Ignore these files when completing names and in explorer
 set wildignore+=.svn,CVS,.git,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpg,*.png,*.xpm,*.gif,*.dvi
 
-" normalize {{{1
-
 " Shared the clipbrd whith other application such as X11.
 if has('unnamedplus')
     set clipboard=unnamedplus
@@ -156,14 +153,14 @@ if has("autocmd")
         au!
 
         " For all text files set 'textwidth' to 78 characters.
-        autocmd FileType text setlocal textwidth=78
+        au FileType text setlocal textwidth=78
 
         " When editing a file, always jump to the last known cursor position.
         " Don't do it when the position is invalid or when inside an event handler
         " (happens when dropping a file on gvim).
         " Also don't do it when the mark is in the first line, that is the default
         " position when opening a file.
-        autocmd BufReadPost *
+        au BufReadPost *
                     \ if line("'\"") > 1 && line("'\"") <= line("$") |
                     \   exe "normal! g`\"" |
                     \ endif
@@ -208,46 +205,25 @@ let $LANG='en_US.UTF-8'
 
 " windows {{{
 if has("win32")
-
     " reset the current language to en
     language messages en
     " language time en
     set langmenu=none
 
     " To try out your translations you first have to remove all menus.
-    source $VIMRUNTIME/delmenu.vim
-    source $VIMRUNTIME/menu.vim
+    so $VIMRUNTIME/delmenu.vim
+    so $VIMRUNTIME/menu.vim
 
     " Set options and add mapping such that Vim behaves a lot like MS-Windows
-    source $VIMRUNTIME/mswin.vim
+    so $VIMRUNTIME/mswin.vim
+
+    " Syntax Highlighting
+    so ~/.vim/custom_color.vim
 
     " Highlight the screen line of the cursor with CursorLine
     " set cursorline
-
-    " Syntax Highlighting {{{
-
-    " Set the status line background color.
-    hi StatusLine guifg=SlateBlue guibg=Yellow
-    hi StatusLineNC guifg=Gray guibg=White
-
-    hi LineNr guifg=#3D3D3D guibg=black gui=NONE ctermfg=darkgray ctermbg=NONE cterm=NONE
-    hi Cursor guifg=black guibg=white gui=NONE ctermfg=black ctermbg=white cterm=reverse
-    hi StatusLine guifg=#CCCCCC guibg=#202020 gui=italic ctermfg=white ctermbg=darkgray cterm=NONE
-    hi StatusLineNC guifg=black guibg=#202020 gui=NONE ctermfg=blue ctermbg=darkgray cterm=NONE
-
-    hi Folded guifg=#a0a8b0 guibg=#384048 gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
-
-    if version >= 700 " Vim 7.x specific colors
-        hi CursorLine guifg=NONE guibg=#121212 gui=NONE ctermfg=NONE ctermbg=NONE cterm=BOLD
-        hi CursorColumn guifg=NONE guibg=#121212 gui=NONE ctermfg=NONE ctermbg=NONE cterm=BOLD
-        hi MatchParen guifg=#f6f3e8 guibg=#857b6f gui=BOLD ctermfg=white ctermbg=darkgray cterm=NONE
-        hi Pmenu guifg=#f6f3e8 guibg=#444444 gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
-        hi PmenuSel guifg=#000000 guibg=#cae682 gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
-        hi Search guifg=#C0c000 guibg=Red gui=underline ctermfg=NONE ctermbg=NONE cterm=underline
-    endif
-    " }}}
-
-endif " end windows }}}
+endif
+" end windows }}}
 
 " encoding {{{
 let &termencoding=&encoding
@@ -274,7 +250,6 @@ if has("multi_byte")
     if v:lang =~? '^\(zh\)\|\(ja\)\|\(ko\)'
         set ambiwidth=double
     endif
-
     set formatoptions+=mM
 else
     echoerr "Sorry, this version of (g)vim was not compiled with multi_byte!"
@@ -336,7 +311,7 @@ nmap <leader>f :find<CR>
 " Fast saving
 nmap <leader>w :w!<CR>
 if executable('sudo')
-    nmap <silent> <leader>s :w !sudo tee %<CR>
+    nmap <silent> <leader>s :w !sudo tee % > /dev/null<CR>
 endif
 
 " Vertical split then hop to new buffer
@@ -352,15 +327,12 @@ map <silent> <A-l> <C-w>>
 " GUI Options:
 if has("gui_running")
 
-    " Hide menu, toolbar
-    set guioptions-=m
-    set guioptions-=T
-
-    " Able to paste into other applications
-    set guioptions+=a
-
-    " Use console messages instead of GUI dialogs
-    set guioptions+=c
+    set guioptions+=c       " use console dialogs, not the gui ones
+    set guioptions-=T       " don't show the toolbar
+    set guioptions-=m       " don't show the menu
+    set guioptions-=r       " don't need right scrollbar
+    set guioptions-=L       " don't show left scrollbar
+    set guioptions+=a       " able to paste into other applications
 
     " Toggle the toolbar & menu (set guioptions+=T)
     map <silent> <F2> :if &guioptions=~# 'm' <Bar> set guioptions-=m <Bar>
@@ -403,7 +375,6 @@ imap <silent> <s-tab> <c-v><tab>
 cmap <silent> ,cd :cd %:p:h<CR>:pwd<CR>
 
 " DATE FUNCTIONS (insert date in format "20 Aug, 2010")
-" au BufNewFile,BufRead *.\@<!php iab $date <C-R>=strftime("%d %B %Y, %X")<CR>
 iab $date <C-R>=strftime("%d %B %Y, %X")<CR>
 
 " STRIP -- EMPTY LINE ENDINGS
@@ -475,7 +446,7 @@ if has("autocmd")
             call setpos('.', save_cursor)
         endif
     endfun
-    autocmd BufWritePre * call UpdateLastModified()
+    au BufWritePre * call UpdateLastModified()
     com! -nargs=0 NOMOD :let b:nomod = 1
     com! -nargs=0 MOD   :let b:nomod = 0
     " }}}
@@ -515,7 +486,7 @@ if has("autocmd")
     " }}}
 
     " Enable tab switch
-    autocmd VimEnter * call BufPos_Initialize()
+    au VimEnter * call BufPos_Initialize()
 
     if has("gui_running") == 0
 
@@ -535,8 +506,13 @@ if has("autocmd")
 
     endif
 
+    au BufRead,BufNew *.* call matchadd('Error', '\%120v.')
+    au BufRead,BufNew *.* call matchadd('Todo', '\v<\+\w+\+>')
+
+    " reads the template file into new file's buffer.
+    au BufNewFile * silent! 0r ~/.vim/skel/%:e.tpl
+
 endif
-" }}}
 
 " internal funcs {{{
 
@@ -607,4 +583,4 @@ func! BufPos_Initialize()
     endfor
     exe "map <M-0> :call BufPos_ActivateBuffer(10)<CR>"
 endfun
-"}}}
+
