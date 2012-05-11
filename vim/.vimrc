@@ -6,7 +6,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri May 11, 2012 11:06AM
+" Last Modified: Fri May 11, 2012 11:20AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -41,60 +41,44 @@ if v:progname =~? "evim" | finish | endif
 " This must be first, because it changes other options as a side effect.
 set nocompatible
 
-" Set to auto read when a file is changed from the outside
-set autoread
-
-" Get function usage help automatically
-set showfulltag
-
-" Use same directory as with last file browser, where a file was opened or saved
-set bsdir=last
+set autoread                    " Set to auto read when a file is changed from the outside
+set showfulltag                 " Get function usage help automatically
+set bsdir=last                  " Use same directory as with last file browser, where a file was opened or saved
+" set autochdir
 
 set history=400                 " keep 400 lines of command line history
 set title                       " set terminal title to filename
 set showcmd                     " display incomplete commands
 set foldminlines=1              " (default 1)
-set nu
-set ruler                       " ashow the cursor position all the time
+set ruler                       " show the cursor position all the time
 
-" Highlighted the matched string is when typing a search command,
+set wrap!
+set nu
+set nopaste
 set incsearch
 set magic
 set iskeyword+=_,$,@,%,-
-
-" Ignore case when searching
-" set ignorecase
-
-" Change the current working directory whenever you open a file
-" set autochdir
+set ignorecase
 
 " backspace and cursor keys wrap to previous/next line
 set backspace=indent,eol,start whichwrap+=<,>,[,],h,l
 
-" The % command jumps from one to the other.
-set matchpairs+=<:>
-
+set matchpairs+=<:>             " The % command jumps from one to the other.
 set vb t_vb=                    " kill the beeps! (visible bell)
 set noerrorbells                " No sound on errors.
 set novisualbell
-set nopaste
 
 " Indentation / tab replacement stuff
 set sts=4
-set shiftwidth=4                " > and < move block by 4 spaces in visual mode
 set tabstop=4
+set shiftwidth=4                " > and < move block by 4 spaces in visual mode
 set expandtab                   " expand tabs to spaces
-set wrap!
-
 set autoindent                  " auto indent, usefull when using the 'o' or 'O' command.
 set si                          " Do smart autoindenting when starting a new line Works for C-like programs
 set cindent                     " use the C indenting rules
-
-" Turn backup off, since most stuff is in SVN, git anyway...
-set nobackup
+set nobackup                    " Turn backup off, since most stuff is in SVN, git anyway...
 set nowb
 set noswapfile
-
 set laststatus=2
 
 " Format the statusline
