@@ -6,7 +6,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri May 11, 2012 11:20AM
+" Last Modified: Fri May 11, 2012 04:14PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -61,7 +61,8 @@ set iskeyword+=_,$,@,%,-
 set ignorecase
 
 " backspace and cursor keys wrap to previous/next line
-set backspace=indent,eol,start whichwrap+=<,>,[,],h,l
+set backspace=indent,eol,start
+set whichwrap+=<,>,[,],h,l
 
 set matchpairs+=<:>             " The % command jumps from one to the other.
 set vb t_vb=                    " kill the beeps! (visible bell)
@@ -69,6 +70,7 @@ set noerrorbells                " No sound on errors.
 set novisualbell
 
 " Indentation / tab replacement stuff
+set shiftround
 set sts=4
 set tabstop=4
 set shiftwidth=4                " > and < move block by 4 spaces in visual mode
@@ -339,7 +341,7 @@ func! s:Grep(...)
     execute 'sil! vimgrep /\<' . l:word . '\>/j **/*.' . l:ext | copen
 endfun
 
-" tab shortcut
+" tab navigation
 map tn :tabnext<CR>
 map tp :tabprevious<CR>
 map td :tabnew
@@ -490,8 +492,10 @@ if has("autocmd")
 
     endif
 
-    au BufRead,BufNew *.* call matchadd('Error', '\%120v.')
-    au BufRead,BufNew *.* call matchadd('Todo', '\v<\+\w+\+>')
+    if exists('matchadd')
+        au BufRead,BufNew *.* call matchadd('Error', '\%120v.')
+        au BufRead,BufNew *.* call matchadd('Todo', '\v<\+\w+\+>')
+    endif
 
     " reads the template file into new file's buffer.
     au BufNewFile * silent! 0r ~/.vim/skel/%:e.tpl
