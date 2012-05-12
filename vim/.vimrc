@@ -1,12 +1,12 @@
 " .vimrc file {{{
-" vim: set ft=vim fdm=marker et ff=unix tw=100 sw=4:
+" vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
 "
 " =================================================================================
 " Vim configuration file
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri May 11, 2012 04:14PM
+" Last Modified: Sat May 12, 2012 03:07PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -58,7 +58,7 @@ set nopaste
 set incsearch
 set magic
 set iskeyword+=_,$,@,%,-
-set ignorecase
+" set ignorecase
 
 " backspace and cursor keys wrap to previous/next line
 set backspace=indent,eol,start
@@ -86,12 +86,10 @@ set laststatus=2
 " Format the statusline
 set statusline=\ %F%m%r%h\ %w\ CW\ %r%{CurDir()}%h\ [%Y,%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ \%=[%l,%v,%p%%,\ %L\ \%P]
 func! CurDir()
-    let curdir = substitute(getcwd(), $HOME, "~", "g")
-    return curdir
+    return substitute(getcwd(), $HOME, "~", "g")
 endfun
 
 " Low priority filename suffixes for filename completion,
-" The default is ".bak,~,.o,.h,.info,.swp,.obj"
 set suffixes-=.h
 set suffixes+=.class,.tmp,.log,.aux
 
@@ -103,6 +101,10 @@ if has('unnamedplus')
     set clipboard=unnamedplus
 else
     set clipboard=unnamed
+endif
+
+if has("win32")
+    set rtp+=~/.vim
 endif
 
 " In many terminal emulators the mouse works just fine, thus enable it.
@@ -142,10 +144,10 @@ if has("autocmd")
         au FileType text setlocal textwidth=78
 
         " When editing a file, always jump to the last known cursor position.
-        " Don't do it when the position is invalid or when inside an event handler
-        " (happens when dropping a file on gvim).
-        " Also don't do it when the mark is in the first line, that is the default
-        " position when opening a file.
+        " Don't do it when the position is invalid or when inside an event
+        " handler (happens when dropping a file on gvim).
+        " Also don't do it when the mark is in the first line, that is the
+        " default position when opening a file.
         au BufReadPost *
                     \ if line("'\"") > 1 && line("'\"") <= line("$") |
                     \   exe "normal! g`\"" |
@@ -203,8 +205,10 @@ if has("win32")
     " Set options and add mapping such that Vim behaves a lot like MS-Windows
     so $VIMRUNTIME/mswin.vim
 
-    " Syntax Highlighting
-    so ~/.vim/custom_color.vim
+    " customize syntax highlighting
+    if filereadable($HOME . "/.vim/custom_color.vim")
+        so ~/.vim/custom_color.vim
+    endif
 
     " Highlight the screen line of the cursor with CursorLine
     " set cursorline
