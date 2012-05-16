@@ -6,7 +6,7 @@
 "
 " Maintainer: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sat May 12, 2012 03:07PM
+" Last Modified: Wed May 16, 2012 11:36AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -52,18 +52,16 @@ set showcmd                     " display incomplete commands
 set foldminlines=1              " (default 1)
 set ruler                       " show the cursor position all the time
 
+" set ignorecase
 set wrap!
 set nu
 set nopaste
 set incsearch
 set magic
 set iskeyword+=_,$,@,%,-
-" set ignorecase
 
-" backspace and cursor keys wrap to previous/next line
-set backspace=indent,eol,start
 set whichwrap+=<,>,[,],h,l
-
+set backspace=indent,eol,start  " backspace and cursor keys wrap to previous/next line
 set matchpairs+=<:>             " The % command jumps from one to the other.
 set vb t_vb=                    " kill the beeps! (visible bell)
 set noerrorbells                " No sound on errors.
@@ -141,7 +139,7 @@ if has("autocmd")
         au!
 
         " For all text files set 'textwidth' to 78 characters.
-        au FileType text setlocal textwidth=78
+        au FileType text setlocal tw=78
 
         " When editing a file, always jump to the last known cursor position.
         " Don't do it when the position is invalid or when inside an event
@@ -153,8 +151,6 @@ if has("autocmd")
                     \   exe "normal! g`\"" |
                     \ endif
     augroup END
-else
-    set autoindent      " always set autoindenting on
 endif
 
 " Convenient command to see the difference between the current buffer and the
@@ -193,9 +189,9 @@ let $LANG='en_US.UTF-8'
 
 " windows {{{
 if has("win32")
+
     " reset the current language to en
     language messages en
-    " language time en
     set langmenu=none
 
     " To try out your translations you first have to remove all menus.
@@ -212,6 +208,7 @@ if has("win32")
 
     " Highlight the screen line of the cursor with CursorLine
     " set cursorline
+
 endif
 " end windows }}}
 
@@ -414,7 +411,7 @@ endfun
 
 "}}}
 
-" autocommands {{{
+" autocommands {{{1
 if has("autocmd")
 
     " Last Modified {{{
@@ -478,23 +475,37 @@ if has("autocmd")
     " Enable tab switch
     au VimEnter * call BufPos_Initialize()
 
-    if has("gui_running") == 0
+    " Saves the current session, and map F6 to restores the session.
+    set ssop=buffers,sesdir,tabpages,winpos,winsize
+    let $VIMSESSION = '~/.session.vim'
+    au VimLeave * mks! $VIMSESSION
+    nmap <F6> :so $VIMSESSION<CR>
 
-        " Saves the current session, and map F6 to restores the session.
-        set ssop=buffers,sesdir,tabpages,winpos,winsize
-        let $VIMSESSION = '~/.session.vim'
-        au VimLeave * mks! $VIMSESSION
-        nmap <F6> :so $VIMSESSION<CR>
-
-        " Register Save command to save current session.
-        com! -nargs=* Save call s:Save(<f-args>)
-        func! s:Save(...)
-            let sessionfile = expand('%:p:h') . '/session.vim'
-            execute 'sil! mks! ' . sessionfile
-            echo 'session saved: ' . sessionfile
-        endfun
-
-    endif
+    " Register `Save` and `LoadSession` command to save and load current
+    " workspace session.
+    com! -nargs=? Save call s:SaveSession(<f-args>)
+    com! -nargs=? LoadSession call s:LoadSession(<f-args>)
+    func! s:LoadSession(...)
+        let l:fname = '.session.vim'
+        if a:0 > 0
+            let l:fname = a:1
+        endif
+        let sfile = expand('%:p:h') . '/' . l:fname
+        if filereadable(l:sfile)
+            execute 'sil! so ' . l:sfile
+        else
+            echo 'session file (' . l:sfile . ') not exit'
+        endif
+    endfun
+    func! s:SaveSession(...)
+        let l:fname = '.session.vim'
+        if a:0 > 0
+            let l:fname = a:1
+        endif
+        let sfile = expand('%:p:h') . '/' . l:fname
+        execute 'sil! mks! ' . l:sfile
+        echo 'session saved: ' . l:sfile
+    endfun
 
     if exists('matchadd')
         au BufRead,BufNew *.* call matchadd('Error', '\%120v.')
@@ -506,7 +517,7 @@ if has("autocmd")
 
 endif
 
-" internal funcs {{{
+" internal funcs {{{1
 
 " @VisualSearch(direction)
 " From an idea by Michael Naumann
