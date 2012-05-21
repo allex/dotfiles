@@ -304,6 +304,7 @@ endif
 " Vertical split then hop to new buffer
 nmap <leader>h :new<CR>
 nmap <leader>v :vnew<CR>
+nmap <leader>d :vert diffsplit
 
 " Maps Alt-[h,j,k,l] to resizing a window split
 map <silent> <A-h> <C-w><
@@ -494,7 +495,7 @@ if has("autocmd")
         if filereadable(l:sfile)
             execute 'sil! so ' . l:sfile
         else
-            echo 'session file (' . l:sfile . ') not exit'
+            echo 'session file (' . l:sfile . ') not exists'
         endif
     endfun
     func! s:SaveSession(...)

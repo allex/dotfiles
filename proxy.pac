@@ -2,7 +2,7 @@
 /*!-------------------------------------------------------------------
 
  Author: Allex (allex.wxn@gmail.com)
- Last Modified: Wed May 09, 2012 10:16AM
+ Last Modified: Tue May 15, 2012 09:52AM
 
  see also:
  http://findproxyforurl.com/pac_file_examples.html
@@ -59,7 +59,7 @@ if (checkproxy('proxy', 8888)) {
     $dp = "PROXY proxy:8888";
 }
 
-echo "\n// Timestamp: " . date("F j, Y, g:i a") . "\n";
+echo "\n// timestamp: " . md5(microtime(true)) . "\n";
 ?>
 
 (function(exports) {
@@ -123,6 +123,7 @@ function isBlockedDnsDomain(host) {
         || dnsDomainIs(host, 'delicious.com')
         || dnsDomainIs(host, 'lesscss.org')
         || dnsDomainIs(host, 'dropbox.com')
+        || dnsDomainIs(host, 'ustream.tv')
     );
 }
 
