@@ -4,7 +4,7 @@
 " =================================================================================
 " Vim configuration file
 "
-" Maintainer: Allex <allex.wxn@gmail.com>
+" Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
 " Last Modified: Wed May 16, 2012 11:36AM
 "
@@ -397,7 +397,7 @@ vnoremap <silent> # :call VisualSearch('b')<CR>
 " Mapping for the <F8> key to toggle the taglist window.
 nnoremap <silent> <F8> :TlistToggle<CR>
 map <silent> <F10> :NERDTreeToggle<CR>
-map <silent> <F12> :conf qa!<CR>
+map <silent> <F12> :conf q!<CR>
 
 " A function to clear the undo history
 com! -nargs=0 Reset call <SID>ForgetUndo()

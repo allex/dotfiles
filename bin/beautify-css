@@ -18,7 +18,7 @@
     "use strict";
 
     var fs = require("fs"),
-        sys = require("sys"),
+        sys = require("util"),
         http = require("http"),
         url = require("url"),
         csso = require("css-optimize"),
@@ -36,8 +36,8 @@
             "-h\tPrint this help",
             "",
             "Examples:",
-            "  beautify-css -m 0 example.js",
-            "  beautify-css < example.js",
+            "  beautify-css -m 0 example.css",
+            "  beautify-css < example.css",
             ""
         ].join("\n"));
     }
