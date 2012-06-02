@@ -80,11 +80,10 @@ fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-# if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-#     . /etc/bash_completion
-# fi
+if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+    . /etc/bash_completion
+fi
 
-# Make cd command arguments case insensitive
-bind "set completion-ignore-case on"
+# Make Terminal’s autocompletion case-insensitive
+bind "set completion-ignore-case On"
 
