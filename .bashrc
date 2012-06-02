@@ -85,5 +85,8 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 # Make Terminal’s autocompletion case-insensitive
-bind "set completion-ignore-case On"
+bind 'set completion-ignore-case On'
+
+# Cycle through autocomplete options in Ubuntu’s Terminal with the TAB key
+bind '"\t":menu-complete'
 
