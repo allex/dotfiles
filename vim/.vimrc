@@ -53,7 +53,7 @@ set foldminlines=1              " (default 1)
 set ruler                       " show the cursor position all the time
 
 " set ignorecase
-set wrap!
+set nowrap
 set nu
 set nopaste
 set incsearch
@@ -129,7 +129,7 @@ inoremap <C-U> <C-G>u<C-U>
 if has("autocmd")
 
     " Enable file type detection.
-    " Use the default filetype settings, so that mail gets 'tw' set to 72,
+    " Use the default filetype settings, so that mail gets 'tw' set to 78,
     " 'cindent' is on in C files, etc.
     " Also load indent files, to automatically do language-dependent indenting.
     filetype plugin indent on
@@ -180,6 +180,7 @@ if has("gui_running")
 else
     colo dante
     set tw=75
+    " set wm=5
 endif
 
 let mapleader=","
@@ -429,7 +430,7 @@ if has("autocmd")
             let save_cursor = getpos('.')
             let n = min([20, line('$')])
             keepjumps exe '1,' . n . 's#^\(.\{,10}' . timeStampLeader . '\).*#\1' . strftime('%a %b %d, %Y %I:%M%p') . '#e'
-            call histdel('/', -1)
+            call histdel('search', -1)
             let @/ = histget('/', -1)
             call setpos('.', save_cursor)
         endif
@@ -514,7 +515,12 @@ if has("autocmd")
     endif
 
     " reads the template file into new file's buffer.
-    au BufNewFile * silent! 0r ~/.vim/skel/%:e.tpl
+    au BufNewFile * call LoadTemplate()
+    func LoadTemplate()
+        silent! 0r ~/.vim/skel/%:e.tpl
+        " Highlight %VAR% placeholders with the Todo colour group
+        syn match Todo "%\u\+%" containedIn=ALL
+    endfun
 
 endif
 
