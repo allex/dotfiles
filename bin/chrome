@@ -3,7 +3,7 @@
 # chromium with user agent switchers
 
 # Author: allex (allex.wxn@gmail.com
-# Last Modified: Fri Feb 10, 2012 04:38PM
+# Last Modified: Thu May 31, 2012 06:35PM
 
 cat<<MENU
 1) iphone
@@ -27,7 +27,8 @@ case "$type" in
         ;;
 esac
 
-nohup chromium-browser --user-agent="$UA" --proxy-pac-url="$PAC_URL">/dev/null 2>&1 &
+# chromium-browser 
+nohup google-chrome --user-agent="$UA" --proxy-pac-url="$PAC_URL">/dev/null 2>&1 &
 
 unset UA
 unset PAC_URL

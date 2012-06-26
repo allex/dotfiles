@@ -3,7 +3,7 @@
 # Closure compiler toolkit
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Sat Apr 28, 2012 02:16PM
+# Last Modified: Sat May 26, 2012 03:14PM
 
 COMPILER="$LIB/compiler.jar"
 JAVA_OPT="-Xms64m -Xmx128m -Djava.library.path=$LIB"
@@ -16,5 +16,5 @@ fi
 if [ -z "$SOURCE_FILE" ]; then
     java $JAVA_OPT -jar $COMPILER --help 
 else
-    eval "java $JAVA_OPT -jar $COMPILER --charset UTF-8 --warning_level QUIET --js \"$SOURCE_FILE\" $@"
+    eval "java $JAVA_OPT -jar $COMPILER --charset UTF-8 --warning_level DEFAULT --js \"$SOURCE_FILE\" $@"
 fi

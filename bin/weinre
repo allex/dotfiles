@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# java -jar $LIB/weinre.jar "$@"
+~/node_modules/weinre/weinre -boundHost -all-
