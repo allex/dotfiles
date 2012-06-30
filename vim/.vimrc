@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Wed May 16, 2012 11:36AM
+" Last Modified: Sat Jun 30, 2012 12:12PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -68,7 +68,6 @@ set noerrorbells                " No sound on errors.
 set novisualbell
 
 " Indentation / tab replacement stuff
-set shiftround
 set sts=4
 set tabstop=4
 set shiftwidth=4                " > and < move block by 4 spaces in visual mode
@@ -77,6 +76,7 @@ set autoindent                  " auto indent, usefull when using the 'o' or 'O'
 set si                          " Do smart autoindenting when starting a new line Works for C-like programs
 set cindent                     " use the C indenting rules
 set nobackup                    " Turn backup off, since most stuff is in SVN, git anyway...
+
 set nowb
 set noswapfile
 set laststatus=2
@@ -292,20 +292,20 @@ let NERDSpaceDelims=1
 " One can change it from the default of \ using: let mapleader = ","
 
 " Some commands work both in Insert mode and Command-line mode, some not
-" :h map/nmap/imap/vnoremap/nnoremap
+" :h map/nmap/imap/vmap
 
 nmap <leader>f :find<CR>
+
+" Vertical split then hop to new buffer
+nmap <leader>h :new<CR>
+nmap <leader>v :vnew<CR>
+nmap <leader>d :vert diffsplit
 
 " Fast saving
 nmap <leader>w :w!<CR>
 if executable('sudo')
     nmap <silent> <leader>s :w !sudo tee % > /dev/null<CR>
 endif
-
-" Vertical split then hop to new buffer
-nmap <leader>h :new<CR>
-nmap <leader>v :vnew<CR>
-nmap <leader>d :vert diffsplit
 
 " Maps Alt-[h,j,k,l] to resizing a window split
 map <silent> <A-h> <C-w><
@@ -350,6 +350,7 @@ map tp :tabprevious<CR>
 map td :tabnew
 map te :tabedit
 map tc :tabclose<CR>
+map <silent> <F12> :conf q!<CR>
 
 "\n to turn off search highlighting
 nmap <silent> <leader>n :silent :nohlsearch<CR>
@@ -378,27 +379,26 @@ fun! Exec(com)
 endfun
 
 " Easily change between backslash and forward slash with <leader>/ or <leader>\
-nnoremap <silent> <leader>/ :let tmp=@/<CR>:s:\\:/:ge<CR>:let @/=tmp<CR>
-nnoremap <silent> <leader><Bslash> :let tmp=@/<CR>:s:/:\\:ge<CR>:let @/=tmp<CR>
+nmap <silent> <leader>/ :let tmp=@/<CR>:s:\\:/:ge<CR>:let @/=tmp<CR>
+nmap <silent> <leader><Bslash> :let tmp=@/<CR>:s:/:\\:ge<CR>:let @/=tmp<CR>
 
 " Move text, but keep highlight
-vnoremap > ><CR>gv
-vnoremap < <<CR>gv
+vmap > ><CR>gv
+vmap < <<CR>gv
 
 " Allow deleting selection without updating the clipboard (yank buffer)
-vnoremap x "_x
-vnoremap X "_X
+vmap x "_x
+vmap X "_X
 
 " Basically you press * or # to search for the current selection !! Really useful same as g[d|D]
-vnoremap <silent> * :call VisualSearch('f')<CR>
-vnoremap <silent> # :call VisualSearch('b')<CR>
+vmap <silent> * :call VisualSearch('f')<CR>
+vmap <silent> # :call VisualSearch('b')<CR>
 
-" nnoremap <silent> <F5> :exec ":!javac -encoding UTF-8 % & java -Dfile.encoding=GBK %:r" <CR>
+nmap <F4> :w<CR>:make<CR>:cw<CR>
 
 " Mapping for the <F8> key to toggle the taglist window.
-nnoremap <silent> <F8> :TlistToggle<CR>
-map <silent> <F10> :NERDTreeToggle<CR>
-map <silent> <F12> :conf q!<CR>
+nmap <silent> <F8> :TlistToggle<CR>
+nmap <silent> <F10> :NERDTreeToggle<CR>
 
 " A function to clear the undo history
 com! -nargs=0 Reset call <SID>ForgetUndo()

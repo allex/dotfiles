@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Untitled Page</title>
+    <title>%TITLE%</title>
     <meta charset="utf-8" />
     <style type="text/css">
     <!--
