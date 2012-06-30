@@ -1,0 +1,3 @@
+[submodule "vim/scss-syntax.vim"]
+	path = vim/scss-syntax.vim
+	url = git://github.com/cakebaker/scss-syntax.vim.git
