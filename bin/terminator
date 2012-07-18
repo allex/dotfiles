@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Override the souce execute with customize screen size
+
+SHELL_PATH="/usr/bin/terminator"
+
+if [ -f "$SHELL_PATH" ]; then
+    "$SHELL_PATH" --geometry=1108x512
+else
+    gnome-terminal
+fi

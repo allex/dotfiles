@@ -2,7 +2,7 @@
 /*!-------------------------------------------------------------------
 
  Author: Allex (allex.wxn@gmail.com)
- Last Modified: Tue May 15, 2012 09:52AM
+ Last Modified: Tue Jul 17, 2012 05:40PM
 
  see also:
  http://findproxyforurl.com/pac_file_examples.html
@@ -11,7 +11,9 @@
 --------------------------------------------------------------------*/
 <?php
 
-function checkproxy($server, $port, $deep = TRUE) {
+define("PROXY_DIRECT", "DIRECT");
+
+function ping($server, $port, $deep = TRUE) {
     $verbinding = @fsockopen($server, $port, $errno, $errstr, 2);
     if ($verbinding) {
         fclose($verbinding);
@@ -28,35 +30,45 @@ function checkproxy($server, $port, $deep = TRUE) {
     return false;
 }
 
+// ===================================================================
+
 header('Content-Type: text/javascript; charset=utf-8');
 
+// main proxy server host.
+$proxyServer = 'proxy';
+
+// reserve proxy server.
+$reserveHost = '192.168.100.221';
+
+// lan ip address
 $ip = exec(getenv('bin').'/ip');
-$lan_proxy_ip = '192.168.100.221';
+if (!$ip) $ip = '127.0.0.1';
 
-if (!$ip) {
-    $ip = '127.0.0.1';
-}
-
-$dp = 'DIRECT';
-$fp = 'DIRECT';
+$freeProxy = PROXY_DIRECT;
+$fiddlerProxy = PROXY_DIRECT;
 
 // goagent proxy
-if (checkproxy('proxy', 8087, FALSE)) {
-    $fp = "PROXY proxy:8087";
+if (ping($proxyServer, 8087, FALSE)) {
+    $freeProxy = "PROXY $proxyServer:8087";
 } else {
     // free gate
-    if (checkproxy('proxy', 8580)) {
-        $fp = "PROXY proxy:8580";
+    if (ping($proxyServer, 8580)) {
+        $freeProxy = "PROXY $proxyServer:8580";
     } else {
         // lan proxy
-        if (checkproxy($lan_proxy_ip, '80')) {
-            $fp = "PROXY $lan_proxy_ip:80";
+        if (ping($reserveHost, '80')) {
+            $freeProxy = "PROXY $reserveHost:80";
         }
     }
 }
 
-if (checkproxy('proxy', 8888)) {
-    $dp = "PROXY proxy:8888";
+if (ping($proxyServer, 8888)) {
+    $fiddlerProxy = "PROXY $proxyServer:8888";
+}
+
+$localProxy = PROXY_DIRECT;
+if (ping($proxyServer, 8581)) {
+    $localProxy = "PROXY $proxyServer:8581";
 }
 
 echo "\n// timestamp: " . md5(microtime(true)) . "\n";
@@ -66,10 +78,11 @@ echo "\n// timestamp: " . md5(microtime(true)) . "\n";
 
 var LAN_IP       = '<?=$ip?>';
 var LAN_PROXY_IP = '192.168.100.221';
-var DIRECT       = 'DIRECT';
+var DIRECT       = '<?=PROXY_DIRECT?>';
 var PROXY_LAN    = 'PROXY ' + LAN_PROXY_IP + ':80';
-var PROXY_FREE   = '<?=$fp?>';
-var PROXY_DEBUG  = '<?=$dp?>';
+var PROXY_FREE   = '<?=$freeProxy?>';
+var PROXY_DEBUG  = '<?=$fiddlerProxy?>';
+var PROXY_LOCAL  = '<?=$localProxy?>';
 
 // WARNING:  Opera, Konqueror, AND Safari USERS MUST NEVER SET DEBUG TO
 // ANYTHING OTHER THAN debugNone.  THE alert() CALL CAUSES THEM TO FAIL!
@@ -97,14 +110,20 @@ function isResolveHost(host) {
     return false;
 }
 
-function isDebugMatch(url) {
+function isFiddlerMatch(url, host) {
     return (0
         || shExpMatch(url, '*.127.net/*')
         || shExpMatch(url, '*.163.com/*')
-        || shExpMatch(url, '*m.sinaimg.cn/*')
-        || shExpMatch(url, '*.sina.com.cn/*')
-        || shExpMatch(url, '*.sinaimg.cn/*')
-        || shExpMatch(url, '*.weibo.com/*')
+        || dnsDomainIs(host, 'm.sinaimg.cn')
+        || (dnsDomainIs(host, '.sina.com.cn') && url.indexOf('internal') === -1)
+        || dnsDomainIs(host, '.sinaimg.cn')
+        || dnsDomainIs(host, '.weibo.com')
+    );
+}
+
+function isLocalProxy(url, host) {
+    return (0
+        || shExpMatch(url, '*125.39.104.*/*')
     );
 }
 
@@ -181,9 +200,8 @@ function FindProxyForURL(url, host) {
     }
 
     // debug proxy
-    if (isDebugMatch(url)) {
-        return PROXY_DEBUG;
-    }
+    if (isFiddlerMatch(url, host)) { return PROXY_DEBUG; }
+    if (isLocalProxy(url, host)) { return PROXY_LOCAL; }
 
     if (!isNumIP) {
         // If IP address is internal or hostname resolves to internal IP, send direct.
