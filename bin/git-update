@@ -1,0 +1,16 @@
+#!/bin/sh
+
+p="$1"
+if [ ! -d "$p" ]; then
+    p="$(pwd)/"
+fi
+find "$p" -type d -name .git -execdir sh -c "pwd && git pull" \;
+
+# for dir in $(find "$p" -mindepth 1 -maxdepth 1 -type d); do
+#     if [ -d "$dir/.git" ]; then
+#         cd $dir;
+#         pwd;
+#         git pull;
+#         cd - > /dev/null;
+#     fi
+# done

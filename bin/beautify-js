@@ -37,9 +37,9 @@ or working for you.
     http = require( "http" ),
     url = require( "url" ),
     jsb = require( "beautify" ),
+    unpack = require( "unpack" ),
     options,
     result = "";
-
 
   function printUsage() {
     sys.puts( [
@@ -127,6 +127,8 @@ or working for you.
       process.exit( 0 );
     }
     else {
+      // unpack if needed.
+      sourceFile = unpack.unpack( sourceFile );
       result = jsb.js_beautify( sourceFile, {
         indent_size: indent_size,
         indent_char: indent_char,

@@ -5,7 +5,7 @@
 SHELL_PATH="/usr/bin/terminator"
 
 if [ -f "$SHELL_PATH" ]; then
-    "$SHELL_PATH" --geometry=1108x512
+    "$SHELL_PATH" --geometry=1208x520
 else
     gnome-terminal
 fi

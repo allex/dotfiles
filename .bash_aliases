@@ -4,7 +4,7 @@
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
 
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    [ -r ~/.dircolors ] && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 
     alias ls='ls --color=auto'
     alias dir='dir --color=auto'
@@ -16,11 +16,26 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # diff with color highlighting
-[ -x "$(which colordiff)" ] && function svndiff() { svn diff $@ | colordiff | less -SR; }
+if [ -x "$(which colordiff 2>/dev/null)" ]; then
+    function svndiff()
+    {
+        svn diff $@ | colordiff | less -SR;
+    }
+fi
+
+svngrep()
+{
+    # Modified from http://ceardach.com/
+    if [ -z "$2" ]; then
+        svn status | egrep "${1}" | awk '{print $2}'
+    else
+        svn ${2} `svn status | egrep "${1}" | awk '{print $2}'`
+    fi
+}
 
 # some more ls aliases
 alias cd..='cd ..'
-alias ll='ls -alF'
+alias ll='ls -lF'
 alias la='ls -A'
 alias l='ls -CF'
 alias md='mkdir -p'

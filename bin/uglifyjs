@@ -20,7 +20,7 @@ var options = {
         make_seqs: true,
         dead_code: true,
         verbose: false,
-        show_copyright: false,
+        show_copyright: true,
         out_same_file: false,
         max_line_length: 32 * 1024,
         unsafe: false,
@@ -204,8 +204,6 @@ out: while (args.length > 0) {
         }
 }
 
-options.codegen_options.unpack &= options.codegen_options.beautify;
-
 if (options.verbose) {
         pro.set_logger(function(msg){
                 sys.debug(msg);
@@ -218,9 +216,10 @@ jsp.set_logger(function(msg){
 
 if (options.make) {
         options.out_same_file = false; // doesn't make sense in this case
-        var makefile = JSON.parse(fs.readFileSync(filename || "Makefile.uglify.js").toString());
+        var makefile = global.eval("(" + fs.readFileSync(filename || "Makefile.uglify.js").toString() + ")");
+        var dir = path.dirname(filename);
         output(makefile.files.map(function(file){
-                var code = fs.readFileSync(file.name).toString();
+                var code = fs.readFileSync(path.join(dir, file.name)).toString();
                 if (file.module) {
                         code = "!function(exports, global){global = this;\n" + code + "\n;this." + file.module + " = exports;}({})";
                 }
@@ -272,12 +271,15 @@ function output(text) {
 function show_copyright(comments) {
         var ret = "";
         for (var i = 0; i < comments.length; ++i) {
-                var c = comments[i];
-                if (c.type == "comment1") {
-                        ret += "//" + c.value + "\n";
-                } else {
-                        ret += "/*" + c.value + "*/";
+            var c = comments[i];
+            if (c.type == "comment1") {
+                // Strip multi comments typs. /* ... */// ....
+                if (i === 0 || c[i - 1] === 'comment1') {
+                    ret += "//" + c.value + "\n";
                 }
+            } else {
+                ret += "/*" + c.value + "*/";
+            }
         }
         return ret;
 };
@@ -285,7 +287,8 @@ function show_copyright(comments) {
 function squeeze_it(code) {
         var result = "";
         if (options.codegen_options.unpack) {
-            code = unpack(code);
+            code = require('unpack').unpack(code);
+            return require( "beautify" ).js_beautify(code);
         }
         if (options.show_copyright) {
                 var tok = jsp.tokenizer(code), c;
@@ -342,24 +345,3 @@ function time_it(name, cont) {
         try { return cont(); }
         finally { sys.debug("// " + name + ": " + ((new Date().getTime() - t1) / 1000).toFixed(3) + " sec."); }
 };
-
-/**
- * Unpack the codes which packed by Dean Edwards' Packer
- * Add by allex_wang (allex.wxn@gmail.com)
- */ 
-var rePacker = /eval\(function\(p,a,c,k,e,r\){.+?\.split\('\|'\),0,\{\}\)\)(?=;?)/;
-function unpack(text) {
-    var match, offset = 0, j = -1, buffer = [];
-    while (text) {
-        if (match = text.match(rePacker)) {
-            offset = match.index;
-            buffer[++j] = text.substring(0, offset);
-            buffer[++j] = eval('String(' + match[0].slice(5, -1) + ')');
-            text = text.substring(offset + match[0].length);
-        } else {
-            buffer[++j] = text;
-            text = '';
-        }
-    }
-    return buffer.join('');
-}
