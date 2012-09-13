@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sat Jun 30, 2012 12:12PM
+" Last Modified: Thu Sep 13, 2012 06:10PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -111,19 +111,22 @@ if has('mouse')
     set selectmode=mouse
 endif
 
-" Switch syntax highlighting on, when the terminal has colors
-" Also switch on highlighting the last used search pattern.
-if &t_Co > 2 || has("gui_running")
-    if version >= 600 | syntax enable | else | syntax on | endif
-    set hlsearch
-endif
-
 " Don't use Ex mode, use Q for formatting
 map Q gq
 
 " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
 inoremap <C-U> <C-G>u<C-U>
+
+" Installation pathogen.vim (http://www.vim.org/scripts/script.php?script_id=2332)
+call pathogen#infect()
+
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if &t_Co > 2 || has("gui_running")
+    if version >= 600 | syntax enable | else | syntax on | endif
+    set hlsearch
+endif
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
@@ -162,7 +165,7 @@ if !exists(":DiffOrig")
 endif
 
 "
-" Set color scheme
+" Set colorscheme
 " For more colorschemes http://vimcolorschemetest.googlecode.com/svn/
 "
 if has("gui_running")
@@ -173,13 +176,12 @@ if has("gui_running")
         colo torte
         set guifont=Lucida_Console:h10:cANSI
     else
-        " pablo skittles_dark
         colo darkdevel
         hi Folded guibg=grey30 guifg=#bbbbbb
     endif
 else
     colo dante
-    set tw=75
+    set tw=85
     " set wm=5
 endif
 
@@ -358,6 +360,9 @@ nmap <silent> <leader>n :silent :nohlsearch<CR>
 "\l to toggle visible whitespace
 nmap <silent> <leader>l :set list!<CR>
 
+" toggle paste mode
+map <silent> <leader>p :set paste!<CR> " <leader>p toggles paste mode
+
 " shift-tab to insert a hard tab
 imap <silent> <s-tab> <c-v><tab>
 
@@ -509,17 +514,12 @@ if has("autocmd")
         echo 'session saved: ' . l:sfile
     endfun
 
-    if exists('matchadd')
-        au BufRead,BufNew *.* call matchadd('Error', '\%120v.')
-        au BufRead,BufNew *.* call matchadd('Todo', '\v<\+\w+\+>')
-    endif
-
-    " reads the template file into new file's buffer.
+    " Reads the template file into new buffer.
     au BufNewFile * call LoadTemplate()
+
+    " hi TODO guifg=#67a42c guibg=#112300 gui=bold
     func LoadTemplate()
         silent! 0r ~/.vim/skel/%:e.tpl
-        " Highlight %VAR% placeholders with the Todo colour group
-        syn match Todo "%\u\+%" containedIn=ALL
     endfun
 
 endif

@@ -1,3 +1,12 @@
-[submodule "vim/scss-syntax.vim"]
-	path = vim/scss-syntax.vim
+[submodule "vim/.vim/bundle/scss-syntax.vim"]
+	path = vim/.vim/bundle/scss-syntax.vim
 	url = git://github.com/cakebaker/scss-syntax.vim.git
+[submodule "vim/.vim/bundle/webapi-vim"]
+	path = vim/.vim/bundle/webapi-vim
+	url = git://github.com/mattn/webapi-vim.git
+[submodule "vim/.vim/bundle/gist-vim"]
+	path = vim/.vim/bundle/gist-vim
+	url = git://github.com/mattn/gist-vim.git
+[submodule "vim/.vim/bundle/vcscommand"]
+	path = vim/.vim/bundle/vcscommand
+	url = git://repo.or.cz/vcscommand.git

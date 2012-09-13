@@ -2,30 +2,56 @@
 	name = Allex
 	email = allex.wxn@gmail.com
 
+[color]
+    ui = auto
+
+[filter "tabspace"]
+    clean = expand --tabs=4 --initial
+    smudge = unexpand --tabs=4 --first-only
+
+[alias]
+    st = status
+    ci = commit
+    br = branch
+    co = checkout
+    df = diff
+    dt = difftool
+    lg = log -p
+    shlog = log --pretty=\"%Cgreen%h%Creset - %Cred%ci%Creset - %s (%Cred%an%Creset)\"
+    fshow = !sh -c 'git show --pretty="format:" --name-only $1 | grep -v "^$" | uniq' -
+    vim   = !sh -c 'vim `git fshow $1`' -
+    mate  = !sh -c 'mate `git fshow $1`' -
+    subl  = !sh -c 'subl `git fshow $1`' -
+    wtf   = !git-wtf
+
 [core]
-    editor = "/usr/bin/vim"
-    ; autocrlf = true
+    # make git ignore white space differences, many different possibilites here
+    # check http://www.kernel.org/pub/software/scm/git/docs/git-config.html#_variables
+    whitespace = -trailing-space,-indent-with-non-tab,-tab-in-indent
+
     pager = less -R
+
+    # autocrlf = input
+    # autocrlf = true
+    # editor = "/usr/bin/vim"
+    # whitespace = cr-at-eol
 
 [diff]
     tool = "git-diff"
-    ; external = git_diff
 
-; [merge]
-;     tool = vimdiff
+[diff "nodiff"]
+    # create a difftool "nodiff" that just returns true
+    # this path is for linux. On Mac it's /usr/bin/true i guess
+    command = /bin/true
 
-; [pager]
-;     diff =
+[difftool]
+    prompt = false
 
 [difftool "git-diff"]
     cmd = "/usr/bin/vimdiff -f -n \"$LOCAL\" \"$REMOTE\""
 
-[difftool]
-	prompt = false
-
-[color]
-    ui = auto
+[merge]
+    tool = vimdiff
 
 [github]
-    user = allex
-    token = 02bd1965c363f7a3e6049748c719c5d9
+	user = allex
