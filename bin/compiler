@@ -1,20 +1,67 @@
 #!/bin/bash
 
-# Closure compiler toolkit
+# Google Closure Compiler (GCC) Toolkit
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Sat May 26, 2012 03:14PM
+# Last Modified: Wed Aug 22, 2012 10:17AM
 
 COMPILER="$LIB/compiler.jar"
-JAVA_OPT="-Xms64m -Xmx128m -Djava.library.path=$LIB"
+GCC="java -Xms64m -Xmx128m -Djava.library.path=$LIB -jar $COMPILER"
 
-if [ $# -gt 0 ]; then
-    SOURCE_FILE=$1
+# For more see http://code.google.com/p/closure-compiler/wiki/Warnings
+args="--charset UTF-8 --language_in=ECMASCRIPT5_STRICT"
+
+# --warning_level VERBOSE|DEFAULT|QUIET
+warning_level="DEFAULT";
+
+usage() {
+    $GCC --help;
+}
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -t|--warning_level)
+            warning_level=$2;
+
+            case ${warning_level} in
+                (QUIET|DEFAULT|VERBOSE)
+                    shift;
+                    ;;
+                (*) warning_level="DEFAULT";
+                    if [ "$1" == "-t" ]; then
+                        warning_level="VERBOSE";
+                    fi
+                    ;;
+            esac
+            ;;
+
+        -h|--help|-\?) usage; exit;;
+        (--) shift; break;;
+
+        (*) arg=$1;
+            if [ "${arg:0:1}" != "-" ]; then
+                args="${args} --js ${arg}";
+            else
+                args="${args} $arg $2";
+                shift;
+            fi
+            ;;
+    esac
     shift
-fi
+done
 
-if [ -z "$SOURCE_FILE" ]; then
-    java $JAVA_OPT -jar $COMPILER --help 
+args="${args} --warning_level ${warning_level}"
+
+# stdin
+if [ ! -t 0 ]; then
+    $GCC ${args} < /dev/stdin
+
+# filepath
+elif [ $(expr "${args}" : ".* --js .*") -ne 0 ]; then
+    $GCC ${args}
+
+# usage
 else
-    eval "java $JAVA_OPT -jar $COMPILER --charset UTF-8 --warning_level DEFAULT --js \"$SOURCE_FILE\" $@"
+    usage;
 fi

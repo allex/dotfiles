@@ -10,3 +10,6 @@
 [submodule "vim/.vim/bundle/vcscommand"]
 	path = vim/.vim/bundle/vcscommand
 	url = git://repo.or.cz/vcscommand.git
+[submodule "vim/.vim/bundle/vim-css3-syntax"]
+	path = vim/.vim/bundle/vim-css3-syntax
+	url = git://github.com/hail2u/vim-css3-syntax.git
