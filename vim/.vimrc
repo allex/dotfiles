@@ -16,7 +16,8 @@
 "  for MS-DOS and Win32:  $VIM\_vimrc
 "       for OpenVMS:  sys$login:.vimrc
 "
-" ln -s ~/.etc/vim/.vimrc ~/.vimrc
+" ln -s etc/vim/.vim ~/.vim
+" ln -s etc/vim/.vimrc ~/.vimrc
 "
 " Tip:
 "  If you find anything that you can't understand than do this:
@@ -178,11 +179,11 @@ if has("gui_running")
     else
         colo darkdevel
         hi Folded guibg=grey30 guifg=#bbbbbb
+        set guifont=Monospace\ 9
     endif
 else
     colo dante
     set tw=85
-    " set wm=5
 endif
 
 let mapleader=","

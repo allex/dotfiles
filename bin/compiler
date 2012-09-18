@@ -3,7 +3,7 @@
 # Google Closure Compiler (GCC) Toolkit
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Wed Aug 22, 2012 10:17AM
+# Last Modified: Mon Sep 17, 2012 11:32AM
 
 COMPILER="$LIB/compiler.jar"
 GCC="java -Xms64m -Xmx128m -Djava.library.path=$LIB -jar $COMPILER"
@@ -53,13 +53,13 @@ done
 
 args="${args} --warning_level ${warning_level}"
 
-# stdin
-if [ ! -t 0 ]; then
-    $GCC ${args} < /dev/stdin
-
 # filepath
-elif [ $(expr "${args}" : ".* --js .*") -ne 0 ]; then
+if [ $(expr "${args}" : ".* --js .*") -ne 0 ]; then
     $GCC ${args}
+
+# stdin
+elif [ ! -t 0 ]; then
+    $GCC ${args} < /dev/stdin
 
 # usage
 else
