@@ -17,7 +17,7 @@ fi
 
 # diff with color highlighting
 if [ -x "$(which colordiff 2>/dev/null)" ]; then
-    function svndiff()
+    function svndf()
     {
         svn diff $@ | colordiff | less -SR;
     }
@@ -35,7 +35,7 @@ svngrep()
 
 # some more ls aliases
 alias cd..='cd ..'
-alias ll='ls -lF'
+alias ll='ls -lXF'
 alias la='ls -A'
 alias l='ls -CF'
 alias md='mkdir -p'

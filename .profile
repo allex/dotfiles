@@ -12,26 +12,30 @@
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     if [ -f "$HOME/.bashrc" ]; then
-	. "$HOME/.bashrc"
+        . "$HOME/.bashrc"
     fi
 fi
 
-# set PATH so it includes user's private bin if it exists
+# Set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-# set LIB
+# Set profile LIB
 if [ -d "$HOME/.lib" ] ; then
     export LIB="$HOME/.lib"
 fi
 
 # JDK
-export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-i386
+export JAVA_HOME="/usr/lib/jvm/java-1.7.0-openjdk-i386"
 
 # Ant
-export ANT_HOME=/usr/share/ant-1.8.2
+export ANT_HOME="/usr/share/ant-1.8.2"
 export PATH=${PATH}:${ANT_HOME}/bin
 
-# nodejs
+# Nodejs
+export NODE_PATH="/usr/local/lib/node"
 export NODE_PATH=${HOME}/.node_libraries:${HOME}/node_modules:$NODE_PATH
+
+# Python packages
+export PYTHONPATH=${HOME}/local/python-packages

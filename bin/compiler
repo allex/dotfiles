@@ -3,7 +3,7 @@
 # Google Closure Compiler (GCC) Toolkit
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Mon Sep 17, 2012 11:32AM
+# Last Modified: Wed Nov 21, 2012 01:09PM
 
 COMPILER="$LIB/compiler.jar"
 GCC="java -Xms64m -Xmx128m -Djava.library.path=$LIB -jar $COMPILER"
@@ -17,6 +17,8 @@ warning_level="DEFAULT";
 usage() {
     $GCC --help;
 }
+
+tmpfile=$(mktemp);
 
 while [ $# -gt 0 ]
 do
@@ -40,12 +42,23 @@ do
         (--) shift; break;;
 
         (*) arg=$1;
+
+            # Handle the un-prefixed arg to filename
             if [ "${arg:0:1}" != "-" ]; then
-                args="${args} --js ${arg}";
+                filename=${arg};
+                if [ -f "$filename" ]; then
+                    cp $filename $tmpfile
+
+                    # do some pre-compile syntax parsing
+                    perl -0777 -i -pe 's/<debug>[\s\S]*?<\/debug>//g' $tmpfile
+
+                    args="${args} --js $tmpfile";
+                fi
             else
                 args="${args} $arg $2";
                 shift;
             fi
+
             ;;
     esac
     shift
@@ -65,3 +78,5 @@ elif [ ! -t 0 ]; then
 else
     usage;
 fi
+
+rm $tmpfile;
