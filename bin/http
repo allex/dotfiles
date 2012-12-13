@@ -14,10 +14,3 @@ else
     rm /var/log/apache2/* -f
     service apache2 start
 fi
-
-
-# httpd -k stop
-# sleep 1
-# rm /var/log/apache2/*
-# httpd -k start
-
