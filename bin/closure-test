@@ -1,0 +1,7 @@
+#!/bin/sh
+
+p="$1"
+if [ ! -d "$p" ]; then
+    p="$(pwd)/"
+fi
+find "$p" -name "*.js" -exec closure -t {} \;

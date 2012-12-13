@@ -16,6 +16,7 @@
     co = checkout
     df = diff
     dt = difftool
+    l = log --stat --format=format:'"%C(yellow)%h %C(cyan)%an %C(blue)(%cn) %C(cyan)%ai\n%C(green)%s\n%b%N"'
     lg = log -p
     shlog = log --pretty=\"%Cgreen%h%Creset - %Cred%ci%Creset - %s (%Cred%an%Creset)\"
     fshow = !sh -c 'git show --pretty="format:" --name-only $1 | grep -v "^$" | uniq' -

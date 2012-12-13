@@ -1,0 +1,4 @@
+#!/bin/sh
+
+kill -9 `lsof -i tcp:8581 | grep "node" | awk -F" " '{print $2}'` > /dev/null 2>&1
+node ~/node_modules/nodejs-proxy/proxy.js "$@"

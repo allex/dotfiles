@@ -1,0 +1,12 @@
+#!/bin/sh
+
+ip=`/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
+if [ -z $ip ]; then
+    ip=`/sbin/ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
+fi
+echo $ip
+
+# getip displays the ipaddress of a given interface
+getip() {
+    ifconfig ${1:-eth0} | awk '/inet addr/ {print $2}' | awk -F: '{print $2}';
+}
