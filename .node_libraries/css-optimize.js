@@ -5,7 +5,7 @@
  * Version: 2.0
  *
  * Author: Allex [allex.wxn@gmail.com]
- * Last Modified: Sat May 26, 2012 12:12AM
+ * Last Modified: Mon Dec 10, 2012 07:08PM
  *
  * Some inspiration are refers from the cssmin-1.0.1 package.
  *
@@ -349,6 +349,7 @@ function cssmin(css, linebreakpos) {
     return css;
 }
 
+var TAB_SPACE = '    ';
 function cssOptimize(css, options) {
 
     // Format the strings of CSS.
@@ -364,25 +365,27 @@ function cssOptimize(css, options) {
 
     var s = cssmin(css, linebreakpos);
     switch (mode) {
+    // beautify css codes
+    case 1:
+    case 2:
 
-        // beautify css codes
-        case 1:
-        case 2:
+        // Add the semicolon where it's missing.
+        s = s.replace(/([^;{}])\}/g, '$1;}');
+        s = s.replace(/@(?:import|charset) [^;]+;/, function($0) { return $0 + "\n"; });
+        s = s.replace(/(\}|\*\/)/g, '$1\n');
+        if (mode === 2) {
+            s = s.replace(/{/g, ' {\n' + TAB_SPACE);
+            s = s.replace(/,/g, ', ');
+            s = s.replace(/([;])(?=[^}]+?)/g, '$1\n' + TAB_SPACE);
+            s = s.replace(/\}/g, '\n}');
+            s = s.replace(/\n\s*\n/g, '\n'); // remove empty line
+        }
+        break;
 
-            // Add the semicolon where it's missing.
-            s = s.replace(/([^;{}])\}/g, '$1;}');
-
-            s = s.replace(/@(?:import|charset) [^;]+;/, function($0) { return $0 + "\n"; });
-            s = s.replace(/(\}|\*\/)/g,'$1\n');
-            if (mode === 2) {
-                s = s.replace(/([;{])(?=[^}]+?)/g,'$1\n\t').replace(/\}/g,'\n}');
-            }
-            break;
-
-        // compresss
-        case 0:
-        default:
-            break;
+    // compresss
+    case 0:
+    default:
+        break;
     }
 
     return s;

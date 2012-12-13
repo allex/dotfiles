@@ -2,7 +2,7 @@
 /*!-------------------------------------------------------------------
 
  Author: Allex (allex.wxn@gmail.com)
- Last Modified: Tue Jul 17, 2012 05:40PM
+ Last Modified: Thu Dec 13, 2012 10:22PM
 
  see also:
  http://findproxyforurl.com/pac_file_examples.html
@@ -14,23 +14,13 @@
 define("PROXY_DIRECT", "DIRECT");
 
 function ping($server, $port, $deep = TRUE) {
-    $verbinding = @fsockopen($server, $port, $errno, $errstr, 2);
-    if ($verbinding) {
-        fclose($verbinding);
-        if ($deep) {
-            $url = "http://$server:$port";
-            list($status) = @get_headers($url);
-            if (!$status || strpos($status, '404') !== FALSE) {
-                // URL is 404ing
-                return false;
-            }
-        }
+    $socket = @fsockopen($server, $port, $errno, $errstr, 0.4);
+    if ($socket) {
+        fclose($socket);
         return true;
     }
     return false;
 }
-
-// ===================================================================
 
 header('Content-Type: text/javascript; charset=utf-8');
 
@@ -122,9 +112,7 @@ function isFiddlerMatch(url, host) {
 }
 
 function isLocalProxy(url, host) {
-    return (0
-        || shExpMatch(url, '*125.39.104.*/*')
-    );
+    return false;
 }
 
 function isBlockedDnsDomain(host) {
@@ -199,9 +187,11 @@ function FindProxyForURL(url, host) {
         url = str;
     }
 
+    // local dispatcher proxy service.
+    if (isLocalProxy(url, host)) { return PROXY_LOCAL; }
+
     // debug proxy
     if (isFiddlerMatch(url, host)) { return PROXY_DEBUG; }
-    if (isLocalProxy(url, host)) { return PROXY_LOCAL; }
 
     if (!isNumIP) {
         // If IP address is internal or hostname resolves to internal IP, send direct.
@@ -232,4 +222,4 @@ function log(s) {
 // exports api method
 exports.FindProxyForURL = FindProxyForURL;
 
-})(this);
+})(typeof exports !== 'undefined' ? exports : this);

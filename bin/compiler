@@ -3,7 +3,7 @@
 # Google Closure Compiler (GCC) Toolkit
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Wed Nov 21, 2012 01:09PM
+# Last Modified: Sun Nov 25, 2012 07:34PM
 
 COMPILER="$LIB/compiler.jar"
 GCC="java -Xms64m -Xmx128m -Djava.library.path=$LIB -jar $COMPILER"
@@ -48,10 +48,6 @@ do
                 filename=${arg};
                 if [ -f "$filename" ]; then
                     cp $filename $tmpfile
-
-                    # do some pre-compile syntax parsing
-                    perl -0777 -i -pe 's/<debug>[\s\S]*?<\/debug>//g' $tmpfile
-
                     args="${args} --js $tmpfile";
                 fi
             else
@@ -68,15 +64,19 @@ args="${args} --warning_level ${warning_level}"
 
 # filepath
 if [ $(expr "${args}" : ".* --js .*") -ne 0 ]; then
+
+    # do some pre-compile syntax parsing
+    perl -0777 -i -pe 's/<debug>[\s\S]*?<\/debug>//g' $tmpfile
     $GCC ${args}
 
 # stdin
-elif [ ! -t 0 ]; then
-    $GCC ${args} < /dev/stdin
-
-# usage
 else
-    usage;
+    tee $tmpfile > /dev/null
+
+    # do some pre-compile syntax parsing
+    perl -0777 -i -pe 's/<debug>[\s\S]*?<\/debug>//g' $tmpfile
+    args="${args} --js $tmpfile";
+    $GCC ${args}
 fi
 
 rm $tmpfile;

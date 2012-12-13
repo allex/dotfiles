@@ -34,18 +34,20 @@ svngrep()
 }
 
 # some more ls aliases
+alias ..='cd ..'
 alias cd..='cd ..'
 alias ll='ls -lXF'
-alias la='ls -A'
-alias l='ls -CF'
+alias la='ls -XA'
+alias l='ls -CXF'
+# show most recent files at the bottom
+alias ltr='ls -ltr'
 alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
+alias svndiff='svn diff --diff-cmd ~/bin/svnvimdiff'
 
 # enable sudo current user's private bin
 alias sud='/usr/bin/sudo env PATH=$PATH'
 
-# logout
 alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
-
-# restart x
 alias restartx='sudo restart lightdm'
+

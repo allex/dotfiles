@@ -31,11 +31,17 @@ export JAVA_HOME="/usr/lib/jvm/java-1.7.0-openjdk-i386"
 
 # Ant
 export ANT_HOME="/usr/share/ant-1.8.2"
-export PATH=${PATH}:${ANT_HOME}/bin
+export PATH=$PATH:$ANT_HOME/bin
 
 # Nodejs
 export NODE_PATH="/usr/local/lib/node"
-export NODE_PATH=${HOME}/.node_libraries:${HOME}/node_modules:$NODE_PATH
+export NODE_PATH=$HOME/.node_libraries:$HOME/node_modules:$NODE_PATH
 
 # Python packages
-export PYTHONPATH=${HOME}/local/python-packages
+export PYTHONPATH=$HOME/local/python-packages
+
+# Includes python packages commond
+if [ -d "$PYTHONPATH" ] ; then
+    export PATH="$PATH:$PYTHONPATH"
+fi
+

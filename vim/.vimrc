@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Thu Sep 13, 2012 06:10PM
+" Last Modified: Sat Dec 01, 2012 08:01PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -45,7 +45,10 @@ set nocompatible
 set autoread                    " Set to auto read when a file is changed from the outside
 set showfulltag                 " Get function usage help automatically
 set bsdir=last                  " Use same directory as with last file browser, where a file was opened or saved
-" set autochdir
+
+if has("gui_running")
+    set autochdir
+endif
 
 set history=400                 " keep 400 lines of command line history
 set title                       " set terminal title to filename
@@ -318,7 +321,6 @@ map <silent> <A-l> <C-w>>
 
 " GUI Options:
 if has("gui_running")
-
     set guioptions+=c       " use console dialogs, not the gui ones
     set guioptions-=T       " don't show the toolbar
     set guioptions-=m       " don't show the menu
@@ -417,7 +419,7 @@ func! <SID>ForgetUndo()
     unlet old_ul
 endfun
 
-"}}}
+" }}}
 
 " autocommands {{{1
 if has("autocmd")
@@ -448,8 +450,9 @@ if has("autocmd")
 
     " Programming settings {{{
     augroup IDE
-        " Remove all cprog autocommands
         au!
+
+        " shortcut for auto complete
         au BufNewFile,BufRead *.java,*.cs       inoremap <buffer> $pr private
         au BufNewFile,BufRead *.java,*.cs       inoremap <buffer> $pu public
         au BufNewFile,BufRead *.java            inoremap <buffer> $print( System.out.print();
@@ -483,16 +486,16 @@ if has("autocmd")
     " Enable tab switch
     au VimEnter * call BufPos_Initialize()
 
-    " Saves the current session, and map F6 to restores the session.
-    set ssop=buffers,sesdir,tabpages,winpos,winsize
-    let $VIMSESSION = '~/.session.vim'
-    au VimLeave * mks! $VIMSESSION
-    nmap <F6> :so $VIMSESSION<CR>
-
     " Register `Save` and `LoadSession` command to save and load current
     " workspace session.
+    set ssop=buffers,sesdir,tabpages,winpos,winsize
+
     com! -nargs=? Save call s:SaveSession(<f-args>)
     com! -nargs=? LoadSession call s:LoadSession(<f-args>)
+
+    " F6 to restores the session.
+    nmap <F6> :LoadSession <CR>
+
     func! s:LoadSession(...)
         let l:fname = '.session.vim'
         if a:0 > 0
@@ -505,6 +508,8 @@ if has("autocmd")
             echo 'session file (' . l:sfile . ') not exists'
         endif
     endfun
+
+    " Saves the current session
     func! s:SaveSession(...)
         let l:fname = '.session.vim'
         if a:0 > 0

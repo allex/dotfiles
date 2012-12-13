@@ -30,6 +30,7 @@
     whitespace = -trailing-space,-indent-with-non-tab,-tab-in-indent
 
     pager = less -R
+	warnambiguousrefs = false
 
     # autocrlf = input
     # autocrlf = true
