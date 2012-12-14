@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sat Dec 15, 2012 12:03AM
+" Last Modified: Sat Dec 15, 2012 12:18AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -39,10 +39,10 @@
 if v:progname =~? "evim" | finish | endif
 
 " Helper functions
-func! s:Exec(com)
+fun! s:Exec(com)
     exec 'silent ' . a:com
 endfun
-func! s:Load(file)
+fun! s:Load(file)
     if filereadable(a:file) | exec 'silent source ' a:file | endif
 endfun
 
@@ -95,7 +95,7 @@ set laststatus=2
 
 " Format the statusline
 set statusline=\ %F%m%r%h\ %w\ CW\ %r%{CurDir()}%h\ [%Y,%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ \%=[%l,%v,%p%%,\ %L\ \%P]
-func! CurDir()
+fun! CurDir()
     return substitute(getcwd(), $HOME, "~", "g")
 endfun
 
@@ -253,7 +253,7 @@ endif
 set diffopt+=vertical
 if has('win32')
     set diffexpr=MyDiff()
-    function! MyDiff()
+    fun! MyDiff()
         let opt='-a --binary '
         if &diffopt =~ 'icase' | let opt=opt . '-i ' | endif
         if &diffopt =~ 'iwhite' | let opt=opt . '-b ' | endif
@@ -334,7 +334,7 @@ endif
 
 " Grep command
 com! -nargs=* Grep call s:Grep(<f-args>)
-func! s:Grep(...)
+fun! s:Grep(...)
     if a:0 > 0
         let word = a:1
     else
@@ -406,7 +406,7 @@ nmap <silent> <F10> :NERDTreeToggle<CR>
 
 " A function to clear the undo history
 com! -nargs=0 Reset call <SID>ForgetUndo()
-func! <SID>ForgetUndo()
+fun! <SID>ForgetUndo()
     let old_ul = &undolevels
     set undolevels=-1
     exe "silent normal a \<BS>\<Esc>"
@@ -424,7 +424,7 @@ if has("autocmd")
     " 'Last modified: ' can have up to 10 characters before (they are retained).
     " Restores cursor and window position using save_cursor variable. ('ul' is alias
     " for 'undolevels').
-    function! UpdateLastModified()
+    fun! UpdateLastModified()
         if exists('b:nomod') && b:nomod
             return
         end
@@ -457,7 +457,7 @@ if has("autocmd")
 
     " Enable tab switch
     au VimEnter * call s:BufPos_Initialize()
-    func! s:BufPos_Initialize()
+    fun! s:BufPos_Initialize()
         for i in range(1, 9)
             exe "map <M-" . i . "> :call BufPos_ActivateBuffer(" . i . ")<CR>"
         endfor
@@ -473,7 +473,7 @@ if has("autocmd")
 
     " F6 to restores the session.
     nmap <F6> :LoadSession <CR>
-    func! s:LoadSession(...)
+    fun! s:LoadSession(...)
         let l:fname = '.session.vim'
         if a:0 > 0
             let l:fname = a:1
@@ -487,7 +487,7 @@ if has("autocmd")
     endfun
 
     " Saves the current session
-    func! s:SaveSession(...)
+    fun! s:SaveSession(...)
         let l:fname = '.session.vim'
         if a:0 > 0
             let l:fname = a:1
@@ -501,7 +501,7 @@ if has("autocmd")
     au BufNewFile * call s:LoadTemplate()
 
     " hi TODO guifg=#67a42c guibg=#112300 gui=bold
-    func s:LoadTemplate()
+    fun! s:LoadTemplate()
         silent! 0r ~/.vim/skel/%:e.tpl
     endfun
 endif
@@ -513,7 +513,7 @@ call s:Load($HOME . "/.vim/filetype.vim")
 
 " @VisualSearch(direction)
 " From an idea by Michael Naumann
-func! VisualSearch(direction) range
+fun! VisualSearch(direction) range
     let l:saved_reg=@"
     execute "normal! vgvy"
 
@@ -531,13 +531,13 @@ func! VisualSearch(direction) range
 endfun
 
 " @JavaScriptFold()
-func! JavaScriptFold()
+fun! JavaScriptFold()
     setlocal foldmethod=marker
     " always start editing with all folds closed (value zero)
     setlocal foldlevelstart=0
     setlocal foldlevel=0
     syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
-    func! MyFoldText()
+    fun! MyFoldText()
         " for now, just don't try if version isn't 7 or higher
         if v:version < 701
             return foldtext()
@@ -552,7 +552,7 @@ func! JavaScriptFold()
 endfun
 
 " @BufPos_ActivateBuffer(num)
-func! BufPos_ActivateBuffer(num)
+fun! BufPos_ActivateBuffer(num)
     let l:count=1
     for i in range(1, bufnr("$"))
         if buflisted(i) && getbufvar(i, "&modifiable")
