@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sat Dec 01, 2012 08:01PM
+" Last Modified: Fri Dec 14, 2012 10:24PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -37,6 +37,10 @@
 
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim" | finish | endif
+
+func! s:Load(file)
+    if filereadable(a:file) | so a:file | endif
+endfun
 
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
@@ -168,10 +172,8 @@ if !exists(":DiffOrig")
                 \ | wincmd p | diffthis
 endif
 
-"
 " Set colorscheme
 " For more colorschemes http://vimcolorschemetest.googlecode.com/svn/
-"
 if has("gui_running")
     set tw=100
     set lines=35
@@ -196,7 +198,6 @@ let $LANG='en_US.UTF-8'
 
 " windows {{{
 if has("win32")
-
     " reset the current language to en
     language messages en
     set langmenu=none
@@ -209,13 +210,7 @@ if has("win32")
     so $VIMRUNTIME/mswin.vim
 
     " customize syntax highlighting
-    if filereadable($HOME . "/.vim/custom_color.vim")
-        so ~/.vim/custom_color.vim
-    endif
-
-    " Highlight the screen line of the cursor with CursorLine
-    " set cursorline
-
+    call s:Load($HOME . "/.vim/custom_color.vim")
 endif
 " end windows }}}
 
@@ -292,7 +287,7 @@ let NERDSpaceDelims=1
 
 " }}}
 
-" mappings {{{
+" mappings {{{1
 "
 " Note <leader> is the user modifier key (like g is the vim modifier key)
 " One can change it from the default of \ using: let mapleader = ","
@@ -418,7 +413,6 @@ func! <SID>ForgetUndo()
     let &undolevels = old_ul
     unlet old_ul
 endfun
-
 " }}}
 
 " autocommands {{{1
@@ -448,29 +442,6 @@ if has("autocmd")
     com! -nargs=0 MOD   :let b:nomod = 0
     " }}}
 
-    " Programming settings {{{
-    augroup IDE
-        au!
-
-        " shortcut for auto complete
-        au BufNewFile,BufRead *.java,*.cs       inoremap <buffer> $pr private
-        au BufNewFile,BufRead *.java,*.cs       inoremap <buffer> $pu public
-        au BufNewFile,BufRead *.java            inoremap <buffer> $print( System.out.print();
-        au BufNewFile,BufRead *.java            inoremap <buffer> $println( System.out.println();
-
-        " Map auto complete of (, ", ', [
-        au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap " ""<ESC>:let leavechar='"'<CR>i
-        au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap ' ''<ESC>:let leavechar="'"<CR>i
-        au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap ( ()<ESC>i
-        au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap ) <c-r>=ClosePair(')')<CR>
-        au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap { {}<ESC>i
-        au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap } <c-r>=ClosePair('}')<CR>
-        au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap [ []<ESC>i
-        au bufnewfile,bufread *.j*,*.cs*,*.htm*,*.aspx,*.ph* inoremap ] <c-r>=ClosePair(']')<CR>
-
-    augroup END
-    " }}}
-
     " Auto fold javascript, vim ect. {{{
     if has("folding")
         augroup FOLDSETTINGS
@@ -484,7 +455,13 @@ if has("autocmd")
     " }}}
 
     " Enable tab switch
-    au VimEnter * call BufPos_Initialize()
+    au VimEnter * call s:BufPos_Initialize()
+    func! s:BufPos_Initialize()
+        for i in range(1, 9)
+            exe "map <M-" . i . "> :call BufPos_ActivateBuffer(" . i . ")<CR>"
+        endfor
+        exe "map <M-0> :call BufPos_ActivateBuffer(10)<CR>"
+    endfun
 
     " Register `Save` and `LoadSession` command to save and load current
     " workspace session.
@@ -495,7 +472,6 @@ if has("autocmd")
 
     " F6 to restores the session.
     nmap <F6> :LoadSession <CR>
-
     func! s:LoadSession(...)
         let l:fname = '.session.vim'
         if a:0 > 0
@@ -521,16 +497,18 @@ if has("autocmd")
     endfun
 
     " Reads the template file into new buffer.
-    au BufNewFile * call LoadTemplate()
+    au BufNewFile * call s:LoadTemplate()
 
     " hi TODO guifg=#67a42c guibg=#112300 gui=bold
-    func LoadTemplate()
+    func s:LoadTemplate()
         silent! 0r ~/.vim/skel/%:e.tpl
     endfun
-
 endif
 
-" internal funcs {{{1
+" filetype extends
+call s:Load($HOME . "/.vim/filetype.vim")
+
+" Internal functions {{{1
 
 " @VisualSearch(direction)
 " From an idea by Michael Naumann
@@ -550,14 +528,7 @@ func! VisualSearch(direction) range
     let @/=l:pattern
     let @"=l:saved_reg
 endfun
-" @ClosePair(char)
-function! ClosePair(char)
-    if getline('.')[col('.') - 1] == a:char
-        return "\<Right>"
-    else
-        return a:char
-    endif
-endf
+
 " @JavaScriptFold()
 func! JavaScriptFold()
     setlocal foldmethod=marker
@@ -578,6 +549,7 @@ func! JavaScriptFold()
     endfun
     setlocal foldtext=MyFoldText()
 endfun
+
 " @BufPos_ActivateBuffer(num)
 func! BufPos_ActivateBuffer(num)
     let l:count=1
@@ -591,12 +563,5 @@ func! BufPos_ActivateBuffer(num)
         endif
     endfor
     echo "No buffer!"
-endfun
-" @BufPos_Initialize()
-func! BufPos_Initialize()
-    for i in range(1, 9)
-        exe "map <M-" . i . "> :call BufPos_ActivateBuffer(" . i . ")<CR>"
-    endfor
-    exe "map <M-0> :call BufPos_ActivateBuffer(10)<CR>"
 endfun
 

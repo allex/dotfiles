@@ -34,8 +34,9 @@ svngrep()
 }
 
 # some more ls aliases
+alias ~='cd ~'
 alias ..='cd ..'
-alias cd..='cd ..'
+alias ...='cd ../../'
 alias ll='ls -lXF'
 alias la='ls -XA'
 alias l='ls -CXF'

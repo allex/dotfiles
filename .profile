@@ -21,7 +21,7 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-# Set profile LIB
+# Set profile lib dir
 if [ -d "$HOME/.lib" ] ; then
     export LIB="$HOME/.lib"
 fi
