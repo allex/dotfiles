@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri Dec 14, 2012 10:24PM
+" Last Modified: Sat Dec 15, 2012 12:03AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -38,8 +38,12 @@
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim" | finish | endif
 
+" Helper functions
+func! s:Exec(com)
+    exec 'silent ' . a:com
+endfun
 func! s:Load(file)
-    if filereadable(a:file) | so a:file | endif
+    if filereadable(a:file) | exec 'silent source ' a:file | endif
 endfun
 
 " Use Vim settings, rather than Vi settings (much better!).
@@ -371,15 +375,12 @@ cmap <silent> ,cd :cd %:p:h<CR>:pwd<CR>
 iab $date <C-R>=strftime("%d %B %Y, %X")<CR>
 
 " STRIP -- EMPTY LINE ENDINGS
-nmap <silent> _$ :call Exec("%s/\\s\\+$//e")<CR>
-vmap <silent> _$ :call Exec("s/\\s\\+$//e")<CR>
+nmap <silent> _$ :call s:Exec("%s/\\s\\+$//e")<CR>
+vmap <silent> _$ :call s:Exec("s/\\s\\+$//e")<CR>
 
 " STRIP -- EMPTY LINE BEGINNINGS
-nmap <silent> _^ :call Exec("%s/^\\s\\+//e")<CR>
-vmap <silent> _^ :call Exec("s/^\\s\\+//e")<CR>
-fun! Exec(com)
-    exec 'silent ' . a:com
-endfun
+nmap <silent> _^ :call s:Exec("%s/^\\s\\+//e")<CR>
+vmap <silent> _^ :call s:Exec("s/^\\s\\+//e")<CR>
 
 " Easily change between backslash and forward slash with <leader>/ or <leader>\
 nmap <silent> <leader>/ :let tmp=@/<CR>:s:\\:/:ge<CR>:let @/=tmp<CR>
