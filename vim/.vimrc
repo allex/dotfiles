@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sat Dec 15, 2012 12:18AM
+" Last Modified: Sat Dec 15, 2012 09:53AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -40,10 +40,10 @@ if v:progname =~? "evim" | finish | endif
 
 " Helper functions
 fun! s:Exec(com)
-    exec 'silent ' . a:com
+    exec 'sil! ' . a:com
 endfun
 fun! s:Load(file)
-    if filereadable(a:file) | exec 'silent source ' a:file | endif
+    if filereadable(a:file) | exec 'sil! so ' a:file | endif
 endfun
 
 " Use Vim settings, rather than Vi settings (much better!).
@@ -183,17 +183,17 @@ if has("gui_running")
     set lines=35
     set co=150
     if has("win32")
-        colo torte
+        sil! colo torte
         set guifont=Lucida_Console:h10:cANSI
     else
-        colo darkdevel
-        hi Folded guibg=grey30 guifg=#bbbbbb
+        sil! colo darkdevel
         set guifont=Monospace\ 9
     endif
 else
-    colo dante
     set tw=85
+    sil! colo dante
 endif
+hi Folded guifg=DarkBlue guibg=LightGrey
 
 let mapleader=","
 
@@ -274,7 +274,7 @@ if has('win32')
         else
             let cmd=$VIMRUNTIME . '\diff'
         endif
-        silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+        sil! exec '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
     endfun
 endif
 " }}}
@@ -345,7 +345,7 @@ fun! s:Grep(...)
     else
         let ext = expand('%:e')
     endif
-    execute 'sil! vimgrep /\<' . l:word . '\>/j **/*.' . l:ext | copen
+    exec 'sil! vimgrep /\<' . l:word . '\>/j **/*.' . l:ext | copen
 endfun
 
 " tab navigation
@@ -409,7 +409,7 @@ com! -nargs=0 Reset call <SID>ForgetUndo()
 fun! <SID>ForgetUndo()
     let old_ul = &undolevels
     set undolevels=-1
-    exe "silent normal a \<BS>\<Esc>"
+    exe "sil! normal a \<BS>\<Esc>"
     w
     let &undolevels = old_ul
     unlet old_ul
@@ -480,7 +480,7 @@ if has("autocmd")
         endif
         let sfile = expand('%:p:h') . '/' . l:fname
         if filereadable(l:sfile)
-            execute 'sil! so ' . l:sfile
+            exec 'sil! so ' . l:sfile
         else
             echo 'session file (' . l:sfile . ') not exists'
         endif
@@ -493,7 +493,7 @@ if has("autocmd")
             let l:fname = a:1
         endif
         let sfile = expand('%:p:h') . '/' . l:fname
-        execute 'sil! mks! ' . l:sfile
+        exec 'sil! mks! ' . l:sfile
         echo 'session saved: ' . l:sfile
     endfun
 
@@ -502,7 +502,7 @@ if has("autocmd")
 
     " hi TODO guifg=#67a42c guibg=#112300 gui=bold
     fun! s:LoadTemplate()
-        silent! 0r ~/.vim/skel/%:e.tpl
+        sil! 0r ~/.vim/skel/%:e.tpl
     endfun
 endif
 
@@ -515,15 +515,15 @@ call s:Load($HOME . "/.vim/filetype.vim")
 " From an idea by Michael Naumann
 fun! VisualSearch(direction) range
     let l:saved_reg=@"
-    execute "normal! vgvy"
+    exec "normal! vgvy"
 
     let l:pattern=escape(@", '\\/.*$^~[]')
     let l:pattern=substitute(l:pattern, "\n$", "", "")
 
     if a:direction == 'b'
-        execute "normal ?" . l:pattern . "^M"
+        exec "normal ?" . l:pattern . "^M"
     else
-        execute "normal /" . l:pattern . "^M"
+        exec "normal /" . l:pattern . "^M"
     endif
 
     let @/=l:pattern
