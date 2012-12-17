@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sat Dec 15, 2012 09:53AM
+" Last Modified: Mon Dec 17, 2012 11:56AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -249,8 +249,12 @@ else
 endif
 " }}}
 
-" diff {{{
+" diff configuration {{{
 set diffopt+=vertical
+
+" diff buffers in current window
+com! -nargs=0 Diff :sil! windo diffoff | diffthis
+
 if has('win32')
     set diffexpr=MyDiff()
     fun! MyDiff()
@@ -299,12 +303,12 @@ let NERDSpaceDelims=1
 " Some commands work both in Insert mode and Command-line mode, some not
 " :h map/nmap/imap/vmap
 
-nmap <leader>f :find<CR>
+nmap <silent> <leader>f :find<CR>
 
 " Vertical split then hop to new buffer
-nmap <leader>h :new<CR>
-nmap <leader>v :vnew<CR>
-nmap <leader>d :vert diffsplit
+nmap <silent> <leader>h :new<CR>
+nmap <silent> <leader>v :vnew<CR>
+nmap <silent> <leader>d :vert diffsplit
 
 " Fast saving
 nmap <leader>w :w!<CR>

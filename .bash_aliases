@@ -33,10 +33,12 @@ svngrep()
     fi
 }
 
-# some more ls aliases
+# some userfull shortcut
 alias ~='cd ~'
 alias ..='cd ..'
 alias ...='cd ../../'
+
+# some more ls aliases
 alias ll='ls -lXF'
 alias la='ls -XA'
 alias l='ls -CXF'
