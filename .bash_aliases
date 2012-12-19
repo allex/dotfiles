@@ -1,5 +1,7 @@
-# ~/.bash_aliases
 # vim: set ft=sh:
+
+# ~/.bash_aliases
+# author: Allex (allex.wxn@gmail.com)
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
