@@ -33,6 +33,11 @@ svngrep()
     fi
 }
 
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias vi='/usr/bin/vim'
+
 # some userfull shortcut
 alias ~='cd ~'
 alias ..='cd ..'
@@ -42,15 +47,17 @@ alias ...='cd ../../'
 alias ll='ls -lXF'
 alias la='ls -XA'
 alias l='ls -CXF'
+
 # show most recent files at the bottom
 alias ltr='ls -ltr'
+
 alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
 alias svndiff='svn diff --diff-cmd ~/bin/svnvimdiff'
 
-# enable sudo current user's private bin
-alias sud='/usr/bin/sudo env PATH=$PATH'
-
-alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
-alias restartx='sudo restart lightdm'
-
+# alias for Ubuntu
+uname -a | grep -q "Ubuntu"
+if [ $? -eq 0 ]; then
+    alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
+    alias restartx='sudo restart lightdm'
+fi
