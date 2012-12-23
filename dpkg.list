@@ -1426,12 +1426,12 @@ lintian						install
 linux-firmware					install
 linux-generic					install
 linux-generic-pae				install
-linux-headers-3.5.0-19				install
-linux-headers-3.5.0-19-generic			install
+linux-headers-3.5.0-21				install
+linux-headers-3.5.0-21-generic			install
 linux-headers-generic				install
 linux-headers-generic-pae			install
-linux-image-3.5.0-19-generic			install
-linux-image-extra-3.5.0-19-generic		install
+linux-image-3.5.0-21-generic			install
+linux-image-extra-3.5.0-21-generic		install
 linux-image-generic				install
 linux-image-generic-pae				install
 linux-libc-dev:i386				install

@@ -6,7 +6,7 @@
 "
 " Author: Allex <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Mon Dec 17, 2012 11:56AM
+" Last Modified: Thu Dec 20, 2012 02:33PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -330,10 +330,8 @@ if has("gui_running")
     set guioptions-=r       " don't need right scrollbar
     set guioptions-=L       " don't show left scrollbar
     set guioptions+=a       " able to paste into other applications
-
     " Toggle the toolbar & menu (set guioptions+=T)
-    map <silent> <F2> :if &guioptions=~# 'm' <Bar> set guioptions-=m <Bar>
-                \else <Bar> set guioptions+=m <Bar> endif<CR>
+    map <silent> <F2> :if &guioptions=~# 'm' \| set guioptions-=m \| else \| set guioptions+=m \| endif<CR>
 endif
 
 " Grep command
