@@ -1,12 +1,12 @@
-" .vimrc file {{{
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
+
+" ================================================================================= {{{
 "
-" =================================================================================
-" Vim configuration file
+" .vimrc file
 "
-" Author: Allex <allex.wxn@gmail.com>
+" Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Thu Dec 20, 2012 02:33PM
+" Last Modified: Wed Jan 09, 2013 06:08PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -19,21 +19,7 @@
 " ln -s etc/vim/.vim ~/.vim
 " ln -s etc/vim/.vimrc ~/.vimrc
 "
-" Tip:
-"  If you find anything that you can't understand than do this:
-"  help keyword OR helpgrep keywords
-"
-" Example:
-"  Go into command-line mode and type helpgrep nocompatible, ie.
-"  :helpgrep nocompatible
-"  then press <leader>c to see the results, or :botright cw
-"
-" Help Document:
-"  How to use folds in vim
-"  http://tuxtraining.com/2009/04/10/how-to-use-folds-in-vim
-"
-" =================================================================================
-" }}}
+" ================================================================================= }}}
 
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim" | finish | endif
@@ -49,6 +35,9 @@ endfun
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
 set nocompatible
+
+" Installation pathogen.vim (http://www.vim.org/scripts/script.php?script_id=2332)
+sil! call pathogen#infect()
 
 set autoread                    " Set to auto read when a file is changed from the outside
 set showfulltag                 " Get function usage help automatically
@@ -129,9 +118,6 @@ map Q gq
 " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
 inoremap <C-U> <C-G>u<C-U>
-
-" Installation pathogen.vim (http://www.vim.org/scripts/script.php?script_id=2332)
-call pathogen#infect()
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -293,6 +279,10 @@ let Tlist_Use_SingleClick=1
 " Add a space after the left delimiter and before the right delimiter, like this: /* int foo=2; */
 let NERDSpaceDelims=1
 
+" Additionally load gist.vim only if git installed.
+if !executable('git')
+    let g:loaded_gist_vim=1
+endif
 " }}}
 
 " mappings {{{1

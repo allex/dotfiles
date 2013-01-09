@@ -56,6 +56,10 @@ alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
 alias svndiff='svn diff --diff-cmd ~/bin/svnvimdiff'
 
+if [ -x "$(which easy_install)" ]; then
+    alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"
+fi
+
 # alias for Ubuntu
 uname -a | grep -q "Ubuntu"
 if [ $? -eq 0 ]; then

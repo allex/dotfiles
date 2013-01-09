@@ -1,14 +1,23 @@
 #!/bin/bash
 
 # Google Closure Compiler (GCC) Toolkit
+# see https://github.com/allex/etc/blob/master/bin/closure
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Sun Nov 25, 2012 07:34PM
+# Last Modified: Wed Jan 09, 2013 06:18PM
 
-COMPILER="$LIB/compiler.jar"
-GCC="java -Xms64m -Xmx128m -Djava.library.path=$LIB -jar $COMPILER"
+type java >/dev/null 2>&1 || { echo >&2 "Java not installed. Aborting."; exit 1; }
 
-# For more see http://code.google.com/p/closure-compiler/wiki/Warnings
+EXEC_DIR=`dirname $(readlink -f $0)`
+COMPILER="$EXEC_DIR/lib/compiler.jar"
+[ -r "$COMPILER" ] || COMPILER="$LIB/compiler.jar"
+GCC="java -Xms64m -Xmx128m -Djava.library.path=$EXEC_DIR/lib -jar $COMPILER"
+
+if [ ! -r $COMPILER ]; then
+    echo "Error: Unable to access jarfile compiler.jar"; exit 1;
+fi
+
+# for more see http://code.google.com/p/closure-compiler/wiki/Warnings
 args="--charset UTF-8 --language_in=ECMASCRIPT5_STRICT"
 
 # --warning_level VERBOSE|DEFAULT|QUIET
@@ -18,8 +27,15 @@ usage() {
     $GCC --help;
 }
 
+# do some pre-compile syntax parsing
+prebuild() {
+    perl -0777 -i -pe 's/<debug>[\s\S]*?<\/debug>//g' $1
+}
+
+# create tmp file for dist
 tmpfile=$(mktemp);
 
+# parse arguments, normalize params.
 while [ $# -gt 0 ]
 do
     case $1 in
@@ -62,21 +78,15 @@ done
 
 args="${args} --warning_level ${warning_level}"
 
-# filepath
-if [ $(expr "${args}" : ".* --js .*") -ne 0 ]; then
-
-    # do some pre-compile syntax parsing
-    perl -0777 -i -pe 's/<debug>[\s\S]*?<\/debug>//g' $tmpfile
-    $GCC ${args}
-
-# stdin
-else
-    tee $tmpfile > /dev/null
-
-    # do some pre-compile syntax parsing
-    perl -0777 -i -pe 's/<debug>[\s\S]*?<\/debug>//g' $tmpfile
+# check input filepath or stdin mode
+if [ $(expr "${args}" : ".* --js .*") -eq 0 ]; then
     args="${args} --js $tmpfile";
-    $GCC ${args}
+    tee $tmpfile > /dev/null
 fi
 
+# compile target file
+prebuild $tmpfile
+$GCC ${args}
+
+# remove tmp file
 rm $tmpfile;

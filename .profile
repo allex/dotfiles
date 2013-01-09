@@ -27,9 +27,9 @@ if [ -d "$HOME/.lib" ] ; then
 fi
 
 # JDK
-export JAVA_HOME="/usr/lib/jvm/java-1.7.0-openjdk-i386"
+export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 
-# Ant
+# ANT
 export ANT_HOME="/usr/share/ant-1.8.2"
 export PATH=$PATH:$ANT_HOME/bin
 
