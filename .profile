@@ -30,7 +30,7 @@ fi
 export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 
 # ANT
-export ANT_HOME="/usr/share/ant-1.8.2"
+export ANT_HOME="/usr/share/ant"
 export PATH=$PATH:$ANT_HOME/bin
 
 # Nodejs

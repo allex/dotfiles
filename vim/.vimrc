@@ -239,7 +239,16 @@ endif
 set diffopt+=vertical
 
 " diff buffers in current window
-com! -nargs=0 Diff :sil! windo diffoff | diffthis
+com! -nargs=0 Diff :sil! call s:ToggleDiff()
+fun! s:ToggleDiff()
+    if exists('b:diff') && b:diff
+        let b:diff = 0
+        windo diffoff | set nowrap
+    else
+        let b:diff = 1
+        windo diffoff | diffthis
+    endif
+endfun
 
 if has('win32')
     set diffexpr=MyDiff()
@@ -312,16 +321,23 @@ map <silent> <A-j> <C-W>-
 map <silent> <A-k> <C-W>+
 map <silent> <A-l> <C-w>>
 
-" GUI Options:
+" guioptions
 if has("gui_running")
+
+    " Initial guioptions
     set guioptions+=c       " use console dialogs, not the gui ones
     set guioptions-=T       " don't show the toolbar
     set guioptions-=m       " don't show the menu
     set guioptions-=r       " don't need right scrollbar
     set guioptions-=L       " don't show left scrollbar
     set guioptions+=a       " able to paste into other applications
-    " Toggle the toolbar & menu (set guioptions+=T)
-    map <silent> <F2> :if &guioptions=~# 'm' \| set guioptions-=m \| else \| set guioptions+=m \| endif<CR>
+
+    " Toggle the toolbar and menu
+    if has('gui_gtk')
+        map <silent> <F3> :if &guioptions=~# 'T' \| set guioptions-=T \| else \| set guioptions+=T \| endif<CR>
+    else
+        map <silent> <F2> :if &guioptions=~# 'm' \| set guioptions-=m \| else \| set guioptions+=m \| endif<CR>
+    endif
 endif
 
 " Grep command
@@ -419,7 +435,7 @@ if has("autocmd")
     fun! UpdateLastModified()
         if exists('b:nomod') && b:nomod
             return
-        end
+        endif
         if &modified
             let timeStampLeader = 'Last Modified: '
             let save_cursor = getpos('.')
