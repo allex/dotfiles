@@ -56,7 +56,7 @@ alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
 alias svndiff='svn diff --diff-cmd ~/bin/svnvimdiff'
 
-if [ -x "$(which easy_install)" ]; then
+if [ -x "$(which easy_install 2>/dev/null)" ]; then
     alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"
 fi
 
