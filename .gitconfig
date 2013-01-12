@@ -1,6 +1,6 @@
 [user]
-	name = Allex
-	email = allex.wxn@gmail.com
+    name = Allex
+    email = allex.wxn@gmail.com
 
 [color]
     ui = auto
@@ -26,17 +26,16 @@
     wtf   = !git-wtf
 
 [core]
+    # deactivate LF will be replaced by CRLF
+    autocrlf = false
+
     # make git ignore white space differences, many different possibilites here
     # check http://www.kernel.org/pub/software/scm/git/docs/git-config.html#_variables
     whitespace = -trailing-space,-indent-with-non-tab,-tab-in-indent
 
     pager = less -R
-	warnambiguousrefs = false
-
-    # autocrlf = input
-    # autocrlf = true
+    warnambiguousrefs = false
     # editor = "/usr/bin/vim"
-    # whitespace = cr-at-eol
 
 [diff]
     tool = "git-diff"
@@ -56,4 +55,4 @@
     tool = vimdiff
 
 [github]
-	user = allex
+    user = allex
