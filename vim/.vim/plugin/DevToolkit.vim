@@ -24,14 +24,14 @@ augroup DevToolkit
     au!
 
     " Shortcut for edit current file with notepad/gedit
-    let editor = ''
+    let gui_editor = ''
     if has('win32')
-        let editor = 'notepad'
+        let gui_editor = 'notepad'
     elseif has('gui_gtk2')
-        let editor = 'gedit'
+        let gui_editor = 'gedit'
     endif
-    if editor != ''
-        nnoremap <silent> <leader>,n :exec ':silent !' . editor . ' %' <CR>
+    if gui_editor != ''
+        nnoremap <silent> <leader>,n :exec ':silent !' . gui_editor . ' %' <CR>
     endif
 
     " Html tidy definitions.

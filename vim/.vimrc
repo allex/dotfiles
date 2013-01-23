@@ -1,7 +1,6 @@
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
 
 " ================================================================================= {{{
-"
 " .vimrc file
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
@@ -18,7 +17,6 @@
 "
 " ln -s etc/vim/.vim ~/.vim
 " ln -s etc/vim/.vimrc ~/.vimrc
-"
 " ================================================================================= }}}
 
 " When started as "evim", evim.vim will already have done these settings.
@@ -43,9 +41,8 @@ set autoread                    " Set to auto read when a file is changed from t
 set showfulltag                 " Get function usage help automatically
 set bsdir=last                  " Use same directory as with last file browser, where a file was opened or saved
 
-if has("gui_running")
-    set autochdir
-endif
+" Change the current working directory when open a file in GUI.
+if has("gui_running") | set autochdir | endif
 
 set history=400                 " keep 400 lines of command line history
 set title                       " set terminal title to filename
