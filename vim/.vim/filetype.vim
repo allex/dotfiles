@@ -1,7 +1,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Wed Jan 23, 2013 03:41PM
+" Last Modified: Thu Jan 24, 2013 10:45AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -35,7 +35,8 @@ augroup IDE
     endfun
 augroup END
 
-" cancel php $ keyword
+" cancel php, sh $ keyword
 au FileType php setlocal iskeyword-=$
+au FileType sh setlocal iskeyword-=$
 
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
