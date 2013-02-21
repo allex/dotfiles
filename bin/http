@@ -1,16 +1,8 @@
 #!/bin/sh
 
 WHOAMI=$(/usr/bin/whoami)  
-
-if [ "$WHOAMI" != "root" ] ; then
-   /bin/echo   
-   /bin/echo -e 'ERROR: you have to execute this command with root privileges: put "sudo" before this command!'
-   /bin/echo   
-   exit 1
-else
-    service apache2 stop
-    sleep 2
-    /bin/echo -e ' * Deleting apache logs in /var/log/apache2/*'
-    rm /var/log/apache2/* -f
-    service apache2 start
-fi
+service apache2 stop
+sleep 2
+/bin/echo -e ' * Deleting apache logs in /var/log/apache2/*'
+rm /var/log/apache2/* -f
+service apache2 start

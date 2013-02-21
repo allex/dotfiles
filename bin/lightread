@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# ================================================
+# Description: start lightread by proxy
+# Last Modified: Fri Jan 18, 2013 07:05PM
+# Author: allex (allex.wxn@gmail.com)
+# ================================================
+
+http_proxy=http://proxy:8087/
+EXEC=/opt/extras.ubuntu.com/lightread/bin/lightread
+
+if [ -f $EXEC ]; then
+    $EXEC;
+else
+    echo "lightread not install."
+fi

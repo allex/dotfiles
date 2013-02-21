@@ -1,11 +1,9 @@
-" vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
-
 " ================================================================================= {{{
 " .vimrc file
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Wed Jan 09, 2013 06:08PM
+" Last Modified: Wed Jan 30, 2013 09:57AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -571,3 +569,4 @@ fun! BufPos_ActivateBuffer(num)
     echo "No buffer!"
 endfun
 
+" vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:

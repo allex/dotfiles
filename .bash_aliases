@@ -37,7 +37,6 @@ svngrep()
 
 alias rm='rm -i'
 alias mv='mv -i'
-alias vi='/usr/bin/vim'
 
 # some userfull shortcut
 alias ~='cd ~'
@@ -55,6 +54,8 @@ alias ltr='ls -ltr'
 alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
 alias svndiff='svn diff --diff-cmd ~/bin/svnvimdiff'
+
+[ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
 
 if [ -x "$(which easy_install 2>/dev/null)" ]; then
     alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"

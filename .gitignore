@@ -12,3 +12,4 @@ vendor
 TODO
 vim7*
 .netrwhist
+*.save
