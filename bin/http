@@ -1,6 +1,32 @@
 #!/bin/sh
+set -e
 
-WHOAMI=$(/usr/bin/whoami)  
+# Restart httpd service, meanwhile cleanup the apache logs.
+# Author: Allex Wang (allex.wxn@gmail.com)
+
+self=`basename $0`
+
+if [ "x$EUID" = "x" ] ; then
+  EUID=`id -u`
+fi
+
+if [ "$EUID" != 0 ] ; then
+  root=f
+  case "`uname 2>/dev/null`" in
+    CYGWIN*)
+      # Cygwin: Assume root if member of admin group
+      for g in `id -G 2>/dev/null` ; do
+    case $g in
+      0|544) root=t ;;
+    esac
+      done ;;
+  esac
+  if [ $root != t ] ; then
+    echo "$self: You must run this as root" >&2
+    exit 1
+  fi
+fi
+
 service apache2 stop
 sleep 2
 /bin/echo -e ' * Deleting apache logs in /var/log/apache2/*'
