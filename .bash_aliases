@@ -54,12 +54,9 @@ alias ltr='ls -ltr'
 alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
 alias svndiff='svn diff --diff-cmd ~/bin/svnvimdiff'
+alias q='exit'
 
 [ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
-
-if [ -x "$(which easy_install 2>/dev/null)" ]; then
-    alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"
-fi
 
 # alias for Ubuntu
 uname -a | grep -q "Ubuntu"
@@ -67,3 +64,9 @@ if [ $? -eq 0 ]; then
     alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
     alias restartx='sudo restart lightdm'
 fi
+
+# set easy_install profile path
+if [ -x "$(which easy_install 2>/dev/null)" ]; then
+    alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"
+fi
+
