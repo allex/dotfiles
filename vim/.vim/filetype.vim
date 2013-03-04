@@ -1,7 +1,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Thu Jan 24, 2013 10:45AM
+" Last Modified: Mon Mar 04, 2013 10:31AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -35,8 +35,9 @@ augroup IDE
     endfun
 augroup END
 
-" cancel php, sh $ keyword
+" Cancel some specific keywords
 au FileType php setlocal iskeyword-=$
 au FileType sh setlocal iskeyword-=$
+au FileType dosbatch setlocal iskeyword-=%
 
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
