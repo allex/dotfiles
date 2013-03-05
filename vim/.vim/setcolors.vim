@@ -75,10 +75,8 @@ function! s:NextColor(how, echo_color)
   endif
 
   let current = s:index
-  if current == -1
-      if exists('g:colors_name')
-          let current = index(s:mycolors, g:colors_name)
-      endif
+  if current == -1 && exists('g:colors_name')
+      let current = index(s:mycolors, g:colors_name)
   endif
 
   let missing = []
