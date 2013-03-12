@@ -13,3 +13,6 @@
 [submodule "vim/.vim/bundle/vim-css3-syntax"]
 	path = vim/.vim/bundle/vim-css3-syntax
 	url = git://github.com/hail2u/vim-css3-syntax.git
+[submodule "vim/.vim/bundle/jshint.vim"]
+	path = vim/.vim/bundle/jshint.vim
+	url = git://github.com/walm/jshint.vim.git
