@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Wed Jan 30, 2013 09:57AM
+" Last Modified: Sat Mar 23, 2013 10:38PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -80,7 +80,7 @@ set laststatus=2
 " Format the statusline
 set statusline=\ %F%m%r%h\ %w\ CW\ %r%{CurDir()}%h\ [%Y,%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ \%=[%l,%v,%p%%,\ %L\ \%P]
 fun! CurDir()
-    return substitute(getcwd(), $HOME, "~", "g")
+    return substitute(getcwd(), fnameescape($HOME), "~", "g")
 endfun
 
 " Low priority filename suffixes for filename completion,
@@ -351,12 +351,19 @@ fun! s:Grep(...)
     exec 'sil! vimgrep /\<' . l:word . '\>/j **/*.' . l:ext | copen
 endfun
 
-" tab navigation
+" Tab navigation
 map tn :tabnext<CR>
 map tp :tabprevious<CR>
 map td :tabnew
 map te :tabedit
 map tc :tabclose<CR>
+
+" Move easily between split windows
+nmap <silent> <C-h> :wincmd h<CR>
+nmap <silent> <C-j> :wincmd j<CR>
+nmap <silent> <C-k> :wincmd k<CR>
+nmap <silent> <C-l> :wincmd l<CR>
+
 map <silent> <F12> :conf q!<CR>
 
 "\n to turn off search highlighting
