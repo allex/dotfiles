@@ -26,6 +26,8 @@ if [ -d "$HOME/.lib" ] ; then
     export LIB="$HOME/.lib"
 fi
 
+export EDITOR="vim"
+
 # JDK
 export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 
@@ -33,7 +35,7 @@ export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 export ANT_HOME="/usr/share/ant"
 export PATH=$PATH:$ANT_HOME/bin
 
-# Nodejs
+# Node
 export NODE_PATH="/usr/local/lib/node"
 export NODE_PATH=$HOME/.node_libraries:$HOME/node_modules:$NODE_PATH
 

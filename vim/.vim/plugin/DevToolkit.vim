@@ -7,7 +7,7 @@
 " Description:   Toolkit with codes format, compressor for web develop etc,.
 "                (javascript, java, c#, css)
 "
-" Last Modified: Mon May 07, 2012 10:16AM
+" Last Modified: Sat Mar 23, 2013 10:33PM
 "
 " ======================================================================================
 
@@ -46,14 +46,11 @@ augroup DevToolkit
         au BufReadPost,FileReadPost *.js call s:Format()
     endif
 
-    " Command definitions
-
     " primary commands
     com -nargs=* -range=% Format call s:Format(<line1>, <line2>, <f-args>)
     com -nargs=* -range=% GC call s:GCompiler(<line1>, <line2>, <f-args>)
 
     " plugin command mappings (format, compressor)
-    nnoremap <silent> <c-k> :Format<cr>
     nnoremap <silent> <plug>Format :Format<cr>
     nnoremap <silent> <plug>GC :GC<cr>
 
