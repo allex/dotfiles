@@ -13,8 +13,13 @@
 "  for MS-DOS and Win32:  $VIM\_vimrc
 "       for OpenVMS:  sys$login:.vimrc
 "
-" ln -s etc/vim/.vim ~/.vim
-" ln -s etc/vim/.vimrc ~/.vimrc
+" Usage:
+"
+"  md ~/.etc
+"  git clone https://github.com/allex/etc.git ~/.etc
+"  ln ~/.etc/vim/.vim ~/ -sf
+"  ln ~/.etc/vim/.vimrc ~/ -f 
+"
 " ================================================================================= }}}
 
 " When started as "evim", evim.vim will already have done these settings.
@@ -348,7 +353,7 @@ fun! s:Grep(...)
     else
         let ext = expand('%:e')
     endif
-    exec 'sil! vimgrep /\<' . l:word . '\>/j **/*.' . l:ext | copen
+    exec 'sil! vimgrep /' . l:word . '/j **/*.' . l:ext | copen
 endfun
 
 " tab navigation
