@@ -59,7 +59,7 @@ set nu
 set nopaste
 set incsearch
 set magic
-set iskeyword+=_,$,@,%,-
+set iskeyword+=_,$,@,%
 
 set whichwrap+=<,>,[,],h,l
 set backspace=indent,eol,start  " backspace and cursor keys wrap to previous/next line

@@ -1,7 +1,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Tue Mar 19, 2013 12:09PM
+" Last Modified: Thu Mar 28, 2013 11:07AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -36,8 +36,8 @@ augroup IDE
 augroup END
 
 " Cancel some specific keywords
-au FileType php set iskeyword-=$,-
-au FileType sh set iskeyword-=$
+au FileType sh,php set iskeyword-=$
 au FileType dosbatch set iskeyword-=%
+au FileType html,xml,css set iskeyword+=-
 
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
