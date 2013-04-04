@@ -323,7 +323,6 @@ map <silent> <A-l> <C-w>>
 
 " guioptions
 if has("gui_running")
-
     " Initial guioptions
     set guioptions+=c       " use console dialogs, not the gui ones
     set guioptions-=T       " don't show the toolbar
