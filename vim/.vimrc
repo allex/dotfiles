@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sat Mar 23, 2013 10:38PM
+" Last Modified: Fri Apr 05, 2013 09:10PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -385,9 +385,6 @@ imap <silent> <s-tab> <c-v><tab>
 " Change directory to the file being edited.
 cmap <silent> ,cd :cd %:p:h<CR>:pwd<CR>
 
-" DATE FUNCTIONS (insert date in format "20 Aug, 2010")
-iab $date <C-R>=strftime("%d %B %Y, %X")<CR>
-
 " STRIP -- EMPTY LINE ENDINGS
 nmap <silent> _$ :call s:Exec("%s/\\s\\+$//e")<CR>
 vmap <silent> _$ :call s:Exec("s/\\s\\+$//e")<CR>
@@ -428,6 +425,9 @@ fun! <SID>ForgetUndo()
     let &undolevels = old_ul
     unlet old_ul
 endfun
+
+" DATE FUNCTIONS (insert date in format "20 Aug, 2010")
+iab $date <C-R>=strftime("%d %B %Y, %X")<CR>
 " }}}
 
 " autocommands {{{1
@@ -443,13 +443,13 @@ if has("autocmd")
             return
         endif
         if &modified
-            let timeStampLeader = 'Last Modified: '
-            let save_cursor = getpos('.')
+            let tstr = 'Last Modified: '
+            let cur_pos = getpos('.')
             let n = min([20, line('$')])
-            keepjumps exe '1,' . n . 's#^\(.\{,10}' . timeStampLeader . '\).*#\1' . strftime('%a %b %d, %Y %I:%M%p') . '#e'
+            keepjumps exe '1,' . n . 's#^\(.\{,10}' . tstr . '\).*#\1' . strftime('%a %b %d, %Y %I:%M%p') . '#e'
             call histdel('search', -1)
             let @/ = histget('/', -1)
-            call setpos('.', save_cursor)
+            call setpos('.', cur_pos)
         endif
     endfun
     au BufWritePre * call UpdateLastModified()
@@ -462,9 +462,33 @@ if has("autocmd")
         augroup FOLDSETTINGS
             let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
             let Enable_JsBeautifier_Onload=0
+
             au!
-            au FileType javascript call JavaScriptFold()
+            au FileType javascript call InitJSFolderOpts()
             au FileType javascript set commentstring=//\ %s
+
+            fun! InitJSFolderOpts()
+                setlocal fdm=marker
+
+                " Always start editing with all folds closed (value zero)
+                setlocal fdl=0
+                setlocal fdls=0
+                syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
+
+                fun! MyFoldText()
+                    " for now, just don't try if version isn't 7 or higher
+                    if v:version < 701
+                        return foldtext()
+                    endif
+                    " clear fold from fillchars to set it up the way we want later
+                    let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
+                    let l:foldtext=getline(v:foldstart)
+                    let l:foldtext=substitute(l:foldtext, '\/[\/\*]\+\s*', '', '')
+                    return substitute(l:foldtext, '{.*', '{...}', '')
+                endfun
+
+                setlocal foldtext=MyFoldText()
+            endfun
         augroup END
     endif
     " }}}
@@ -476,6 +500,19 @@ if has("autocmd")
             exe "map <M-" . i . "> :call BufPos_ActivateBuffer(" . i . ")<CR>"
         endfor
         exe "map <M-0> :call BufPos_ActivateBuffer(10)<CR>"
+    endfun
+    fun! BufPos_ActivateBuffer(num)
+        let l:count=1
+        for i in range(1, bufnr("$"))
+            if buflisted(i) && getbufvar(i, "&modifiable")
+                if l:count == a:num
+                    exe "buffer " . i
+                    return
+                endif
+                let l:count=l:count + 1
+            endif
+        endfor
+        echo "No buffer!"
     endfun
 
     " Register `Save` and `LoadSession` command to save and load current
@@ -514,7 +551,6 @@ if has("autocmd")
     " Reads the template file into new buffer.
     au BufNewFile * call s:LoadTemplate()
 
-    " hi TODO guifg=#67a42c guibg=#112300 gui=bold
     fun! s:LoadTemplate()
         sil! 0r ~/.vim/skel/%:e.tpl
     endfun
@@ -525,16 +561,16 @@ call s:Load($HOME . "/.vim/filetype.vim")
 
 " Internal functions {{{1
 
-" @VisualSearch(direction)
+" @VisualSearch(dir)
 " From an idea by Michael Naumann
-fun! VisualSearch(direction) range
+fun! VisualSearch(dir) range
     let l:saved_reg=@"
     exec "normal! vgvy"
 
     let l:pattern=escape(@", '\\/.*$^~[]')
     let l:pattern=substitute(l:pattern, "\n$", "", "")
 
-    if a:direction == 'b'
+    if a:dir == 'b'
         exec "normal ?" . l:pattern . "^M"
     else
         exec "normal /" . l:pattern . "^M"
@@ -542,42 +578,6 @@ fun! VisualSearch(direction) range
 
     let @/=l:pattern
     let @"=l:saved_reg
-endfun
-
-" @JavaScriptFold()
-fun! JavaScriptFold()
-    setlocal foldmethod=marker
-    " always start editing with all folds closed (value zero)
-    setlocal foldlevelstart=0
-    setlocal foldlevel=0
-    syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
-    fun! MyFoldText()
-        " for now, just don't try if version isn't 7 or higher
-        if v:version < 701
-            return foldtext()
-        endif
-        " clear fold from fillchars to set it up the way we want later
-        let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
-        let l:foldtext=getline(v:foldstart)
-        let l:foldtext=substitute(l:foldtext, '\/[\/\*]\+\s*', '', '')
-        return substitute(l:foldtext, '{.*', '{...}', '')
-    endfun
-    setlocal foldtext=MyFoldText()
-endfun
-
-" @BufPos_ActivateBuffer(num)
-fun! BufPos_ActivateBuffer(num)
-    let l:count=1
-    for i in range(1, bufnr("$"))
-        if buflisted(i) && getbufvar(i, "&modifiable")
-            if l:count == a:num
-                exe "buffer " . i
-                return
-            endif
-            let l:count=l:count + 1
-        endif
-    endfor
-    echo "No buffer!"
 endfun
 
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
