@@ -74,8 +74,9 @@ alias ltr='ls -ltr'
 
 alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
-alias svndiff='svn diff --diff-cmd ~/bin/svnvimdiff'
 alias q='exit'
+
+[ -x "$(which svnvimdiff 2>/dev/null)" ] && alias svndiff='svn diff --diff-cmd svnvimdiff'
 
 [ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
 

@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri Apr 05, 2013 09:10PM
+" Last Modified: Thu Apr 18, 2013 09:56AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -74,13 +74,14 @@ set tabstop=4
 set shiftwidth=4                " > and < move block by 4 spaces in visual mode
 set expandtab                   " expand tabs to spaces
 set autoindent                  " auto indent, usefull when using the 'o' or 'O' command.
-set si                          " Do smart autoindenting when starting a new line Works for C-like programs
+set si                          " do smart autoindenting when starting a new line Works for C-like programs
 set cindent                     " use the C indenting rules
-set nobackup                    " Turn backup off, since most stuff is in SVN, git anyway...
+set laststatus=2                " always show the status line
 
+" Turn backup off, since most stuff is in SVN, git anyway...
+set nobackup
 set nowb
 set noswapfile
-set laststatus=2
 
 " Format the statusline
 set statusline=\ %F%m%r%h\ %w\ CW\ %r%{CurDir()}%h\ [%Y,%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ \%=[%l,%v,%p%%,\ %L\ \%P]
