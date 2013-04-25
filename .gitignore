@@ -1,15 +1,18 @@
-build_tmp*/
-build_rollup_tmp*/
-.DS_Store
-.*.swp
-.svn
-CVS/
-*~
+# git config --global core.excludesfile '~/.gitignore'
+# see http://groups.google.com/group/peepcode/browse_thread/thread/fe6f9c1fc9d6e725
+
 .git
-ref
-dist
-vendor
-TODO
-vim7*
+.svn
+.hg
+.zip
+.gz
+
+.DS_Store
+
+*~
+*.swp
+*.tmp
+
 .netrwhist
-*.save
+.session.vim
+t.*
