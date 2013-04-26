@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Thu Apr 18, 2013 09:56AM
+" Last Modified: Fri Apr 26, 2013 10:24AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -526,27 +526,30 @@ if has("autocmd")
     " F6 to restores the session.
     nmap <F6> :LoadSession <CR>
     fun! s:LoadSession(...)
-        let l:fname = '.session.vim'
+        let fname = '.session.vim'
         if a:0 > 0
-            let l:fname = a:1
+            let fname = a:1
         endif
-        let sfile = expand('%:p:h') . '/' . l:fname
-        if filereadable(l:sfile)
-            exec 'sil! so ' . l:sfile
+        let sfile = expand('%:p:h') . '/' . fname
+        if !filereadable(sfile)
+            let sfile = getcwd() . '/' . fname
+        endif
+        if filereadable(sfile)
+            exec 'sil! so ' . sfile
         else
-            echo 'session file (' . l:sfile . ') not exists'
+            echo 'session file (' . sfile . ') not exists'
         endif
     endfun
 
     " Saves the current session
     fun! s:SaveSession(...)
-        let l:fname = '.session.vim'
+        let fname = '.session.vim'
         if a:0 > 0
-            let l:fname = a:1
+            let fname = a:1
         endif
-        let sfile = expand('%:p:h') . '/' . l:fname
-        exec 'sil! mks! ' . l:sfile
-        echo 'session saved: ' . l:sfile
+        let sfile = getcwd() . '/' . fname
+        exec 'sil! mks! ' . sfile
+        echo 'session saved: ' . sfile
     endfun
 
     " Reads the template file into new buffer.

@@ -35,7 +35,7 @@
 
     pager = less -R
     warnambiguousrefs = false
-	excludesfile = ~/.gitignore
+    excludesfile = ~/.gitignore
     # editor = "/usr/bin/vim"
 
 [diff]
