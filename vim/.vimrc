@@ -428,7 +428,7 @@ fun! <SID>ForgetUndo()
 endfun
 
 " DATE FUNCTIONS (insert date in format "20 Aug, 2010")
-iab $date <C-R>=strftime("%d %B %Y, %X")<CR>
+iab DATE <C-R>=strftime("%d %B %Y, %X")<CR>
 " }}}
 
 " autocommands {{{1
