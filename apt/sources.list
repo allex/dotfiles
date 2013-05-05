@@ -5,17 +5,16 @@
 #############################################################
 
 ###### Ubuntu Main Repos
-deb http://us.archive.ubuntu.com/ubuntu/ quantal main restricted universe 
+deb http://mirror.bjtu.edu.cn/ubuntu/ saucy main restricted universe
 
 ###### Ubuntu Update Repos
-deb http://us.archive.ubuntu.com/ubuntu/ quantal-security main restricted universe 
-deb http://us.archive.ubuntu.com/ubuntu/ quantal-updates main restricted universe 
+deb http://mirror.bjtu.edu.cn/ubuntu/ saucy-security main restricted universe
+deb http://mirror.bjtu.edu.cn/ubuntu/ saucy-updates main restricted universe
 
 ###### Ubuntu Partner Repo
-deb http://archive.canonical.com/ubuntu quantal partner
+deb http://archive.canonical.com/ubuntu saucy partner
 
 ###### Ubuntu Extras Repo
-deb http://extras.ubuntu.com/ubuntu quantal main
+deb http://extras.ubuntu.com/ubuntu saucy main
 
 ###### add by allex
-deb http://ftp.cuhk.edu.hk/pub/Linux/ubuntu quantal main

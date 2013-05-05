@@ -1,2 +1,2 @@
 # wget -q http://download.virtualbox.org/virtualbox/debian/oracle_vbox.asc -O- | sudo apt-key add -
-deb http://download.virtualbox.org/virtualbox/debian quantal contrib
+deb http://download.virtualbox.org/virtualbox/debian raring contrib
