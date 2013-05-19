@@ -61,6 +61,7 @@ alias mv='mv -i'
 
 # some userfull shortcut
 alias ~='cd ~'
+alias cd..='cd ..'
 alias ..='cd ..'
 alias ...='cd ../../'
 
@@ -74,21 +75,30 @@ alias ltr='ls -ltr'
 
 alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
+
 alias q='exit'
 
 [ -x "$(which svnvimdiff 2>/dev/null)" ] && alias svndiff='svn diff --diff-cmd svnvimdiff'
-
 [ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
 
-# alias for Ubuntu
-uname -a | grep -q "Ubuntu"
-if [ $? -eq 0 ]; then
-    alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
-    alias restartx='sudo restart lightdm'
+if [ "$(id -u)" != "0" ]; then
+    alias service='sudo service'
 fi
 
 # set easy_install profile path
-if [ -x "$(which easy_install 2>/dev/null)" ]; then
-    alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"
+[ -x "$(which easy_install 2>/dev/null)" ] && alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"
+
+# aliases for Ubuntu distro
+uname -a | grep -q "Ubuntu"
+if [ $? -eq 0 ]; then
+
+    alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
+    alias restartx='sudo restart lightdm'
+
+    # if user is not root, pass all commands via sudo #
+    if [ $UID -ne 0 ]; then
+        alias reboot='sudo reboot'
+        alias update='sudo apt-get upgrade'
+    fi
 fi
 

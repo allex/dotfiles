@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# ================================================
+# Description: %TITLE%
+# Last Modified: Wed Apr 24, 2013 04:21PM
+# Author: allex (allex.wxn@gmail.com)
+# ================================================
+
+# remove deug statements
+perl -0777 -i -pe 's/\s*\/\/\s*<debug>[\s\S]*?<\/debug>//g' $1

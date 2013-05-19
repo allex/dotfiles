@@ -12,6 +12,7 @@
 *~
 *.swp
 *.tmp
+*.save
 
 .netrwhist
 .session.vim
