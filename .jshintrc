@@ -11,7 +11,11 @@
         "beforeEach": false,
         "waits": false,
         "waitsFor": false,
-        "runs": false
+        "runs": false,
+
+        "define": true,
+        "module": true,
+        "require": true
     },
 
 
@@ -84,5 +88,6 @@
     "white"         : false,  // Not check against strict whitespace and indentation rules.
 
     "unused"        : true,   // Warns when you define and never use your variables
-    "evil"          : true
+    "evil"          : true,
+    "bitwise"       : false 
 }
