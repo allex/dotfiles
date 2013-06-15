@@ -1,5 +1,5 @@
 #!/bin/sh
 
-ps -ef | grep web-proxy-service | awk '{print }' | xargs kill -9 >/dev/null 2>&1
+ps -ef | grep web-proxy-service | awk '{print $2}' | xargs kill -9 >/dev/null 2>&1
 sleep 1
 node ~/node_modules/nodejs-proxy/proxy.dist.js "$@"

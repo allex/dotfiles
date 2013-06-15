@@ -164,3 +164,4 @@ bind 'set completion-ignore-case On'
 bind '"\C-i" menu-complete'
 
 # export http_proxy=http://proxy:8087/
+

@@ -88,5 +88,6 @@
     "white"         : false,  // Not check against strict whitespace and indentation rules.
 
     "unused"        : true,   // Warns when you define and never use your variables
-    "evil"          : true
+    "evil"          : true,
+    "bitwise"       : false 
 }
