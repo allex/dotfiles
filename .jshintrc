@@ -11,7 +11,11 @@
         "beforeEach": false,
         "waits": false,
         "waitsFor": false,
-        "runs": false
+        "runs": false,
+
+        "define": true,
+        "module": true,
+        "require": true
     },
 
 

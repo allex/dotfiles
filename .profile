@@ -8,6 +8,14 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+# Tell ls to be colourful
+export CLICOLOR=1
+# http://geoff.greer.fm/lscolors/
+export LSCOLORS=ExFxcxdxbxegedabagacAd
+
+# Tell grep to highlight matches
+export GREP_OPTIONS='--color=auto'
+
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
@@ -46,4 +54,3 @@ export PYTHONPATH=$HOME/local/python-packages
 if [ -d "$PYTHONPATH" ] ; then
     export PATH="$PATH:$PYTHONPATH"
 fi
-

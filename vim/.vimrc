@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri Apr 26, 2013 10:24AM
+" Last Modified: Thu Jun 06, 2013 11:49AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -208,8 +208,10 @@ endif
 " encoding {{{
 let &termencoding=&encoding
 set encoding=utf-8
-set fileencoding=utf-8
-set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,latin1,gbk,gb2312 " set bomb
+set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,latin1,gbk,gb2312
+if &modifiable
+    set fileencoding=utf-8
+endif
 if has("multi_byte")
     " CJK environment detection and corresponding setting
     if v:lang =~ "^zh_CN"
@@ -343,6 +345,11 @@ endif
 " Grep command
 com! -nargs=* Grep call s:Grep(<f-args>)
 fun! s:Grep(...)
+    "
+    " Native vimgrep function extendssion, some regular-expression will be
+    " escaped.
+    " Author: allex wang (allex.wxn@gmail.com)
+    "
     if a:0 > 0
         let word = a:1
     else
@@ -353,7 +360,7 @@ fun! s:Grep(...)
     else
         let ext = expand('%:e')
     endif
-    exec 'sil! vimgrep /' . l:word . '/j **/*.' . l:ext | copen
+    exec 'sil! vimgrep /' . escape(l:word, "*+./([])") . '/j **/*.' . l:ext | copen
 endfun
 
 " Tab navigation

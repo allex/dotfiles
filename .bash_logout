@@ -5,7 +5,7 @@ if [ -f "$HOME/.xsession-errors" ]; then
 fi
 
 # fixes .goutputstream files polluting $HOME
-rm $HOME/.goutputstream-* -rf
+rm -rf $HOME/.goutputstream-*
 
 # when leaving the console clear the screen to increase privacy
 

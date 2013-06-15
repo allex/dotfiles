@@ -1,7 +1,7 @@
-# vim: set ft=sh:
+# vim: set ft=sh fdm=marker et ff=unix sw=4:
 
 # ~/.bash_aliases
-# author: Allex (allex.wxn@gmail.com)
+# author: Allex Wang (allex.wxn@gmail.com)
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -17,11 +17,19 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
+## svn aliases {{{
+
 # diff with color highlighting
 if [ -x "$(which colordiff 2>/dev/null)" ]; then
     function svndf()
     {
-        svn diff $@ | colordiff | less -SR;
+        svn diff "$@" | colordiff | less -SR;
+    }
+else
+    # http://www.zalas.eu/viewing-svn-diff-result-in-vim
+    svndiff()
+    {
+      svn diff "$@" | vim -M -
     }
 fi
 
@@ -34,6 +42,14 @@ svngrep()
         svn ${2} `svn status | egrep "${1}" | awk '{print $2}'`
     fi
 }
+
+if [ -x "$(which colordiff 2>/dev/null)" ]; then
+    alias svndiff='svn diff --diff-cmd svnvimdiff'
+fi
+
+alias svnvi='svn log --verbose -r'
+
+## }}}
 
 extract () {
     if [ -f $1 ] ; then
@@ -66,10 +82,9 @@ alias ..='cd ..'
 alias ...='cd ../../'
 
 # some more ls aliases
-alias ll='ls -lXF'
-alias la='ls -XA'
-alias l='ls -CXF'
-
+alias ll='ls -lF'
+alias la='ls -hA'
+alias l='ls -C'
 # show most recent files at the bottom
 alias ltr='ls -ltr'
 
@@ -78,7 +93,6 @@ alias curl='/usr/bin/curl -k'
 
 alias q='exit'
 
-[ -x "$(which svnvimdiff 2>/dev/null)" ] && alias svndiff='svn diff --diff-cmd svnvimdiff'
 [ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
 
 if [ "$(id -u)" != "0" ]; then
@@ -101,4 +115,3 @@ if [ $? -eq 0 ]; then
         alias update='sudo apt-get upgrade'
     fi
 fi
-
