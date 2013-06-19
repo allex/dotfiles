@@ -47,7 +47,8 @@ if [ -x "$(which colordiff 2>/dev/null)" ]; then
     alias svndiff='svn diff --diff-cmd svnvimdiff'
 fi
 
-alias svnvi='svn log --verbose -r'
+alias svnvi="svn log --verbose -r"
+alias svnlg="svn log | perl -l40pe 's/^-+/\n/'"
 
 ## }}}
 

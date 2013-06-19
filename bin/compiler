@@ -4,7 +4,7 @@
 # see https://github.com/allex/etc/blob/master/bin/closure
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Sun Jun 16, 2013 12:55PM
+# Last Modified: Tue Jun 18, 2013 08:16PM
 
 type java >/dev/null 2>&1 || { echo >&2 "Java not installed. Aborting."; exit 1; }
 
@@ -34,7 +34,7 @@ prebuild() {
 
 # create tmp file for dist
 tempprefix=`basename $0`
-TMPFILE=`mktemp -t ${tempprefix}` || exit 1
+TMPFILE=`mktemp -t ${tempprefix}.XXXXXX` || exit 1
 
 # parse arguments, normalize params.
 while [ $# -gt 0 ]

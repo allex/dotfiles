@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Thu Jun 06, 2013 11:49AM
+" Last Modified: Wed Jun 19, 2013 10:57AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -360,7 +360,7 @@ fun! s:Grep(...)
     else
         let ext = expand('%:e')
     endif
-    exec 'sil! vimgrep /' . escape(l:word, "*+./([])") . '/j **/*.' . l:ext | copen
+    exec 'sil! vimgrep /' . escape(l:word, "*+./[]") . '/j **/*.' . l:ext | copen
 endfun
 
 " Tab navigation
