@@ -4,24 +4,20 @@
 # see https://github.com/allex/etc/blob/master/bin/closure
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Tue Jun 18, 2013 08:16PM
+# Last Modified: Wed Jun 19, 2013 07:30PM
 
 type java >/dev/null 2>&1 || { echo >&2 "Java not installed. Aborting."; exit 1; }
 
 EXEC_DIR=`dirname $0`
 COMPILER="$EXEC_DIR/lib/compiler.jar"
+
 [ -r "$COMPILER" ] || COMPILER="$LIB/compiler.jar"
+[ ! -r $COMPILER ] && { echo "Error: Unable to access jarfile compiler.jar"; exit 1; }
+
 GCC="java -Xms64m -Xmx128m -Djava.library.path=$EXEC_DIR/lib -jar $COMPILER"
 
-if [ ! -r $COMPILER ]; then
-    echo "Error: Unable to access jarfile compiler.jar"; exit 1;
-fi
-
 # for more see http://code.google.com/p/closure-compiler/wiki/Warnings
-args="--charset UTF-8 --language_in=ECMASCRIPT5_STRICT"
-
-# --warning_level VERBOSE|DEFAULT|QUIET
-warning_level="DEFAULT";
+ARGS="--charset UTF-8 --language_in ECMASCRIPT5_STRICT"
 
 usage() {
     $GCC --help;
@@ -36,58 +32,57 @@ prebuild() {
 tempprefix=`basename $0`
 TMPFILE=`mktemp -t ${tempprefix}.XXXXXX` || exit 1
 
-# parse arguments, normalize params.
-while [ $# -gt 0 ]
-do
+# parse arguments, normalize closure params.
+while [ $# -gt 0 ]; do
     case $1 in
-        -t|--warning_level)
-            warning_level=$2;
+        -h | --help)
+            usage
+            exit
+            ;;
 
-            case ${warning_level} in
-                (QUIET|DEFAULT|VERBOSE)
-                    shift;
+        -t | --warning_level)
+            case $2 in
+                QUIET | DEFAULT | VERBOSE)
+                    ARGS="$ARGS $1 $2"
+                    shift
                     ;;
-                (*) warning_level="DEFAULT";
-                    if [ "$1" == "-t" ]; then
-                        warning_level="VERBOSE";
-                    fi
+                *) [ "$1" == "-t" ] && { ARGS="$ARGS --warning_level VERBOSE"; }
                     ;;
             esac
             ;;
 
-        -h|--help|-\?) usage; exit;;
-        (--) shift; break;;
+        -o | --js_output_file)
+            ARGS="$ARGS --js_output_file $2"
+            shift
+            ;;
 
-        (*) arg=$1;
-
+        *) v=$1;
             # Handle the un-prefixed arg to filename
-            if [ "${arg:0:1}" != "-" ]; then
-                filename=${arg};
-                if [ -f "$filename" ]; then
-                    cp $filename $TMPFILE
-                    args="${args} --js $TMPFILE";
-                fi
+            if [ "${v:0:1}" != "-" ]; then
+                filename=$v;
+                [ -f "$filename" ] && { cp $filename $TMPFILE; ARGS="$ARGS --js $TMPFILE"; }
             else
-                args="${args} $arg $2";
-                shift;
+                ARGS="$ARGS $v $2"
+                shift
             fi
-
             ;;
     esac
     shift
 done
 
-args="${args} --warning_level ${warning_level}"
+if [ "$ARGS" == "${ARGS/ --warning_level /}" ]; then
+    ARGS="$ARGS --warning_level DEFAULT"
+fi
 
 # check input filepath or stdin mode
-if [ $(expr "${args}" : ".* --js .*") -eq 0 ]; then
-    args="${args} --js $TMPFILE";
+if [ $(expr "${ARGS}" : ".* --js .*") -eq 0 ]; then
+    ARGS="${ARGS} --js $TMPFILE";
     tee $TMPFILE > /dev/null
 fi
 
 # compile target file
 prebuild $TMPFILE
-$GCC ${args}
+$GCC ${ARGS}
 
 # remove tmp file
 rm $TMPFILE;
