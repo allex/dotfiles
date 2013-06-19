@@ -9,7 +9,7 @@
 type java >/dev/null 2>&1 || { echo >&2 "Java not installed. Aborting."; exit 1; }
 
 EXEC_DIR=`dirname $0`
-COMPILER="$EXEC_DIR/lib/compiler.jar"
+COMPILER="$EXEC_DIR/compiler.jar"
 
 [ -r "$COMPILER" ] || COMPILER="$LIB/compiler.jar"
 [ ! -r $COMPILER ] && { echo "Error: Unable to access jarfile compiler.jar"; exit 1; }
