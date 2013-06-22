@@ -75,6 +75,15 @@ bash_prompt_command() {
         NEW_PWD=${NEW_PWD:$pwdoffset:$pwdmaxlen}
         NEW_PWD=${trunc_symbol}/${NEW_PWD#*/}
     fi
+
+    # Additionally get current git branch name
+    local ee=""
+    if [ -d .git ]; then
+      read ee <.git/HEAD
+      [[ $ee < g ]] && ee=${ee::7} || ee=${ee/*\/}
+      ee=" ($ee)"
+    fi
+    GIT_BRANCH=$ee
 }
 bash_prompt() {
     local NONE="\[\033[0m\]"    # unsets color to term's fg color
@@ -113,7 +122,7 @@ bash_prompt() {
     [ $UID -eq "0" ] && UC=$R   # root's color
  
     if [ "$color_prompt" = yes ]; then
-        PS1="${EMG}[${EMG}\u@\h ${EMB}\${NEW_PWD}${EMG}]${UC}\\$ ${NONE}"
+        PS1="${EMG}\u@\h ${EMB}\${NEW_PWD}${EMM}\${GIT_BRANCH} ${UC}> ${NONE}"
     else
         # without colors
         PS1="[\u@\h \${NEW_PWD}]\\$ "

@@ -27,7 +27,7 @@ if [ -x "$(which colordiff 2>/dev/null)" ]; then
     }
 else
     # http://www.zalas.eu/viewing-svn-diff-result-in-vim
-    svndiff()
+    svndf()
     {
       svn diff "$@" | vim -M -
     }
@@ -115,4 +115,11 @@ if [ $? -eq 0 ]; then
         alias reboot='sudo reboot'
         alias update='sudo apt-get upgrade'
     fi
+fi
+
+if [ -x "$(which pidof 2>/dev/null)" ]; then
+    function pidof()
+    {
+        echo `ps -ef | grep $1 | awk '{print$2}'`
+    }
 fi
