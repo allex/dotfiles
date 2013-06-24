@@ -21,25 +21,19 @@ fi
 
 # diff with color highlighting
 if [ -x "$(which colordiff 2>/dev/null)" ]; then
-    function svndf()
-    {
-        svn diff "$@" | colordiff | less -SR;
-    }
+    svndf() { svn diff "$@" | colordiff | less -SR; }
 else
     # http://www.zalas.eu/viewing-svn-diff-result-in-vim
-    svndf()
-    {
-      svn diff "$@" | vim -M -
-    }
+    svndf() { svn diff "$@" | vim -M -; }
 fi
 
 svngrep()
 {
     # Modified from http://ceardach.com/
     if [ -z "$2" ]; then
-        svn status | egrep "${1}" | awk '{print $2}'
+        svn st | egrep "${1}" | awk '{print $2}'
     else
-        svn ${2} `svn status | egrep "${1}" | awk '{print $2}'`
+        svn ${2} `svn st | egrep "${1}" | awk '{print $2}'`
     fi
 }
 
@@ -117,9 +111,6 @@ if [ $? -eq 0 ]; then
     fi
 fi
 
-if [ -x "$(which pidof 2>/dev/null)" ]; then
-    function pidof()
-    {
-        echo `ps -ef | grep $1 | awk '{print$2}'`
-    }
+if [ ! -x "$(which pidof 2>/dev/null)" ]; then
+    pidof() { echo `ps -ef | grep $1 | awk '{print$2}'`; }
 fi
