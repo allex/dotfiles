@@ -76,6 +76,24 @@ alias cd..='cd ..'
 alias ..='cd ..'
 alias ...='cd ../../'
 
+# cd enhancments
+cd () {
+  if   [[ "x$*" == "x..." ]]; then
+    cd ../..
+  elif [[ "x$*" == "x...." ]]; then
+    cd ../../..
+  elif [[ "x$*" == "x....." ]]; then
+    cd ../../../..
+  elif [[ "x$*" == "x......" ]]; then
+    cd ../../../../..
+  elif [ -d ~/.autoenv ]; then
+    source ~/.autoenv/activate.sh
+    autoenv_cd "$@"
+  else
+    builtin cd "$@"
+  fi
+}
+
 # some more ls aliases
 alias ll='ls -lF'
 alias la='ls -hA'
