@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Wed Jun 19, 2013 10:57AM
+" Last Modified: Sun Jun 30, 2013 10:39PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -590,5 +590,10 @@ fun! VisualSearch(dir) range
     let @/=l:pattern
     let @"=l:saved_reg
 endfun
+
+" Load customize .vimrc additionally
+if filereadable(expand("~/.vimrc.local"))
+    call s:Load("~/.vimrc.local")
+endif
 
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:

@@ -8,6 +8,17 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
+# Colors
+export GREP_OPTIONS='--color=auto'
+export CLICOLOR=1
+
+if [ "$OS" = "linux" ]; then
+    alias ls='ls --color=auto' # For linux, etc
+else
+    export LSCOLORS=gxfxcxdxbxegedabagacad
+    alias ls='ls -G' # OS-X SPECIFIC - the -G command in OS-X is for colors, in Linux it's no groups
+fi
+
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
 HISTCONTROL=ignoredups:ignorespace
@@ -18,6 +29,7 @@ shopt -s histappend
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
+HISTIGNORE="&:ls:cd:[bf]g:exit:q:..:...:ll:la:l:h:history"
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -172,5 +184,5 @@ bind 'set completion-ignore-case On'
 # Cycle through autocomplete options in Ubuntu’s Terminal with the TAB key
 bind '"\C-i" menu-complete'
 
-# export http_proxy=http://proxy:8087/
+# http_proxy=http://proxy:8087/
 

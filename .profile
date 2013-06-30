@@ -8,13 +8,9 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-# Tell ls to be colourful
-export CLICOLOR=1
-# http://geoff.greer.fm/lscolors/
-export LSCOLORS=ExFxcxdxbxegedabagacAd
-
-# Tell grep to highlight matches
-export GREP_OPTIONS='--color=auto'
+# Idetify OS
+export OS=`uname -s | sed -e 's/  */-/g;y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
+export OSVERSION=`uname -r`; OSVERSION=`expr "$OSVERSION" : '[^0-9]*\([0-9]*\.[0-9]*\)'`
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
