@@ -570,7 +570,7 @@ endif
 " filetype extends
 call s:Load($HOME . "/.vim/filetype.vim")
 
-" Internal functions {{{1
+" functions {{{1
 
 " @VisualSearch(dir)
 " From an idea by Michael Naumann
@@ -590,6 +590,8 @@ fun! VisualSearch(dir) range
     let @/=l:pattern
     let @"=l:saved_reg
 endfun
+
+" customizes {{{1
 
 " Load customize .vimrc additionally
 if filereadable(expand("~/.vimrc.local"))
