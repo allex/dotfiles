@@ -46,8 +46,10 @@ alias svnlg="svn log | perl -l40pe 's/^-+/\n/'"
 
 ## }}}
 
-extract () {
-    if [ -f $1 ] ; then
+# common extract
+xtar()
+{
+    if [ -f "$1" ] ; then
         case $1 in
           *.tar.bz2)   tar xjf $1     ;;
           *.tar.gz)    tar xzf $1     ;;
@@ -60,21 +62,12 @@ extract () {
           *.zip)       unzip $1       ;;
           *.Z)         uncompress $1  ;;
           *.7z)        7z x $1        ;;
-          *)     echo "'$1' cannot be extracted via extract()" ;;
+          *)     echo "'$1' cannot be extracted via xtar()" ;;
         esac
     else
         echo "'$1' is not a valid file"
     fi
 }
-
-alias rm='rm -i'
-alias mv='mv -i'
-
-# some userfull shortcut
-alias ~='cd ~'
-alias cd..='cd ..'
-alias ..='cd ..'
-alias ...='cd ../../'
 
 # cd enhancments
 cd () {
@@ -94,6 +87,15 @@ cd () {
   fi
 }
 
+alias rm='rm -i'
+alias mv='mv -i'
+
+# some userfull shortcut
+alias ~='cd ~'
+alias cd..='cd ..'
+alias ..='cd ..'
+alias ...='cd ../../'
+
 # some more ls aliases
 alias ll='ls -lF'
 alias la='ls -hA'
@@ -103,7 +105,6 @@ alias ltr='ls -ltr'
 
 alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
-
 alias q='exit'
 
 [ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
@@ -116,8 +117,8 @@ fi
 [ -x "$(which easy_install 2>/dev/null)" ] && alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"
 
 # aliases for Ubuntu distro
-uname -a | grep -q "Ubuntu"
-if [ $? -eq 0 ]; then
+un=`uname -a`
+if [ "$un" != "${un/Ubuntu /}" ]; then
 
     alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
     alias restartx='sudo restart lightdm'
@@ -128,6 +129,7 @@ if [ $? -eq 0 ]; then
         alias update='sudo apt-get upgrade'
     fi
 fi
+unset un
 
 if [ ! -x "$(which pidof 2>/dev/null)" ]; then
     pidof() { echo `ps -ef | grep $1 | awk '{print$2}'`; }
