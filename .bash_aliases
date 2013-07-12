@@ -132,3 +132,5 @@ fi
 if [ ! -x "$(which pidof 2>/dev/null)" ]; then
     pidof() { echo `ps -ef | grep $1 | awk '{print$2}'`; }
 fi
+
+alias diskspace="sudo du -k `pwd` | sort -n"

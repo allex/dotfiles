@@ -22,6 +22,8 @@
 "
 " ================================================================================= }}}
 
+" preferences {{{
+
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim" | finish | endif
 
@@ -186,6 +188,8 @@ let mapleader=","
 
 " locale
 let $LANG='en_US.UTF-8'
+
+"}}}
 
 " windows {{{
 if has("win32")

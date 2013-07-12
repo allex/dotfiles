@@ -49,4 +49,6 @@ export PYTHONPATH=$HOME/local/python-packages
 # Includes python packages commond
 if [ -d "$PYTHONPATH" ] ; then
     export PATH="$PATH:$PYTHONPATH"
+else
+    unset PYTHONPATH
 fi
