@@ -89,5 +89,6 @@
 
     "unused"        : true,   // Warns when you define and never use your variables
     "evil"          : true,
-    "bitwise"       : false 
+    "bitwise"       : false,
+    "maxlen"        : true
 }
