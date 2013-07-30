@@ -59,6 +59,7 @@ xtar()
       *.zip)       unzip $1       ;;
       *.Z)         uncompress $1  ;;
       *.7z)        7z x $1        ;;
+      *.xz)        xz --decompress $1;;
       *)     echo "'$1' cannot be extracted via xtar()" ;;
     esac
   else
@@ -94,7 +95,7 @@ alias ..='cd ..'
 alias ...='cd ../../'
 
 # some more ls aliases
-alias ll='ls -lF'
+alias ll='ls -lh'
 alias la='ls -hA'
 alias l='ls -C'
 # show most recent files at the bottom
