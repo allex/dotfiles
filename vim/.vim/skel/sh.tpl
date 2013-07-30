@@ -2,6 +2,6 @@
 
 # ================================================
 # Description: %TITLE%
-# Last Modified: 
-# Author: allex (allex.wxn@gmail.com)
+# Last Modified: %Date%
+# Author: Allex Wang (allex.wxn@gmail.com)
 # ================================================
