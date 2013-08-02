@@ -33,11 +33,10 @@ fi
 export EDITOR="vim"
 
 # JDK
-export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+export JAVA_HOME="/usr/local/java/jdk"
 
 # ANT
-export ANT_HOME="/usr/share/ant"
-export PATH=$PATH:$ANT_HOME/bin
+export ANT_HOME="/usr/local/ant"
 
 # Node
 export NODE_PATH="/usr/local/lib/node"
