@@ -18,7 +18,11 @@ hi Directory    term=bold ctermfg=blue guifg=royalblue
 hi ErrorMsg term=standout ctermfg=white ctermbg=red guifg=white guibg=red3
 hi NonText  term=bold ctermfg=darkgray guibg=gray3 guifg=gray20
 hi SpecialKey   term=bold ctermfg=darkgray guifg=gray30
-hi LineNr   term=underline ctermfg=darkgray guifg=ivory4 guibg=gray4
+if &t_Co = 8
+    hi LineNr	guifg=#90f020 ctermfg=green cterm=none
+else
+    hi LineNr   term=underline ctermfg=darkgray guifg=ivory4 guibg=gray4
+endif
 hi IncSearch    term=reverse cterm=reverse gui=reverse,bold guifg=darkgoldenrod2
 hi Search   term=reverse ctermfg=black ctermbg=yellow guifg=gray10 guibg=gold2
 hi Visual   term=bold,reverse cterm=bold,reverse ctermfg=gray ctermbg=black gui=bold,reverse guifg=gray40 guibg=black
