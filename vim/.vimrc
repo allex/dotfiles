@@ -85,7 +85,8 @@ set laststatus=2                " always show the status line
 set nobackup
 set nowb
 set noswapfile
-set mls=1                       " enabled modelines
+set ml
+set mls=5                       " enabled modelines
 
 " Format the statusline
 set statusline=\ %F%m%r%h\ %w\ CW\ %r%{CurDir()}%h\ [%Y,%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ \%=[%l,%v,%p%%,\ %L\ \%P]

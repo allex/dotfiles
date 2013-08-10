@@ -186,3 +186,6 @@ bind '"\C-i" menu-complete'
 
 # http_proxy=http://proxy:8087/
 
+if [ -f ~/.bash_local ]; then
+    . ~/.bash_local
+fi
