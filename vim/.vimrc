@@ -71,12 +71,13 @@ set noerrorbells                " No sound on errors.
 set novisualbell
 
 " Indentation / tab replacement stuff
+set et                          " expand tabs to spaces
 set sts=4
-set tabstop=4
-set shiftwidth=4                " > and < move block by 4 spaces in visual mode
-set expandtab                   " expand tabs to spaces
-set autoindent                  " auto indent, usefull when using the 'o' or 'O' command.
+set ts=4
+set sw=4                        " > and < move block by 4 spaces in visual mode
+set ai                          " auto indent, usefull when using the 'o' or 'O' command.
 set si                          " do smart autoindenting when starting a new line Works for C-like programs
+
 set cindent                     " use the C indenting rules
 set laststatus=2                " always show the status line
 
