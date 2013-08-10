@@ -23,4 +23,4 @@ html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pr
 /*]]>*/
 </script>
 </body></html>
-<!-- vim: set ft=html ts=4 tw=150: -->
+<!-- vim: set ft=html ff=unix et sw=4 ts=4 sts=4 tw=150: -->
