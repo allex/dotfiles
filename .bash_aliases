@@ -35,7 +35,7 @@ svngrep()
 }
 
 if [ -x "$(which colordiff 2>/dev/null)" ]; then
-  alias svndiff='svn diff --diff-cmd svnvimdiff'
+  alias svndiff='svn diff --diff-cmd svndiff.sh'
 fi
 
 alias svnvi="svn log --verbose -r"
@@ -92,7 +92,8 @@ alias mv='mv -i'
 alias ~='cd ~'
 alias cd..='cd ..'
 alias ..='cd ..'
-alias ...='cd ../../'
+alias ...='cd ...'
+alias ....='cd ....'
 
 # some more ls aliases
 alias ll='ls -lh'
@@ -124,6 +125,7 @@ if [ "$un" != "${un/Ubuntu /}" ]; then
       alias reboot='sudo reboot'
       alias update='sudo apt-get upgrade'
   fi
+  alias open='/usr/bin/nautilus'
 fi
 unset un
 

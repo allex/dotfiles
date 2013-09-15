@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sun Jun 30, 2013 10:39PM
+" Last Modified: Wed Sep 04, 2013 11:32AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -89,7 +89,7 @@ set ml
 set mls=5                       " enabled modelines
 
 " Format the statusline
-set statusline=\ %F%m%r%h\ %w\ CW\ %r%{CurDir()}%h\ [%Y,%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ \%=[%l,%v,%p%%,\ %L\ \%P]
+set statusline=\ %F%m%r%h\ %w\ CW\ %r%{CurDir()}%h\ [%Y,%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ \%=[%l,%v,0x%B\ \/\ %L,%p%%]
 fun! CurDir()
     return substitute(getcwd(), fnameescape($HOME), "~", "g")
 endfun
