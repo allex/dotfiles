@@ -1,4 +1,4 @@
-# vim:ft=sh:ff=unix:fdm=marker:et:sw=2:ts=2:sts=2:
+# vim: ft=sh:ff=unix:fdm=marker:et:sw=2:ts=2:sts=2:
 
 # ~/.bash_aliases
 # author: Allex Wang (allex.wxn@gmail.com)

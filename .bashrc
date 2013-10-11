@@ -1,4 +1,4 @@
-# vim: set fdm=marker et ff=unix sw=4:
+# vim: et:ts=4:sw=4:sts=4:ff=unix:fdm=marker:
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
@@ -183,8 +183,6 @@ bind 'set completion-ignore-case On'
 
 # Cycle through autocomplete options in Ubuntu’s Terminal with the TAB key
 bind '"\C-i" menu-complete'
-
-# http_proxy=http://proxy:8087/
 
 if [ -f ~/.bash_local ]; then
     . ~/.bash_local
