@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Wed Sep 04, 2013 11:32AM
+" Last Modified: Mon Sep 23, 2013 10:54PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -387,8 +387,8 @@ nmap <silent> <leader>n :silent :nohlsearch<CR>
 "\l to toggle visible whitespace
 nmap <silent> <leader>l :set list!<CR>
 
-" toggle paste mode
-map <silent> <leader>p :set paste!<CR> " <leader>p toggles paste mode
+",p toggle paste mode
+map <silent> <leader>p :set paste!<CR>
 
 " shift-tab to insert a hard tab
 imap <silent> <s-tab> <c-v><tab>
