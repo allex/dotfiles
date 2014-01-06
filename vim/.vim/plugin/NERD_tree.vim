@@ -2774,7 +2774,7 @@ function! s:renderView()
     endif
 
     "add the 'up a dir' line
-    call setline(line(".")+1, s:tree_up_dir_line)
+    call setline(line("."), s:tree_up_dir_line)
     call cursor(line(".")+1, col("."))
 
     "draw the header line

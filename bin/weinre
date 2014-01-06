@@ -1,5 +1,5 @@
 #!/bin/sh
 
 # java -jar $LIB/weinre.jar "$@"
-kill -9 `lsof -i tcp:8080 | grep node | awk -F" " '{print $2}'` > /dev/null 2>&1
-~/node_modules/weinre/weinre -boundHost -all-
+kill -9 `lsof -i tcp:8081 | grep node | awk -F" " '{print $2}'` > /dev/null 2>&1
+~/node_modules/weinre/weinre -boundHost -all- --httpPort 8081

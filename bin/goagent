@@ -1,4 +1,4 @@
 #!/bin/sh
 
 kill -9 `lsof -i tcp:8087 | grep "python" | awk -F" " '{print $2}'` > /dev/null 2>&1
-python3 ~/local/goagent/local/proxy.py
+python ~/local/goagent/local/proxy.py

@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Mon Sep 23, 2013 10:54PM
+" Last Modified: Fri Dec 06, 2013 07:27PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -287,6 +287,8 @@ endif
 " plugin settings {{{
 
 " NERD Tree
+let NERDTreeMinimalUI=0
+
 let Tlist_Auto_Open=0
 let Tlist_Use_SingleClick=1
 

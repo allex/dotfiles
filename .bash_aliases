@@ -24,6 +24,7 @@ else
   svndf() { svn diff "$@" | vim -M -; }
 fi
 
+# Usage: svngrep ? st
 svngrep()
 {
   # Modified from http://ceardach.com/
@@ -106,6 +107,9 @@ alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
 alias q='exit'
 
+alias fd='find -type d'
+alias ff='find -type f'
+
 [ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
 
 if [ "$(id -u)" != "0" ]; then
@@ -134,3 +138,10 @@ if [ ! -x "$(which pidof 2>/dev/null)" ]; then
 fi
 
 alias diskspace="sudo du -k `pwd` | sort -n"
+
+#
+# usefull function definations
+#
+psgrep() {
+  ps aux | grep "$1" | awk '{print $2}'
+}
