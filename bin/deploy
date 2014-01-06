@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# ================================================
+# Description: Deploy current project happy
+# Last Modified: Tue Dec 10, 2013 10:42AM
+# Author: Allex Wang (allex.wxn@gmail.com)
+# ================================================
+
+CUR_DIR=$PWD
+TARGET=$1
+
+if [ "${TARGET}x" != "x" ] && [ -d $CUR_DIR/$TARGET ]; then
+    shift;
+    cd $CUR_DIR/$TARGET
+    if [ -f "$CUR_DIR/$TARGET/release.sh" ]; then
+        sh ./release.sh "$@"
+    else
+        mvn clean install "$@"
+    fi
+    cd - >/dev/null 2>&1
+    exit 0;
+fi
+
+PROJ_DIR=`CP=${CUR_DIR}; while [ -n "$CP" ] ; do if [ -f "$CP/release.sh" ] || [ -f "$CP/pom.xml" ]; then echo $CP; break; fi; CP=${CP%/*}; done;`
+if [ -n "$PROJ_DIR" ]; then
+    echo "Building ${PROJ_DIR} ..."
+    cd "$PROJ_DIR"
+    if [ -f "$PROJ_DIR/release.sh" ]; then
+        sh ./release.sh "$@"
+    else
+        if [ -f "$PROJ_DIR/pom.xml" ]; then
+            mvn clean package "$@"
+        fi
+    fi
+    cd "$CUR_DIR"
+fi
+exit 0;
+
+# find -name "*.thrift" -exec thrift --gen java:beans {} \;
