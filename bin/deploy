@@ -2,20 +2,24 @@
 
 # ================================================
 # Description: Deploy current project happy
-# Last Modified: Tue Dec 10, 2013 10:42AM
+# Last Modified: Mon Jan 13, 2014 08:35PM
 # Author: Allex Wang (allex.wxn@gmail.com)
 # ================================================
 
 CUR_DIR=$PWD
 TARGET=$1
+ARGS=("${@}")
+
+ARGS[${#ARGS[@]}]="-Dlog4j_level=error"
+ARGS[${#ARGS[@]}]="-Drose_log4j_level=error"
 
 if [ "${TARGET}x" != "x" ] && [ -d $CUR_DIR/$TARGET ]; then
-    shift;
+    ARGS=(${ARGS[@]:1})
     cd $CUR_DIR/$TARGET
     if [ -f "$CUR_DIR/$TARGET/release.sh" ]; then
-        sh ./release.sh "$@"
+        sh ./release.sh "${ARGS[@]}"
     else
-        mvn clean install "$@"
+        mvn clean install "${ARGS[@]}"
     fi
     cd - >/dev/null 2>&1
     exit 0;
@@ -26,10 +30,10 @@ if [ -n "$PROJ_DIR" ]; then
     echo "Building ${PROJ_DIR} ..."
     cd "$PROJ_DIR"
     if [ -f "$PROJ_DIR/release.sh" ]; then
-        sh ./release.sh "$@"
+        sh ./release.sh "${ARGS[@]}"
     else
         if [ -f "$PROJ_DIR/pom.xml" ]; then
-            mvn clean package "$@"
+            mvn clean install "${ARGS[@]}"
         fi
     fi
     cd "$CUR_DIR"
