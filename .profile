@@ -33,7 +33,11 @@ fi
 export EDITOR="vim"
 
 # JDK
-export JAVA_HOME="/usr/local/java/jdk"
+if [ "$OS" = "darwin" ]; then
+    export JAVA_HOME=$(/usr/libexec/java_home)
+else
+    export JAVA_HOME="/usr/local/java/jdk"
+fi
 
 # ANT
 export ANT_HOME="/usr/local/ant"
