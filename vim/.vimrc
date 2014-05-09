@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri Dec 06, 2013 07:27PM
+" Last Modified: Wed May 07, 2014 11:44AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -22,8 +22,7 @@
 "
 " =================================================================================
 
-" preferences {{{
-
+" pre funcs {{{1
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim" | finish | endif
 
@@ -34,6 +33,8 @@ endfun
 fun! s:Load(file)
     if filereadable(a:file) | exec 'sil! so ' a:file | endif
 endfun
+
+" preferences {{{1
 
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
@@ -188,7 +189,7 @@ let mapleader=","
 " locale
 let $LANG='en_US.UTF-8'
 
-"}}}
+" }}}1
 
 " windows {{{
 if has("win32")
@@ -206,8 +207,7 @@ if has("win32")
     " customize syntax highlighting
     call s:Load($HOME . "/.vim/custom_color.vim")
 endif
-" end windows }}}
-
+" }}}
 " encoding {{{
 let &termencoding=&encoding
 set encoding=utf-8
@@ -240,8 +240,7 @@ else
     echoerr "Sorry, this version of (g)vim was not compiled with multi_byte!"
 endif
 " }}}
-
-" diff configuration {{{
+" diff configuration {{{1
 set diffopt+=vertical
 
 " diff buffers in current window
@@ -282,9 +281,7 @@ if has('win32')
         sil! exec '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
     endfun
 endif
-" }}}
-
-" plugin settings {{{
+" plugin settings {{{1
 
 " NERD Tree
 let NERDTreeMinimalUI=0
@@ -347,27 +344,6 @@ if has("gui_running")
     endif
 endif
 
-" Grep command
-com! -nargs=* Grep call s:Grep(<f-args>)
-fun! s:Grep(...)
-    "
-    " Native vimgrep function extendssion, some regular-expression will be
-    " escaped.
-    " Author: allex wang (allex.wxn@gmail.com)
-    "
-    if a:0 > 0
-        let word = a:1
-    else
-        let word = expand("<cword>")
-    endif
-    if a:0 > 1
-        let ext = a:2
-    else
-        let ext = expand('%:e')
-    endif
-    exec 'sil! vimgrep /' . escape(l:word, "*+./[]") . '/j **/*.' . l:ext | copen
-endfun
-
 " Tab navigation
 map tn :tabnext<CR>
 map tp :tabprevious<CR>
@@ -428,19 +404,9 @@ nmap <F4> :w<CR>:make<CR>:cw<CR>
 nmap <silent> <F8> :TlistToggle<CR>
 nmap <silent> <F10> :NERDTreeToggle<CR>
 
-" A function to clear the undo history
-com! -nargs=0 Reset call <SID>ForgetUndo()
-fun! <SID>ForgetUndo()
-    let old_ul = &undolevels
-    set undolevels=-1
-    exe "sil! normal a \<BS>\<Esc>"
-    w
-    let &undolevels = old_ul
-    unlet old_ul
-endfun
-
 " DATE FUNCTIONS (insert date in format "20 Aug, 2010")
 iab DATE <C-R>=strftime("%d %B %Y, %X")<CR>
+
 " }}}
 
 " autocommands {{{1
@@ -451,21 +417,7 @@ if has("autocmd")
     " 'Last modified: ' can have up to 10 characters before (they are retained).
     " Restores cursor and window position using save_cursor variable. ('ul' is alias
     " for 'undolevels').
-    fun! UpdateLastModified()
-        if exists('b:nomod') && b:nomod
-            return
-        endif
-        if &modified
-            let tstr = 'Last Modified: '
-            let cur_pos = getpos('.')
-            let n = min([20, line('$')])
-            keepjumps exe '1,' . n . 's#^\(.\{,10}' . tstr . '\).*#\1' . strftime('%a %b %d, %Y %I:%M%p') . '#e'
-            call histdel('search', -1)
-            let @/ = histget('/', -1)
-            call setpos('.', cur_pos)
-        endif
-    endfun
-    au BufWritePre * call UpdateLastModified()
+    au BufWritePre * call s:UpdateLastModified()
     com! -nargs=0 NOMOD :let b:nomod = 1
     com! -nargs=0 MOD   :let b:nomod = 0
     " }}}
@@ -528,54 +480,126 @@ if has("autocmd")
         echo "No buffer!"
     endfun
 
-    " Register `Save` and `LoadSession` command to save and load current
-    " workspace session.
-    set ssop=buffers,sesdir,tabpages,winpos,winsize
-
-    com! -nargs=? Save call s:SaveSession(<f-args>)
-    com! -nargs=? LoadSession call s:LoadSession(<f-args>)
-
-    " F6 to restores the session.
-    nmap <F6> :LoadSession <CR>
-    fun! s:LoadSession(...)
-        let fname = '.session.vim'
-        if a:0 > 0
-            let fname = a:1
-        endif
-        let sfile = expand('%:p:h') . '/' . fname
-        if !filereadable(sfile)
-            let sfile = getcwd() . '/' . fname
-        endif
-        if filereadable(sfile)
-            exec 'sil! so ' . sfile
-        else
-            echo 'session file (' . sfile . ') not exists'
-        endif
-    endfun
-
-    " Saves the current session
-    fun! s:SaveSession(...)
-        let fname = '.session.vim'
-        if a:0 > 0
-            let fname = a:1
-        endif
-        let sfile = getcwd() . '/' . fname
-        exec 'sil! mks! ' . sfile
-        echo 'session saved: ' . sfile
-    endfun
-
     " Reads the template file into new buffer.
     au BufNewFile * call s:LoadTemplate()
-
     fun! s:LoadTemplate()
         sil! 0r ~/.vim/skel/%:e.tpl
     endfun
 endif
+" }}}
 
-" filetype extends
-call s:Load($HOME . "/.vim/filetype.vim")
+" customize function / commond {{{1
+" Sts() {{{2
+com! -nargs=? Sts call s:Sts(<args>)
+
+"
+" Set shift tab size by sts, ts, sw, (default tabsize: 2)
+" Author: Allex Wang (http://iallex.com)
+"
+fun! s:Sts(...)
+    let l:n = 2
+    if a:0 > 0
+        let l:n = a:1
+    endif
+    set et
+    let &ts=l:n
+    let &sw=l:n
+    let &sts=l:n
+endfun
+
+" Reset() {{{2
+com! -nargs=0 Reset call <SID>ForgetUndo()
+
+" clear the undo history
+fun! <SID>ForgetUndo()
+    let old_ul = &undolevels
+    set undolevels=-1
+    exe "sil! normal a \<BS>\<Esc>"
+    w
+    let &undolevels = old_ul
+    unlet old_ul
+endfun
+
+" Grep() {{{2
+com! -nargs=* Grep call s:Grep(<f-args>)
+
+" Deep serach by a specific pattern
+fun! s:Grep(...)
+    "
+    " Native vimgrep function extendssion, some regular-expression will be
+    " escaped.
+    " Author: Allex Wang (http://iallex.com)
+    "
+    if a:0 > 0
+        let word = a:1
+    else
+        let word = expand("<cword>")
+    endif
+    if a:0 > 1
+        let ext = a:2
+    else
+        let ext = expand('%:e')
+    endif
+    exec 'sil! vimgrep /' . escape(l:word, "*+./[]") . '/j **/*.' . l:ext | copen
+endfun
+
+" Save() / LoadSession() {{{2
+set ssop=buffers,sesdir,tabpages,winpos,winsize
+
+com! -nargs=? Save call s:SaveSession(<f-args>)
+com! -nargs=? LoadSession call s:LoadSession(<f-args>)
+
+" F6 to restores the session.
+nmap <F6> :LoadSession <CR>
+
+"
+" functions to save and load current workspace session.
+" Author: Allex Wang (http://iallex.com)
+"
+fun! s:LoadSession(...)
+    let fname = '.session.vim'
+    if a:0 > 0
+        let fname = a:1
+    endif
+    let sfile = expand('%:p:h') . '/' . fname
+    if !filereadable(sfile)
+        let sfile = getcwd() . '/' . fname
+    endif
+    if filereadable(sfile)
+        exec 'sil! so ' . sfile
+    else
+        echo 'session file (' . sfile . ') not exists'
+    endif
+endfun
+fun! s:SaveSession(...)
+    let fname = '.session.vim'
+    if a:0 > 0
+        let fname = a:1
+    endif
+    let sfile = getcwd() . '/' . fname
+    exec 'sil! mks! ' . sfile
+    echo 'session saved: ' . sfile
+endfun
+
+" }}}1
 
 " functions {{{1
+
+" Update last modified section
+fun! s:UpdateLastModified()
+    if exists('b:nomod') && b:nomod
+        return
+    endif
+    if &modified
+        let tstr = 'Last Modified: '
+        let cur_pos = getpos('.')
+        let n = min([20, line('$')])
+        keepjumps exe '1,' . n . 's#^\(.\{,10}' . tstr . '\).*#\1' . strftime('%a %b %d, %Y %I:%M%p') . '#e'
+        call histdel('search', -1)
+        let @/ = histget('/', -1)
+        call setpos('.', cur_pos)
+    endif
+endfun
 
 " @VisualSearch(dir)
 " From an idea by Michael Naumann
@@ -596,7 +620,12 @@ fun! VisualSearch(dir) range
     let @"=l:saved_reg
 endfun
 
+" }}}
+
 " customizes {{{1
+
+" filetype extends
+call s:Load($HOME . "/.vim/filetype.vim")
 
 " Load customize .vimrc additionally
 if filereadable(expand("~/.vimrc.local"))

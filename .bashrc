@@ -12,28 +12,28 @@
 export GREP_OPTIONS='--color=auto'
 export CLICOLOR=1
 
-if [ "$OS" = "linux" ]; then
-    alias ls='ls --color=auto' # For linux, etc
-else
-    export LSCOLORS=gxfxcxdxbxegedabagacad
-    alias ls='ls -G' # OS-X SPECIFIC - the -G command in OS-X is for colors, in Linux it's no groups
-fi
-
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
 HISTCONTROL=ignoredups:ignorespace
-
-# append to the history file, don't overwrite it
-shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
 HISTIGNORE="&:ls:cd:[bf]g:exit:q:..:...:ll:la:l:h:history"
 
+# append to the history file, don't overwrite it
+shopt -s histappend
+
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
+
+if [ "$OS" = "linux" ]; then
+    alias ls='ls --color=auto' # For linux, etc
+else
+    export LSCOLORS=gxfxcxdxbxegedabagacad
+    alias ls='ls -G' # OS-X SPECIFIC - the -G command in OS-X is for colors, in Linux it's no groups
+fi
 
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -133,31 +133,21 @@ bash_prompt() {
     local UC=$W                 # user's color
     [ $UID -eq "0" ] && UC=$R   # root's color
  
-    if [ "$color_prompt" = yes ]; then
-        PS1="${EMG}\u@\h ${EMB}\${NEW_PWD}${EMM}\${GIT_BRANCH}${UC}> ${NONE}"
-    else
-        # without colors
-        PS1="[\u@\h \${NEW_PWD}]\\$ "
-    fi
+    PS1="${EMG}\u@\h ${EMB}\${NEW_PWD}${EMM}\${GIT_BRANCH}${UC}> ${NONE}"
 }
 
-# init it by setting PROMPT_COMMAND
-PROMPT_COMMAND=bash_prompt_command
-bash_prompt
+if [ "$color_prompt" = yes ]; then
+    # init it by setting PROMPT_COMMAND
+    PROMPT_COMMAND=bash_prompt_command
+    bash_prompt
+else
+    unset bash_prompt_command
+fi
 unset bash_prompt
 
 ## END complex prompt }}}
 
 unset color_prompt force_color_prompt
-
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert

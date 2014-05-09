@@ -10,14 +10,11 @@
 
 # Idetify OS
 export OS=`uname -s | sed -e 's/  */-/g;y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
-export OSVERSION=`uname -r`; OSVERSION=`expr "$OSVERSION" : '[^0-9]*\([0-9]*\.[0-9]*\)'`
+export OSVERSION=`expr "$(uname -r)" : '[^0-9]*\([0-9]*\.[0-9]*\)'`
 
-# if running bash
-if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-        . "$HOME/.bashrc"
-    fi
+# Include .bashrc if running bash.
+if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
+    . "$HOME/.bashrc"
 fi
 
 # Set PATH so it includes user's private bin if it exists
@@ -41,6 +38,7 @@ fi
 
 # ANT
 export ANT_HOME="/usr/local/ant"
+export M2_HOME="/usr/local/maven"
 
 # Node
 export NODE_PATH="/usr/local/lib/node"
@@ -54,4 +52,10 @@ if [ -d "$PYTHONPATH" ] ; then
     export PATH="$PATH:$PYTHONPATH"
 else
     unset PYTHONPATH
+fi
+
+# Show a random terminal welcome ascii message
+if type cowsay &> /dev/null; then
+    # fortune | cowsay -f $(ls /usr/share/cowsay | shuf -n1)
+    fortune | cowsay -f $(cowsay -l | tail -n +2 | tr " " "\n" | shuf -n1)
 fi
