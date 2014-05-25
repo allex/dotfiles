@@ -2,16 +2,24 @@
 
 # ================================================
 # Description: Deploy current project happy
-# Last Modified: Mon Jan 13, 2014 08:35PM
+# Last Modified: Fri May 09, 2014 11:05PM
 # Author: Allex Wang (allex.wxn@gmail.com)
 # ================================================
 
 CUR_DIR=$PWD
-TARGET=$1
+arg1=$1
 ARGS=("${@}")
 
 ARGS[${#ARGS[@]}]="-Dlog4j_level=error"
 ARGS[${#ARGS[@]}]="-Drose_log4j_level=error"
+
+# cleanup maven build folders with named `target`
+if [ "${arg1}" = "clean" ]; then
+    for f in `find -L $CUR_DIR -type d -name target`; do echo $f; if [ -f `dirname $f`/pom.xml ]; then rm -rf $f; fi; done
+    exit 0;
+fi
+
+TARGET=$arg1
 
 if [ "${TARGET}x" != "x" ] && [ -d $CUR_DIR/$TARGET ]; then
     ARGS=(${ARGS[@]:1})

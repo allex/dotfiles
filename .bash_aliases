@@ -27,11 +27,15 @@ fi
 # Usage: svngrep ? st
 svngrep()
 {
+  p=${1}
+  if [ "${p}" = "?" ]; then
+    p="\\?"
+  fi
   # Modified from http://ceardach.com/
   if [ -z "$2" ]; then
-    svn st | egrep "${1}" | awk '{print $2}'
+    svn st | egrep "${p}" | awk '{print $2}'
   else
-    svn ${2} `svn st | egrep "${1}" | awk '{print $2}'`
+    svn ${2} `svn st | egrep "${p}" | awk '{print $2}'`
   fi
 }
 
@@ -108,7 +112,7 @@ alias curl='/usr/bin/curl -k'
 alias q='exit'
 
 alias fd='find -type d'
-alias ff='find -type f'
+alias ff="function _f() { find $1 -type f; unset -f f; } _f"
 
 [ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
 

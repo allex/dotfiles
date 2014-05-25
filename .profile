@@ -38,6 +38,7 @@ fi
 
 # ANT
 export ANT_HOME="/usr/local/ant"
+export M2_HOME="/usr/local/maven"
 
 # Node
 export NODE_PATH="/usr/local/lib/node"
