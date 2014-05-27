@@ -13,13 +13,17 @@ if [ "$SHLVL" = 1 ]; then
     [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
 fi
 
-# osx diagnostic resports
-if [ -d $HOME/library/Logs/DiagnosticReports ]; then
-    rm -rf $HOME/library/Logs/DiagnosticReports/* &>/dev/null
-fi
-
-BREW_CACHE=`brew --cache`
-if [ -d $BREW_CACHE ];
+# OS X
+if [ "$OS" = "darwin" ]; then
+    # osx diagnostic resports
+    if [ -d $HOME/library/Logs/DiagnosticReports ]; then
+        rm -rf $HOME/library/Logs/DiagnosticReports/* &>/dev/null
+    fi
+    # cleanup brew cache
+    BREW_CACHE_D=`type cowsay &> /dev/null && brew --cache`
+    if [ ! -z "$BREW_CACHE_D" ] && [ -d $BREW_CACHE_D ];
     then
-    rm -rf $BREW_CACHE/*
+        rm -rf $BREW_CACHE_D/*
+    fi
+    unset BREW_CACHE_D
 fi
