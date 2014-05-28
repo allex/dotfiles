@@ -20,7 +20,7 @@ if [ "$OS" = "darwin" ]; then
         rm -rf $HOME/library/Logs/DiagnosticReports/* &>/dev/null
     fi
     # cleanup brew cache
-    BREW_CACHE_D=`type cowsay &> /dev/null && brew --cache`
+    BREW_CACHE_D=`type brew &> /dev/null && brew --cache`
     if [ ! -z "$BREW_CACHE_D" ] && [ -d $BREW_CACHE_D ];
     then
         rm -rf $BREW_CACHE_D/*
