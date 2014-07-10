@@ -1,13 +1,9 @@
-
-Allex (allex.wxn@gmail.com)
+Allex Wang (allex.wxn@gmail.com)
 --------------------------------------------------
 
-git remote add origin git@github.com:allex/.etc.git
-git push -u origin master
+# Setup
 
-# setup vim config
-
-cd etc
+git clone https://github.com/allex/dotfiles.git ~/.dotfiles
 git submodule update --init
-ln -s ./vim/.vim ~/.vim
-ln -s ./vim/.vimrc ~/.vimrc
+cd ~/.dotfiles
+sh ./setup.sh

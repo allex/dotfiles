@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Wed May 07, 2014 11:44AM
+" Last Modified: Fri Jul 11, 2014 12:33AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -15,10 +15,9 @@
 "
 " Usage:
 "
-"  md ~/.etc
-"  git clone https://github.com/allex/etc.git ~/.etc
-"  ln ~/.etc/vim/.vim ~/ -sf
-"  ln ~/.etc/vim/.vimrc ~/ -f 
+"  $ git clone https://github.com/allex/dotfiles.git ~/.dotfiles
+"  $ ln -sfh ~/.dotfiles/vim/.vim ~/.vim
+"  $ ln -sfh ~/.dotfiles/vim/.vimrc ~/.vimrc
 "
 " =================================================================================
 
