@@ -1,5 +1,5 @@
 [user]
-    name = Allex
+    name = Allex Wang
     email = allex.wxn@gmail.com
 
 [color]
@@ -24,6 +24,7 @@
     mate  = !sh -c 'mate `git fshow $1`' -
     subl  = !sh -c 'subl `git fshow $1`' -
     wtf   = !git-wtf
+    rmbranch = "!f(){ git branch -d ${1} && git push origin --delete ${1}; };f"
 
 [core]
     # deactivate LF will be replaced by CRLF

@@ -2,7 +2,9 @@
 
 # ================================================
 # Description: Deploy current project happy
-# Last Modified: Fri May 09, 2014 11:05PM
+# GistID: cb0c8000aca295926ffa
+# GistURL: https://gist.github.com/allex/cb0c8000aca295926ffa
+# Last Modified: Sun Jul 13, 2014 05:59PM
 # Author: Allex Wang (allex.wxn@gmail.com)
 # ================================================
 
@@ -10,8 +12,8 @@ CUR_DIR=$PWD
 arg1=$1
 ARGS=("${@}")
 
-ARGS[${#ARGS[@]}]="-Dlog4j_level=error"
-ARGS[${#ARGS[@]}]="-Drose_log4j_level=error"
+ARGS[${#ARGS[@]}]="-Dlog4j_level=debug"
+ARGS[${#ARGS[@]}]="-Drose_log4j_level=debug"
 
 # cleanup maven build folders with named `target`
 if [ "${arg1}" = "clean" ]; then
