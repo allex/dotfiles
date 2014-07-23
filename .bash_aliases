@@ -143,6 +143,8 @@ alias diskspace="sudo du -k `pwd` | sort -n"
 #
 # usefull function definations
 #
-psgrep() { ps aux | grep "$1" | awk '{print $2}' }
+
 fd() { find $@ -type d; }
 ff() { find $@ -type f; }
+psgrep() { ps aux | grep "$1" | awk "{print $2}"; }
+
