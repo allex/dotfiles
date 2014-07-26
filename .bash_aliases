@@ -111,9 +111,6 @@ alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
 alias q='exit'
 
-alias fd='find -type d'
-alias ff="function _f() { find $1 -type f; unset -f f; } _f"
-
 [ -x "/usr/bin/vim" ] && alias vi='/usr/bin/vim'
 
 if [ "$(id -u)" != "0" ]; then
@@ -146,6 +143,8 @@ alias diskspace="sudo du -k `pwd` | sort -n"
 #
 # usefull function definations
 #
-psgrep() {
-  ps aux | grep "$1" | awk '{print $2}'
-}
+
+fd() { find $@ -type d; }
+ff() { find $@ -type f; }
+psgrep() { ps aux | grep "$1" | awk "{print $2}"; }
+
