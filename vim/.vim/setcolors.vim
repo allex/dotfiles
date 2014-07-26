@@ -49,6 +49,7 @@ function! s:SetColors(args)
 endfunction
 
 command! -nargs=* SetColors call s:SetColors('<args>')
+command! -nargs=* NextColor call NextColor('<args>')
 
 " Set next/previous/random (how = 1/-1/0) color from our list of colors.
 " The 'random' index is actually set from the current time in seconds.
