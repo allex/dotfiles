@@ -1,3 +1,5 @@
+# Allex Wang personal global gitconfig
+# Github: https://raw.githubusercontent.com/allex/dotfiles/master/.gitconfig
 [user]
     name = Allex Wang
     email = allex.wxn@gmail.com
@@ -10,14 +12,15 @@
     smudge = unexpand --tabs=4 --first-only
 
 [alias]
-    st = status
+    st = status --porcelain -sb
     ci = commit
     br = branch
     co = checkout
     df = diff
     dt = difftool
     l = log --stat --format=format:'"%C(yellow)%h %C(cyan)%an %C(blue)(%cn) %C(cyan)%ai\n%C(green)%s\n%b%N"'
-    lg = log -p
+    # lg = log -p
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
     shlog = log --pretty=\"%Cgreen%h%Creset - %Cred%ci%Creset - %s (%Cred%an%Creset)\"
     fshow = !sh -c 'git show --pretty="format:" --name-only $1 | grep -v "^$" | uniq' -
     vim   = !sh -c 'vim `git fshow $1`' -
