@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri Jul 11, 2014 12:33AM
+" Last Modified: Fri Jul 18, 2014 12:25AM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -179,7 +179,11 @@ if has("gui_running")
     endif
 else
     set tw=85
-    sil! colo dante
+    if &t_Co < 32
+        sil! colo desert
+    else
+        sil! colo dante
+    endif
 endif
 hi Folded guifg=DarkBlue guibg=LightGrey
 

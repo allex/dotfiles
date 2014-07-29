@@ -59,3 +59,8 @@ if type cowsay>/dev/null 2>&1; then
     # fortune | cowsay -f $(ls /usr/share/cowsay | shuf -n1)
     fortune | cowsay -f $(cowsay -l | tail -n +2 | tr " " "\n" | shuf -n1)
 fi
+
+# Adding Git Autocomplete to Bash
+if [ -f ~/.dotfiles/git-completion.bash ]; then
+    . ~/.dotfiles/git-completion.bash
+fi

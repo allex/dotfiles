@@ -1,6 +1,8 @@
 Allex Wang (allex.wxn@gmail.com)
 --------------------------------------------------
 
+Personal config files aka `dotfiles` for linx & osx
+
 # Setup
 
 ```sh
