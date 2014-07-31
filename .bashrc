@@ -89,13 +89,17 @@ bash_prompt_command() {
     fi
 
     # Additionally get current git branch name
-    local ee=""
+    local branch=""
     if [ -d .git ]; then
-      read ee <.git/HEAD
-      [[ $ee < g ]] && ee=${ee::7} || ee=${ee/*\/}
-      ee="($ee)"
+        read branch <.git/HEAD
+        [[ $branch < g ]] && branch=${branch::7} || branch=${branch/*\/}
+    else
+        branch=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
     fi
-    GIT_BRANCH=$ee
+    if [ -n "$branch" ]; then
+        branch="($branch)"
+    fi
+    GIT_BRANCH=$branch
 }
 bash_prompt() {
     local NONE="\[\033[0m\]"    # unsets color to term's fg color
