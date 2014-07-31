@@ -61,6 +61,6 @@ if type cowsay>/dev/null 2>&1; then
 fi
 
 # Adding Git Autocomplete to Bash
-if [ -f ~/.dotfiles/git-completion.bash ]; then
-    . ~/.dotfiles/git-completion.bash
+if [ -f $HOME/.dotfiles/git-completion.bash ]; then
+    source $HOME/.dotfiles/git-completion.bash
 fi
