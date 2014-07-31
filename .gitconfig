@@ -42,6 +42,9 @@
     excludesfile = ~/.gitignore
     # editor = "/usr/bin/vim"
 
+[branch]
+    autosetuprebase = always
+
 [diff]
     tool = "git-diff"
 
