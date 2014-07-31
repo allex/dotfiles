@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri Jul 18, 2014 12:25AM
+" Last Modified: Wed Jul 30, 2014 08:32PM
 "
 " For details see https://github.com/allex/etc/blob/master/vim/.vimrc
 "
@@ -179,9 +179,7 @@ if has("gui_running")
     endif
 else
     set tw=85
-    if &t_Co < 32
-        sil! colo desert
-    else
+    if &t_Co >= 8 && $TERM !~ 'linux'
         sil! colo dante
     endif
 endif

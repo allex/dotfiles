@@ -12,7 +12,7 @@
     smudge = unexpand --tabs=4 --first-only
 
 [alias]
-    st = status --porcelain -sb
+    st = status --porcelain -s
     ci = commit
     br = branch
     co = checkout
