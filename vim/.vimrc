@@ -5,7 +5,7 @@
 " Version: 1.6
 " Last Modified: Wed Jul 30, 2014 08:32PM
 "
-" For details see https://github.com/allex/etc/blob/master/vim/.vimrc
+" For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
