@@ -4,7 +4,7 @@
 # Description: Deploy current project happy
 # GistID: cb0c8000aca295926ffa
 # GistURL: https://gist.github.com/allex/cb0c8000aca295926ffa
-# Last Modified: Sun Jul 13, 2014 05:59PM
+# Last Modified: Tue Aug 05, 2014 11:39AM
 # Author: Allex Wang (allex.wxn@gmail.com)
 # ================================================
 
@@ -28,8 +28,10 @@ if [ "${TARGET}x" != "x" ] && [ -d $CUR_DIR/$TARGET ]; then
     cd $CUR_DIR/$TARGET
     if [ -f "$CUR_DIR/$TARGET/release.sh" ]; then
         sh ./release.sh "${ARGS[@]}"
+        rm -rf ./target
     else
         mvn clean install "${ARGS[@]}"
+        rm -rf ./target
     fi
     cd - >/dev/null 2>&1
     exit 0;
@@ -41,9 +43,11 @@ if [ -n "$PROJ_DIR" ]; then
     cd "$PROJ_DIR"
     if [ -f "$PROJ_DIR/release.sh" ]; then
         sh ./release.sh "${ARGS[@]}"
+        rm -rf ./target
     else
         if [ -f "$PROJ_DIR/pom.xml" ]; then
             mvn clean install "${ARGS[@]}"
+            rm -rf ./target
         fi
     fi
     cd "$CUR_DIR"
