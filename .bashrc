@@ -97,7 +97,7 @@ bash_prompt_command() {
         branch=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
     fi
     if [ -n "$branch" ]; then
-        branch="($branch)"
+        branch=":$branch"
     fi
     GIT_BRANCH=$branch
 }
