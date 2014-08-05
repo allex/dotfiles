@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Wed Jul 30, 2014 08:32PM
+" Last Modified: Tue Aug 05, 2014 02:37PM
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -166,6 +166,7 @@ endif
 
 " Set colorscheme
 " For more colorschemes http://vimcolorschemetest.googlecode.com/svn/
+set t_Co=256
 if has("gui_running")
     set tw=100
     set lines=35
