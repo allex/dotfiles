@@ -64,3 +64,5 @@
 
 [github]
     user = allex
+[pull]
+	rebase = true

@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+
+/**
+ * nodejs intercept commond line tool for AMD specific module
+ *
+ * Usage: nodex [-p] script.js
+ *
+ * author: Allex Wang (http://iallex.com)
+ */
+
+require('amdefine/intercept');
+
+var argv = process.argv.slice(2), fileName = argv[0], commandOption;
+
+if (fileName && fileName.indexOf('-') === 0) {
+  commandOption = fileName.substring(1);
+  fileName = argv[1];
+}
+
+if (fileName) {
+  var result = require(require('path').resolve(fileName));
+  if (commandOption === 'p') {
+    console.log(result);
+  }
+}
+else {
+  console.log('Usage: nodex [-p] script.js');
+}
+
+// vim: ft=javascript:et:ts=2:sw=2:sts=2:ff=unix:
