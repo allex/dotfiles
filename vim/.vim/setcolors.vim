@@ -100,7 +100,7 @@ function! s:NextColor(how, echo_color)
     echo 'Error: colorscheme not found:' join(missing)
   endif
   if (a:echo_color)
-    echo g:colors_name
+    echo s:mycolors[current]
   endif
 endfunction
 

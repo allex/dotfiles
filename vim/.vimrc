@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Tue Aug 05, 2014 02:37PM
+" Last Modified: Sun Aug 10, 2014 07:49PM
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -181,7 +181,7 @@ if has("gui_running")
 else
     set tw=85
     if &t_Co >= 8 && $TERM !~ 'linux'
-        sil! colo dante
+        sil! colo molokai
     endif
 endif
 hi Folded guifg=DarkBlue guibg=LightGrey
