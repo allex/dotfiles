@@ -22,6 +22,12 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
+# Set PATH includes user's node_modules cli .bin if it exists
+if [ -d "$HOME/node_modules/.bin" ] ; then
+    PATH="$HOME/node_modules/.bin:$PATH"
+fi
+export PATH="./node_modules/.bin:$PATH"
+
 # Set profile lib dir
 if [ -d "$HOME/.lib" ] ; then
     export LIB="$HOME/.lib"

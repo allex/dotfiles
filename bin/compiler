@@ -4,7 +4,7 @@
 # see https://github.com/allex/etc/blob/master/bin/closure
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Wed Jun 19, 2013 07:30PM
+# Last Modified: Tue Sep 02, 2014 03:12PM
 
 type java >/dev/null 2>&1 || { echo >&2 "Java not installed. Aborting."; exit 1; }
 
@@ -47,6 +47,17 @@ while [ $# -gt 0 ]; do
                     shift
                     ;;
                 *) [ "$1" == "-t" ] && { ARGS="$ARGS --warning_level VERBOSE"; }
+                    ;;
+            esac
+            ;;
+
+        -s | --compilation_level)
+            case $2 in
+                WHITESPACE_ONLY | SIMPLE_OPTIMIZATIONS | ADVANCED_OPTIMIZATIONS)
+                    ARGS="$ARGS $1 $2"
+                    shift
+                    ;;
+                *) [ "$1" == "-s" ] && { ARGS="$ARGS --compilation_level ADVANCED_OPTIMIZATIONS"; }
                     ;;
             esac
             ;;
