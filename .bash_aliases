@@ -3,8 +3,10 @@
 # ~/.bash_aliases
 # author: Allex Wang (allex.wxn@gmail.com)
 
+cmd_exists () { type "$1" &> /dev/null; }
+
 # enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
+if cmd_exists dircolors ; then
   [ -r ~/.dircolors ] && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
   alias ls='ls --color=auto'
   alias dir='dir --color=auto'
@@ -123,14 +125,17 @@ fi
 # aliases for Ubuntu distro
 un=`uname -a`
 if [ "$un" != "${un/Ubuntu /}" ]; then
-  alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
-  alias restartx='sudo restart lightdm'
   # if user is not root, pass all commands via sudo #
   if [ $UID -ne 0 ]; then
       alias reboot='sudo reboot'
       alias update='sudo apt-get upgrade'
   fi
   alias open='/usr/bin/nautilus'
+  alias restartx='sudo restart lightdm'
+  alias logout='dbus-send --session --type=method_call --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.Logout uint32:1'
+  # Add an "alert" alias for long running commands.  Use like so:
+  #   sleep 10; alert
+  alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 fi
 unset un
 
@@ -154,3 +159,4 @@ psgrep() {
   fi
 }
 
+unset -f cmd_exists

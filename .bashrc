@@ -8,6 +8,8 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
+cmd_exists () { type "$1" &> /dev/null; }
+
 # Colors
 export GREP_OPTIONS='--color=auto'
 export CLICOLOR=1
@@ -28,11 +30,13 @@ shopt -s histappend
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-if [ "$OS" = "linux" ]; then
+if cmd_exists dircolors ; then
     alias ls='ls --color=auto' # For linux, etc
 else
-    export LSCOLORS=gxfxcxdxbxegedabagacad
-    alias ls='ls -G' # OS-X SPECIFIC - the -G command in OS-X is for colors, in Linux it's no groups
+    if [ $OS = "darwin" ]; then
+        export LSCOLORS=gxfxcxdxbxegedabagacad
+        alias ls='ls -G' # OS-X SPECIFIC - the -G command in OS-X is for colors, in Linux it's no groups
+    fi
 fi
 
 # make less more friendly for non-text input files, see lesspipe(1)
@@ -153,10 +157,6 @@ unset bash_prompt
 
 unset color_prompt force_color_prompt
 
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
@@ -172,6 +172,11 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
 
+# Adding Git Autocomplete to Bash
+if [ -f $HOME/.dotfiles/git-completion.bash ]; then
+    source $HOME/.dotfiles/git-completion.bash
+fi
+
 # Make Terminal’s autocompletion case-insensitive
 bind 'set completion-ignore-case On'
 
@@ -181,3 +186,5 @@ bind '"\C-i" menu-complete'
 if [ -f ~/.bash_local ]; then
     . ~/.bash_local
 fi
+
+unset -f cmd_exists
