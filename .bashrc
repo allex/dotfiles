@@ -173,8 +173,8 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 # Adding Git Autocomplete to Bash
-if [ -f $HOME/.dotfiles/git-completion.bash ]; then
-    source $HOME/.dotfiles/git-completion.bash
+if [ -f "$HOME/.dotfiles/git-completion.bash" ]; then
+    source "$HOME/.dotfiles/git-completion.bash"
 fi
 
 # Make Terminal’s autocompletion case-insensitive
