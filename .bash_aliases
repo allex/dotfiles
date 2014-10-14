@@ -153,9 +153,9 @@ fd() { find $@ -type d; }
 ff() { find $@ -type f; }
 psgrep() {
   if [ "$2" = "kill" ]; then
-    ps aux | grep "$1" | awk '{print $2}' | xargs kill -9;
+    ps aux | grep "$1" | grep -v grep | awk '{print $2}' | xargs kill -9;
   else
-    ps aux | grep "$1" | awk '{print $2}';
+    ps aux | grep "$1" | grep -v grep | awk '{print $2}';
   fi
 }
 

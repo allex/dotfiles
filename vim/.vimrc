@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Sun Aug 10, 2014 07:49PM
+" Last Modified: Fri Sep 19, 2014 09:37AM
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -71,10 +71,11 @@ set noerrorbells                " No sound on errors.
 set novisualbell
 
 " Indentation / tab replacement stuff
-set et                          " expand tabs to spaces
-set sts=4
+" Also we can use `:Sts [num]` set the tab size realtime
 set ts=4
+set sts=4
 set sw=4                        " > and < move block by 4 spaces in visual mode
+set et                          " expand tabs to spaces
 set ai                          " auto indent, usefull when using the 'o' or 'O' command.
 set si                          " do smart autoindenting when starting a new line Works for C-like programs
 
