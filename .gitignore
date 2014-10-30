@@ -1,3 +1,4 @@
+# Github: https://raw.githubusercontent.com/allex/dotfiles/master/.gitignore
 # git config --global core.excludesfile '~/.gitignore'
 # see http://groups.google.com/group/peepcode/browse_thread/thread/fe6f9c1fc9d6e725
 
@@ -44,6 +45,7 @@ nb-configuration.xml
 *.swp
 *.tmp
 *.save
+.sass*
 
 .netrwhist
 .session.vim
@@ -54,3 +56,4 @@ logs/*
 npm-debug.log
 
 .*-cache
+.project

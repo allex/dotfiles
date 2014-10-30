@@ -149,8 +149,14 @@ alias diskspace="sudo du -k `pwd` | sort -n"
 # usefull function definations
 #
 
-fd() { find $@ -type d; }
-ff() { find $@ -type f; }
+fd() {
+  [ "$#" = "0" ] && eval set -- ".";
+  find $@ -type d;
+}
+ff() {
+  [ "$#" = "0" ] && eval set -- ".";
+  find $@ -type f;
+}
 psgrep() {
   if [ "$2" = "kill" ]; then
     ps aux | grep "$1" | grep -v grep | awk '{print $2}' | xargs kill -9;
