@@ -10,21 +10,38 @@
 
 require('amdefine/intercept');
 
-var argv = process.argv.slice(2), fileName = argv[0], commandOption;
+var argv = process.argv.slice(2), firstArg = argv[0], commandOption;
 
-if (fileName && fileName.indexOf('-') === 0) {
-  commandOption = fileName.substring(1);
-  fileName = argv[1];
+var exit = function() {
+  process.stdout.write('\n');
+  process.exit();
+};
+
+if ( firstArg === '-h' || firstArg === '--help' ) {
+  console.log('Usage: nodex [-p] script.js');
+  exit();
 }
 
-if (fileName) {
-  var result = require(require('path').resolve(fileName));
+if (firstArg && firstArg.indexOf('-') === 0) {
+  commandOption = firstArg.substring(1);
+  firstArg = argv[1];
+}
+
+process.on('SIGINT', exit);
+process.on('SIGTSTP', exit);
+
+if (firstArg) {
+  var result = require(require('path').resolve(firstArg));
   if (commandOption === 'p') {
     console.log(result);
   }
 }
 else {
-  console.log('Usage: nodex [-p] script.js');
+  require('repl').start({
+    prompt: '⚡  ',
+    input: process.stdin,
+    output: process.stdout
+  });
 }
 
 // vim: ft=javascript:et:ts=2:sw=2:sts=2:ff=unix:
