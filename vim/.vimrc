@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.6
-" Last Modified: Fri Sep 19, 2014 09:37AM
+" Last Modified: Fri Oct 31, 2014 02:41PM
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -604,7 +604,6 @@ fun! s:UpdateLastModified()
     endif
 endfun
 
-" @VisualSearch(dir)
 " From an idea by Michael Naumann
 fun! VisualSearch(dir) range
     let l:saved_reg=@"
@@ -623,6 +622,16 @@ fun! VisualSearch(dir) range
     let @"=l:saved_reg
 endfun
 
+" Append modeline after last line in buffer.
+" Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
+" files.
+fun! AppendModeline()
+    let l:modeline = printf(" vim: set ts=%d sw=%d tw=%d %set :",
+        \ &tabstop, &shiftwidth, &textwidth, &expandtab ? '' : 'no')
+    let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+    call append(line("$"), l:modeline)
+endfun
+nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
 " }}}
 
 " customizes {{{1
