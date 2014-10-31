@@ -22,10 +22,10 @@
     # lg = log -p
     lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr | %cn)%Creset' --abbrev-commit --date=relative
     shlog = log --pretty=\"%Cgreen%h%Creset - %Cred%ci%Creset - %s (%Cred%an%Creset)\"
-    fshow = !sh -c 'git show --pretty="format:" --name-only $1 | grep -v "^$" | uniq' -
-    vim   = !sh -c 'vim `git fshow $1`' -
-    mate  = !sh -c 'mate `git fshow $1`' -
-    subl  = !sh -c 'subl `git fshow $1`' -
+    fshow = !sh -c 'git show --pretty="format:" --name-only $1 | grep -v "^$" | uniq'
+    vim   = !sh -c 'vim `git fshow $1`'
+    mate  = !sh -c 'mate `git fshow $1`'
+    subl  = !sh -c 'subl `git fshow $1`'
     wtf   = !git-wtf
     rmbranch = "!f(){ git branch -d ${1} && git push origin --delete ${1}; };f"
     up = "!f(){ git pull \"$@\" && git submodule init && git submodule update && git submodule foreach git pull origin master; };f"
