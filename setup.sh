@@ -6,8 +6,8 @@ cd $dir
 git submodule update --init
 cd - >/dev/null
 
-case "`uname `" in
-  Linux*)  ln="ln -sfn" ;;
+case "`uname`" in
+  CYGWIN* | Linux*)  ln="ln -sfn" ;;
   Darwin*) ln="ln -sfh" ;;
   *) echo "ln file fails, pls link it manaully."; exit 0 ;;
 esac
