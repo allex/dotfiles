@@ -21,7 +21,7 @@
         sys = require("util"),
         http = require("http"),
         url = require("url"),
-        csso = require("css-optimize"),
+        optimizer = require("css-optimizer"),
         options,
         result = "";
 
@@ -85,7 +85,7 @@
             sys.puts("HTML files not supported.");
             process.exit(0);
         } else {
-            result = csso.cssOptimize(sourceFile, {mode: mode});
+            result = optimizer.parse(sourceFile, {mode: mode});
         }
 
         // Trying to output `result` in one go had funny side effects on OSX.

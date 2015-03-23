@@ -43,11 +43,11 @@ export ANT_HOME="/usr/local/ant"
 export M2_HOME="/usr/local/maven"
 
 # Node
-export NODE_PATH="/usr/local/lib/node"
 export NODE_PATH=$HOME/.node_libraries:$HOME/node_modules:$NODE_PATH
 
 pathmunge "$HOME/node_modules/.bin"
 pathmunge "./node_modules/.bin"
+pathmunge "/usr/local/nodejs/bin"
 
 # Python
 export PYTHONPATH=$HOME/local/python-packages

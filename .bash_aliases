@@ -16,6 +16,8 @@ if cmd_exists dircolors ; then
   alias egrep='egrep --color=auto'
 fi
 
+alias grep='grep -I'
+
 ## svn aliases {{{
 
 # diff with color highlighting
@@ -166,3 +168,36 @@ psgrep() {
 }
 
 unset -f cmd_exists
+
+# Wrap scp to check for missing colons
+scp() {
+    if (($# >= 2)) && [[ $* != *:* ]] ; then
+        printf 'scp: Missing colon, probably an error\n' >&2
+        return 1
+    fi
+    command scp "$@"
+}
+
+# Completion for ssh/sftp/ssh-copy-id with config hostnames
+_ssh() {
+    local word=${COMP_WORDS[COMP_CWORD]}
+
+    # Bail if the configuration file is illegible
+    local config=$HOME/.ssh/config
+    if [[ ! -r $config ]] ; then
+        return 1
+    fi
+
+    # Read hostnames from the file, no asterisks
+    local -a hosts
+    local option value
+    while read -r option value _ ; do
+        if [[ $option == Host && $value != *'*'* ]] ; then
+            hosts=("${hosts[@]}" "$value")
+        fi
+    done < "$config"
+
+    # Generate completion reply
+    COMPREPLY=( $(compgen -W "${hosts[*]}" -- "$word") )
+}
+complete -F _ssh -o default ssh sftp ssh-copy-id
