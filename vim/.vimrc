@@ -641,8 +641,6 @@ nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
 call s:Load($HOME . "/.vim/filetype.vim")
 
 " Load customize .vimrc additionally
-if filereadable(expand("~/.vimrc.local"))
-    call s:Load("~/.vimrc.local")
-endif
+call s:Load($HOME . "/.vimrc.local")
 
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
