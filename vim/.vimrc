@@ -1,9 +1,11 @@
+" vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
 " =================================================================================
+"
 " .vimrc file
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
-" Version: 1.6
-" Last Modified: Fri Oct 31, 2014 02:41PM
+" Version: 1.7
+" Last Modified: Wed Mar 22, 2017 11:25
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -21,26 +23,24 @@
 "
 " =================================================================================
 
-" pre funcs {{{1
+" helpers {{{1
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim" | finish | endif
 
 " Helper functions
-fun! s:Exec(com)
+fun! Exec(com)
     exec 'sil! ' . a:com
 endfun
-fun! s:Load(file)
-    if filereadable(a:file) | exec 'sil! so ' a:file | endif
+fun! s:load(file)
+    if filereadable(a:file) | exec 'so ' a:file | endif
 endfun
+" }}}
 
 " preferences {{{1
 
 " Use Vim settings, rather than Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
 set nocompatible
-
-" Installation pathogen.vim (http://www.vim.org/scripts/script.php?script_id=2332)
-sil! call pathogen#infect()
 
 set autoread                    " Set to auto read when a file is changed from the outside
 set showfulltag                 " Get function usage help automatically
@@ -90,9 +90,10 @@ set ml
 set mls=5                       " enabled modelines
 
 " Format the statusline
-set statusline=\ %F%m%r%h\ %w\ CW\ %r%{CurDir()}%h\ [%Y,%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ \%=[%l,%v,0x%B\ \/\ %L,%p%%]
-fun! CurDir()
-    return substitute(getcwd(), fnameescape($HOME), "~", "g")
+set statusline=\ %F%m%r%h\%=\%w<%r%{__get_cur_dir()}%h>\ [%{&ft},%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}][%l,%v,0x%B\/%L,%p%%]
+fun! __get_cur_dir()
+    let p = substitute(getcwd(), fnameescape($HOME), "~", "g")
+    return p
 endfun
 
 " Low priority filename suffixes for filename completion,
@@ -100,12 +101,16 @@ set suffixes-=.h
 set suffixes+=.class,.tmp,.log,.aux
 
 " Ignore these files when completing names and in explorer
-set wildignore+=.svn,CVS,.git,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.swp,*.jpg,*.png,*.xpm,*.gif,*.dvi
+set wildignore+=.svn,.hg,CVS,.git,*.o,*.a,*.class,*.mo,*.la,*.so,*.obj,*.dll,*.jpg,*.jpeg,*.png,*.xpm,*.gif,*.dvi
+set wildignore+=*~,#*#,*.sw?,%*,*= " Backup, auto save, swap, undo, and view files.
+set wildignore+=*.DS_Store " Mac OS X
+
+let mapleader=","
 
 " Shared the clipbrd whith other application such as X11.
-if has('unnamedplus')
-    set clipboard=unnamedplus
-else
+if has('unnamedplus') " When possible use + register for copy-paste
+    set clipboard=unnamed,unnamedplus
+else " On mac and Windows, use * register for copy-paste
     set clipboard=unnamed
 endif
 
@@ -133,85 +138,101 @@ if &t_Co > 2 || has("gui_running")
     set hlsearch
 endif
 
-" Only do this part when compiled with support for autocommands.
-if has("autocmd")
+" ctags {{{2
+set tags=./.tags;/,~/.vimtags
 
-    " Enable file type detection.
-    " Use the default filetype settings, so that mail gets 'tw' set to 78,
-    " 'cindent' is on in C files, etc.
-    " Also load indent files, to automatically do language-dependent indenting.
-    filetype plugin indent on
-
-    " Put these in an autocmd group, so that we can delete them easily.
-    augroup vimrcEx
-        au!
-
-        " For all text files set 'textwidth' to 78 characters.
-        au FileType text setlocal tw=78
-
-        " When editing a file, always jump to the last known cursor position.
-        " Don't do it when the position is invalid or when inside an event
-        " handler (happens when dropping a file on gvim).
-        " Also don't do it when the mark is in the first line, that is the
-        " default position when opening a file.
-        au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-    augroup END
+" Make tags placed in .git/tags file available in all levels of a repository
+let gitroot = substitute(system('git rev-parse --show-toplevel 2>/dev/null'), '[\n\r]', '', 'g')
+if gitroot != ''
+    let &tags = &tags . ',' . gitroot . '/.git/ctags'
 endif
 
-" Convenient command to see the difference between the current buffer and the
-" file it was loaded from, thus the changes you made.
-" Only define it when not defined already.
-if !exists(":DiffOrig")
-    command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
-endif
+" Index ctags from any project, including those outside Rails
+com! MakeTags :!ctags -f ./.tags -R .
+" }}}
+
+fun! s:SetColor(...)
+    if a:0 > 1
+        set background=a:2
+    endif
+    let c=a:1
+    if empty(globpath(&rtp, '**/colors/' . l:c . '.vim'))
+        echoerr l:c . "not found"
+        " use default instead.'
+        let c='desert'
+    endif
+    call Exec('colo ' . l:c)
+    hi clear Normal
+    hi clear NonText
+    hi Normal ctermbg=NONE
+    hi NonText ctermbg=NONE
+    set nocursorline
+endfun
+
+" :SetColor completion implement
+let s:allcolors = []
+fun! SetColorComplete(A, L, P)
+    if len(s:allcolors) == 0
+        let list = split(globpath(&rtp, '**/colors/*.vim'), '\n')
+        let i = 0
+        for p in list
+            let list[i] = substitute(p, '.*/\|.vim', '', 'g')
+            let i += 1
+        endfor
+        let s:allcolors = list
+    endif
+    let result = []
+    let i = 0
+    while (i < len(s:allcolors))
+        if (match(s:allcolors[i], a:A) == 0)
+            call add(result, s:allcolors[i])
+        endif
+        let i += 1
+    endwhile
+    return result
+endfun
+
+com! -nargs=+ -complete=customlist,SetColorComplete SetColor call s:SetColor(<f-args>)
+
+" Allow to trigger background
+fun! s:ToggleBG()
+    if &bg == "dark"
+        set bg=light
+    else
+        set bg=dark
+    endif
+endfun
+
+noremap <Leader>bg :call <SID>ToggleBG()<CR>
 
 " Set colorscheme
 " For more colorschemes http://vimcolorschemetest.googlecode.com/svn/
 set t_Co=256
+set tw=85
+
+if exists('$TMUX')
+    set term=screen-256color
+endif
+
 if has("gui_running")
-    set tw=100
     set lines=35
     set co=150
+    set tw=100
     if has("win32")
         sil! colo torte
-        set guifont=Lucida_Console:h10:cANSI
+        " set guifont=Lucida_Console:h10:cANSI
     else
         sil! colo darkdevel
-        set guifont=Monospace\ 9
-    endif
-else
-    set tw=85
-    if &t_Co >= 8 && $TERM !~ 'linux'
-        sil! colo molokai
+        " set guifont=Monospace\ 9
     endif
 endif
-hi Folded guifg=DarkBlue guibg=LightGrey
-
-let mapleader=","
 
 " locale
 let $LANG='en_US.UTF-8'
 
-" }}}1
-
-" windows {{{
-if has("win32")
-    " reset the current language to en
-    language messages en
-    set langmenu=none
-
-    " To try out your translations you first have to remove all menus.
-    so $VIMRUNTIME/delmenu.vim
-    so $VIMRUNTIME/menu.vim
-
-    " Set options and add mapping such that Vim behaves a lot like MS-Windows
-    so $VIMRUNTIME/mswin.vim
-
-    " customize syntax highlighting
-    call s:Load($HOME . "/.vim/custom_color.vim")
-endif
 " }}}
-" encoding {{{
+
+" encoding {{{1
 let &termencoding=&encoding
 set encoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,latin1,gbk,gb2312
@@ -243,8 +264,18 @@ else
     echoerr "Sorry, this version of (g)vim was not compiled with multi_byte!"
 endif
 " }}}
-" diff configuration {{{1
+
+" vimdiff {{{1
+
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+    command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+endif
+
 set diffopt+=vertical
+set diffopt+=iwhite " ignore whitespace
 
 " diff buffers in current window
 com! -nargs=0 Diff :sil! call s:ToggleDiff()
@@ -284,44 +315,89 @@ if has('win32')
         sil! exec '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
     endfun
 endif
-" plugin settings {{{1
+" }}}
 
-" NERD Tree
-let NERDTreeMinimalUI=0
+" plugins {{{1
+
+" NerdTree {{{2
+if isdirectory(expand("~/.vim/bundle/nerdtree"))
+    nmap <silent> <F10> :NERDTreeToggle<CR>
+
+    let NERDTreeMinimalUI=1
+    let NERDTreeQuitOnOpen=1
+
+    " colored NERD Tree
+    let NERDChristmasTree=1
+    let NERDTreeHighlightCursorline=1
+    let NERDTreeShowHidden=1
+    let NERDTreeIgnore=['\.sass-cache', '\.DS_Store','\.pdf', '.beam', '\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
+
+    " Add a space after the left delimiter and before the right delimiter, like this: /* int foo=2; */
+    let NERDSpaceDelims=1
+endif
+" }}}
+
+" ctrlp {{{2
+if isdirectory(expand("~/.vim/bundle/ctrlp.vim"))
+    let g:ctrlp_map = '<c-p>'
+    let g:ctrlp_cmd = 'CtrlP'
+    let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', '.git', '.svn']
+    let g:ctrlp_working_path_mode = 'ra'
+    let g:ctrlp_custom_ignore = {
+        \ 'dir':  '\.git$\|\.hg$\|\.svn$\|bower_components\|node_modules',
+        \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$'
+        \ }
+endif
+" }}}
+
+" editorconfig {{{2
+if isdirectory(expand("~/.vim/bundle/editorconfig-vim"))
+    let g:EditorConfig_exclude_patterns = [ "^tarfile::" ]
+endif
+" }}}
 
 let Tlist_Auto_Open=0
 let Tlist_Use_SingleClick=1
-
-" NERD Commenter settings, 05-17-2009
-" Add a space after the left delimiter and before the right delimiter, like this: /* int foo=2; */
-let NERDSpaceDelims=1
 
 " Additionally load gist.vim only if git installed.
 if !executable('git')
     let g:loaded_gist_vim=1
 endif
+
+" auto compile scss, sass files
+let g:sass_compile_auto=0
+
+" Installation pathogen.vim (http://www.vim.org/scripts/script.php?script_id=2332)
+sil! call pathogen#infect()
+
+" Mapping for the <F8> key to toggle the taglist window.
+nmap <silent> <F8> :TlistToggle<CR>
+
 " }}}
 
-" mappings {{{1
+" colorscheme {{{
+if exists('$ITERM_PROFILE')
+    if $ITERM_PROFILE =~? 'light'
+        set background=light
+    else
+        set background=dark
+    endif
+    let mycolors = {
+                \ "dark": [ "peaksea", "ir_black", "molokai", "solarized" ],
+                \ "light": [ "default", "delek", "desert", "morning", "ekvoli", "fnaqevan", "ironman", "ocenlight", "soso", "vc"  ] }
+    if &t_Co >= 8 && $TERM !~ 'linux'
+        call s:SetColor("solarized")
+    endif
+endif
+" }}}
+
+" shortcuts {{{1
 "
-" Note <leader> is the user modifier key (like g is the vim modifier key)
+" Note <Leader> is the user modifier key (like g is the vim modifier key)
 " One can change it from the default of \ using: let mapleader = ","
 
 " Some commands work both in Insert mode and Command-line mode, some not
 " :h map/nmap/imap/vmap
-
-nmap <silent> <leader>f :find<CR>
-
-" Vertical split then hop to new buffer
-nmap <silent> <leader>h :new<CR>
-nmap <silent> <leader>v :vnew<CR>
-nmap <silent> <leader>d :vert diffsplit
-
-" Fast saving
-nmap <leader>w :w!<CR>
-if executable('sudo')
-    nmap <silent> <leader>s :w !sudo tee % > /dev/null<CR>
-endif
 
 " Maps Alt-[h,j,k,l] to resizing a window split
 map <silent> <A-h> <C-w><
@@ -331,6 +407,7 @@ map <silent> <A-l> <C-w>>
 
 " guioptions
 if has("gui_running")
+
     " Initial guioptions
     set guioptions+=c       " use console dialogs, not the gui ones
     set guioptions-=T       " don't show the toolbar
@@ -354,40 +431,57 @@ map td :tabnew
 map te :tabedit
 map tc :tabclose<CR>
 
+",p toggle paste mode
+map <silent> <Leader>p :set paste!<CR>
+
+map <silent> <F12> :conf q!<CR>
+
+" nmap <silent> <Leader>f :find<CR>
+
+" Vertical split then hop to new buffer
+nmap <silent> <Leader>h :new<CR>
+nmap <silent> <Leader>v :vnew<CR>
+nmap <Leader>d :vert diffsplit
+
+" Fast saving
+nmap <Leader>w :w!<CR>
+
+" sudo write this
+if executable('sudo')
+    nmap <silent> <Leader>s :w !sudo tee % > /dev/null<CR>
+    cmap W! silent w !sudo tee % >/dev/null <CR>
+endif
+
 " Move easily between split windows
 nmap <silent> <C-h> :wincmd h<CR>
 nmap <silent> <C-j> :wincmd j<CR>
 nmap <silent> <C-k> :wincmd k<CR>
 nmap <silent> <C-l> :wincmd l<CR>
 
-map <silent> <F12> :conf q!<CR>
-
 "\n to turn off search highlighting
-nmap <silent> <leader>n :silent :nohlsearch<CR>
+nmap <silent> <Leader>n :silent :nohlsearch<CR>
 
-"\l to toggle visible whitespace
-nmap <silent> <leader>l :set list!<CR>
+"\l to toggle (in)visible whitespace
+nmap <silent> <Leader>l :set list!<CR>
 
-",p toggle paste mode
-map <silent> <leader>p :set paste!<CR>
+" Shift+Tab to insert a hard tab
+imap <S-Tab> <C-V><Tab>
 
-" shift-tab to insert a hard tab
-imap <silent> <s-tab> <c-v><tab>
-
-" Change directory to the file being edited.
-cmap <silent> ,cd :cd %:p:h<CR>:pwd<CR>
+" Change Working Directory to that of the current file
+cmap <silent> cwd lcd %:p:h<CR>:pwd<CR>
+cmap <silent> <Leader>cd :cd %:p:h<CR>:pwd<CR>
 
 " STRIP -- EMPTY LINE ENDINGS
-nmap <silent> _$ :call s:Exec("%s/\\s\\+$//e")<CR>
-vmap <silent> _$ :call s:Exec("s/\\s\\+$//e")<CR>
+nmap <silent> _$ :call Exec("%s/\\s\\+$//e")<CR>
+vmap <silent> _$ :call Exec("s/\\s\\+$//e")<CR>
 
 " STRIP -- EMPTY LINE BEGINNINGS
-nmap <silent> _^ :call s:Exec("%s/^\\s\\+//e")<CR>
-vmap <silent> _^ :call s:Exec("s/^\\s\\+//e")<CR>
+nmap <silent> _^ :call Exec("%s/^\\s\\+//e")<CR>
+vmap <silent> _^ :call Exec("s/^\\s\\+//e")<CR>
 
-" Easily change between backslash and forward slash with <leader>/ or <leader>\
-nmap <silent> <leader>/ :let tmp=@/<CR>:s:\\:/:ge<CR>:let @/=tmp<CR>
-nmap <silent> <leader><Bslash> :let tmp=@/<CR>:s:/:\\:ge<CR>:let @/=tmp<CR>
+" Easily change between backslash and forward slash with <Leader>/ or <Leader>\
+nmap <silent> <Leader>/ :let tmp=@/<CR>:s:\\:/:ge<CR>:let @/=tmp<CR>
+nmap <silent> <Leader><Bslash> :let tmp=@/<CR>:s:/:\\:ge<CR>:let @/=tmp<CR>
 
 " Move text, but keep highlight
 vmap > ><CR>gv
@@ -398,76 +492,137 @@ vmap x "_x
 vmap X "_X
 
 " Basically you press * or # to search for the current selection !! Really useful same as g[d|D]
-vmap <silent> * :call VisualSearch('f')<CR>
-vmap <silent> # :call VisualSearch('b')<CR>
+vmap <silent> * :call s:VisualSearch('f')<CR>
+vmap <silent> # :call s:VisualSearch('b')<CR>
 
 nmap <F4> :w<CR>:make<CR>:cw<CR>
 
-" Mapping for the <F8> key to toggle the taglist window.
-nmap <silent> <F8> :TlistToggle<CR>
-nmap <silent> <F10> :NERDTreeToggle<CR>
+" More convenient copy/paste for the + register
+noremap <Leader>y "+y
+noremap <leader>Y "+Y
+noremap <leader>p "+p
+noremap <leader>P "+P
 
+" Selecting
+"
+" Reselect what was just pasted so I can so something with it.
+" (To reslect last selection even if it is not the last paste, use gv.)
+nnoremap <Leader>y `[v`]
+
+" Select current line, excluding leading and trailing whitespace
+nnoremap vv ^vg_
+
+" Shortcut macro
+"
 " DATE FUNCTIONS (insert date in format "20 Aug, 2010")
 iab DATE <C-R>=strftime("%d %B %Y, %X")<CR>
+
+com! -nargs=? ESLintFix call s:ESLintFix()
+nnoremap <Leader>el :ESLintFix<CR>
+
+fun! s:ESLintFix()
+  execute "!eslint --fix %"
+  edit! %
+endfun
 
 " }}}
 
 " autocommands {{{1
+" Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
+    " build-in autocmd {{{
+    " Enable file type detection.
+    " Use the default filetype settings, so that mail gets 'tw' set to 78,
+    " 'cindent' is on in C files, etc.
+    " Also load indent files, to automatically do language-dependent indenting.
+    filetype plugin indent on
+
+    " Put these in an autocmd group, so that we can delete them easily.
+    augroup vimrcEx
+        au!
+
+        " For all text files set 'textwidth' to 78 characters.
+        au FileType text setlocal tw=78
+
+        " When editing a file, always jump to the last known cursor position.
+        " Don't do it when the position is invalid or when inside an event
+        " handler (happens when dropping a file on gvim).
+        " Also don't do it when the mark is in the first line, that is the
+        " default position when opening a file.
+        au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+
+    augroup END
+    " }}}
+
+    " folding {{{
+    augroup codeFolding
+        au!
+
+        au FileType javascript set commentstring=//\ %s
+        au FileType javascript call s:InitJSFolderOpts()
+
+        fun! s:InitJSFolderOpts()
+            setlocal fdm=marker
+            setlocal fdl=0 " Always start editing with all folds closed (value zero)
+            setlocal fdls=0
+            setlocal foldtext=MyFoldText()
+            syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
+        endfun
+
+        let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
+        fun! MyFoldText()
+            " for now, just don't try if version isn't 7 or higher
+            if v:version < 701
+                return foldtext()
+            endif
+            " clear fold from fillchars to set it up the way we want later
+            let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
+            let l:foldtext=getline(v:foldstart)
+            let l:foldtext=substitute(l:foldtext, '\/[\/\*]\+\s*', '', '')
+            return substitute(l:foldtext, '{.*', '{...}', '')
+        endfun
+
+    augroup END
+    " }}}
+
     " Last Modified {{{
+
     " If buffer modified, update any 'Last modified: ' in the first 20 lines.
     " 'Last modified: ' can have up to 10 characters before (they are retained).
     " Restores cursor and window position using save_cursor variable. ('ul' is alias
     " for 'undolevels').
-    au BufWritePre * call s:UpdateLastModified()
+
     com! -nargs=0 NOMOD :let b:nomod = 1
     com! -nargs=0 MOD   :let b:nomod = 0
-    " }}}
 
-    " Auto fold javascript, vim ect. {{{
-    if has("folding")
-        augroup FOLDSETTINGS
-            let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
-            let Enable_JsBeautifier_Onload=0
+    au BufWritePre * call s:UpdateLastModified()
 
-            au!
-            au FileType javascript call InitJSFolderOpts()
-            au FileType javascript set commentstring=//\ %s
+    " Update last modified section
+    fun! s:UpdateLastModified()
+        if exists('b:nomod') && b:nomod
+            return
+        endif
+        if &modified
+            let tstr = 'Last Modified: '
+            let cur_pos = getpos('.')
+            let n = min([30, line('$')])
+            keepjumps exe '1,' . n . 's#^\(.\{,10}' . tstr . '\).*#\1' . strftime('%a %b %d, %Y %H:%M') . '#e'
+            call histdel('search', -1)
+            let @/ = histget('/', -1)
+            call setpos('.', cur_pos)
+        endif
+    endfun
 
-            fun! InitJSFolderOpts()
-                setlocal fdm=marker
-
-                " Always start editing with all folds closed (value zero)
-                setlocal fdl=0
-                setlocal fdls=0
-                syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
-
-                fun! MyFoldText()
-                    " for now, just don't try if version isn't 7 or higher
-                    if v:version < 701
-                        return foldtext()
-                    endif
-                    " clear fold from fillchars to set it up the way we want later
-                    let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
-                    let l:foldtext=getline(v:foldstart)
-                    let l:foldtext=substitute(l:foldtext, '\/[\/\*]\+\s*', '', '')
-                    return substitute(l:foldtext, '{.*', '{...}', '')
-                endfun
-
-                setlocal foldtext=MyFoldText()
-            endfun
-        augroup END
-    endif
     " }}}
 
     " Enable tab switch
     au VimEnter * call s:BufPos_Initialize()
     fun! s:BufPos_Initialize()
         for i in range(1, 9)
-            exe "map <M-" . i . "> :call BufPos_ActivateBuffer(" . i . ")<CR>"
+            exe "map \<C-" . i . "\> :call BufPos_ActivateBuffer(" . i . ")<CR>"
         endfor
-        exe "map <M-0> :call BufPos_ActivateBuffer(10)<CR>"
+        exe "map \<C-0\> :call BufPos_ActivateBuffer(10)<CR>"
     endfun
     fun! BufPos_ActivateBuffer(num)
         let l:count=1
@@ -484,27 +639,63 @@ if has("autocmd")
     endfun
 
     " Reads the template file into new buffer.
-    au BufNewFile * call s:LoadTemplate()
-    fun! s:LoadTemplate()
+    au BufNewFile * call s:loadTemplate()
+    fun! s:loadTemplate()
         sil! 0r ~/.vim/skel/%:e.tpl
     endfun
+
+    " Disable syntax highlight if filesize is greater than 1M
+    au BufRead,BufNew *
+        \ if getfsize(expand('<afile>')) > 1000000 |
+        \   setl syntax=off |
+        \ endif
+
+    " Customize filetypes
+    au FileType ruby,eruby,yaml set ai ts=2 sw=2 sts=2 et
+
+    " Fold current HTML tag mapping: zf
+    au FileType html,xml nnoremap zf Vatzf
+
+    au BufNewFile,BufReadPost *.coffee setl shiftwidth=2 expandtab
+    au BufRead,BufNewFile *.es setf javascript
+    au BufRead,BufNewFile *.node setf javascript
+    au BufRead,BufNewFile *.ejs setf html
+
+    " fix nodejs interpreter
+    au BufNewFile,BufRead * call s:DetectNodejs()
+    function! s:DetectNodejs()
+        if getline(1) =~ '^#!.*\<node\>'
+            set filetype=javascript
+        endif
+    endfunction
+
+    " for hex editing
+    augroup Binary
+      au!
+      au BufReadPre  *.bin let &bin=1
+      au BufReadPost *.bin if &bin | %!xxd
+      au BufReadPost *.bin set ft=xxd | endif
+      au BufWritePre *.bin if &bin | %!xxd -r
+      au BufWritePre *.bin endif
+      au BufWritePost *.bin if &bin | %!xxd
+      au BufWritePost *.bin set nomod | endif
+    augroup END
 endif
 " }}}
 
 " customize function / commond {{{1
-" Sts() {{{2
-com! -nargs=? Sts call s:Sts(<args>)
 
-"
+" Sts() {{{2
+com! -nargs=? Sts call s:Sts(<f-args>)
+
 " Set shift tab size by sts, ts, sw, (default tabsize: 2)
-" Author: Allex Wang (http://iallex.com)
-"
+" author: Allex Wang (http://iallex.com)
 fun! s:Sts(...)
     let l:n = 2
     if a:0 > 0
         let l:n = a:1
     endif
-    set et
+   set et
     let &ts=l:n
     let &sw=l:n
     let &sts=l:n
@@ -514,7 +705,7 @@ endfun
 com! -nargs=0 Reset call <SID>ForgetUndo()
 
 " clear the undo history
-fun! <SID>ForgetUndo()
+fun! s:ForgetUndo()
     let old_ul = &undolevels
     set undolevels=-1
     exe "sil! normal a \<BS>\<Esc>"
@@ -583,29 +774,12 @@ fun! s:SaveSession(...)
     exec 'sil! mks! ' . sfile
     echo 'session saved: ' . sfile
 endfun
-
 " }}}1
 
 " functions {{{1
 
-" Update last modified section
-fun! s:UpdateLastModified()
-    if exists('b:nomod') && b:nomod
-        return
-    endif
-    if &modified
-        let tstr = 'Last Modified: '
-        let cur_pos = getpos('.')
-        let n = min([20, line('$')])
-        keepjumps exe '1,' . n . 's#^\(.\{,10}' . tstr . '\).*#\1' . strftime('%a %b %d, %Y %I:%M%p') . '#e'
-        call histdel('search', -1)
-        let @/ = histget('/', -1)
-        call setpos('.', cur_pos)
-    endif
-endfun
-
 " From an idea by Michael Naumann
-fun! VisualSearch(dir) range
+fun! s:VisualSearch(dir) range
     let l:saved_reg=@"
     exec "normal! vgvy"
 
@@ -622,25 +796,24 @@ fun! VisualSearch(dir) range
     let @"=l:saved_reg
 endfun
 
-" Append modeline after last line in buffer.
+" Append a vim modeline to the end of the file
 " Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
 " files.
-fun! AppendModeline()
+fun! s:AppendModeline()
     let l:modeline = printf(" vim: set fdm=%s ts=%d sw=%d sts=%d tw=%d %set :",
         \ &fdm,
         \ &tabstop, &shiftwidth, &sts, &textwidth, &expandtab ? '' : 'no')
     let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
     call append(line("$"), l:modeline)
+    $s/\s\s*/ /
 endfun
-nnoremap <silent> <Leader>ml :call AppendModeline()<CR>
+nnoremap <silent> <Leader>ml <SID>:call s:AppendModeline()<CR>
 " }}}
 
 " customizes {{{1
 
 " filetype extends
-call s:Load($HOME . "/.vim/filetype.vim")
+call s:load($HOME . "/.vim/filetype.vim")
 
 " Load customize .vimrc additionally
-call s:Load($HOME . "/.vimrc.local")
-
-" vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
+call s:load($HOME . "/.vimrc.local")
