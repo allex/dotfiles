@@ -5,7 +5,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.7
-" Last Modified: Wed Mar 22, 2017 11:25
+" Last Modified: Fri Nov 03, 2017 09:14
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -90,10 +90,11 @@ set ml
 set mls=5                       " enabled modelines
 
 " Format the statusline
-set statusline=\ %F%m%r%h\%=\%w<%r%{__get_cur_dir()}%h>\ [%{&ft},%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}][%l,%v,0x%B\/%L,%p%%]
+set statusline=\ %m%r%h%w<%r%{__get_cur_dir()}%h>\%=\[%{&ft},%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ [%l,%v,0x%B\/%L,%p%%]
 fun! __get_cur_dir()
     let p = substitute(getcwd(), fnameescape($HOME), "~", "g")
-    return p
+    let f = expand("%f")
+    return p . "/" . f
 endfun
 
 " Low priority filename suffixes for filename completion,
@@ -341,7 +342,7 @@ endif
 if isdirectory(expand("~/.vim/bundle/ctrlp.vim"))
     let g:ctrlp_map = '<c-p>'
     let g:ctrlp_cmd = 'CtrlP'
-    let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', '.git', '.svn']
+    let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', '.git', '.svn', '.config']
     let g:ctrlp_working_path_mode = 'ra'
     let g:ctrlp_custom_ignore = {
         \ 'dir':  '\.git$\|\.hg$\|\.svn$\|bower_components\|node_modules',
@@ -660,6 +661,7 @@ if has("autocmd")
     au BufRead,BufNewFile *.es setf javascript
     au BufRead,BufNewFile *.node setf javascript
     au BufRead,BufNewFile *.ejs setf html
+    au BufRead,BufNewFile *.vue setf html
 
     " fix nodejs interpreter
     au BufNewFile,BufRead * call s:DetectNodejs()
@@ -680,7 +682,14 @@ if has("autocmd")
       au BufWritePost *.bin if &bin | %!xxd
       au BufWritePost *.bin set nomod | endif
     augroup END
-endif
+
+    if has("autocmd") && exists("+omnifunc")
+      autocmd Filetype *
+            \	if &omnifunc == "" |
+            \		setlocal omnifunc=syntaxcomplete#Complete |
+            \	endif
+        endif
+    endif
 " }}}
 
 " customize function / commond {{{1
@@ -695,7 +704,7 @@ fun! s:Sts(...)
     if a:0 > 0
         let l:n = a:1
     endif
-   set et
+    set et
     let &ts=l:n
     let &sw=l:n
     let &sts=l:n
