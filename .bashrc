@@ -1,4 +1,4 @@
-# vim: et:ts=4:sw=4:sts=4:ff=unix:fdm=marker:
+# vim: ft=sh:et:ts=2:sw=2:sts=2:ff=unix:fdm=marker:
 
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
@@ -8,11 +8,16 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
-cmd_exists () { type "$1" &> /dev/null; }
+__require() {
+  local f=$1;
+  [ -f "$f" ] && [ -r "$f" ] && { source $f; return 0; }
+  return 1;
+}
 
 # Colors
-export GREP_OPTIONS='--color=auto'
-export CLICOLOR=1
+CLICOLOR=1
+
+# GREP_OPTIONS='--color=auto'
 
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
@@ -22,6 +27,8 @@ HISTCONTROL=ignoredups:ignorespace
 HISTSIZE=1000
 HISTFILESIZE=2000
 HISTIGNORE="&:ls:cd:[bf]g:exit:q:..:...:ll:la:l:h:history"
+HISTTIMEFORMAT="%d/%m/%y %T "
+#HISTTIMEFORMAT='%Y-%m-%d %H:%M:%S '
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -30,26 +37,14 @@ shopt -s histappend
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-if cmd_exists dircolors ; then
-    alias ls='ls --color=auto' # For linux, etc
-else
-    if [ $OS = "darwin" ]; then
-        export LSCOLORS=gxfxcxdxbxegedabagacad
-        alias ls='ls -G' # OS-X SPECIFIC - the -G command in OS-X is for colors, in Linux it's no groups
-    fi
-fi
-
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
-fi
+## PS1 by Allex {{{
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+  xterm-256color | xterm-color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -58,123 +53,135 @@ esac
 force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        # We have color support; assume it's compliant with Ecma-48
-        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-        # a case would tend to support setf rather than setaf.)
-        color_prompt=yes
-    else
-        color_prompt=
-    fi
+  if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+    # We have color support; assume it's compliant with Ecma-48
+    # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+    # a case would tend to support setf rather than setaf.)
+    color_prompt=yes
+  else
+    color_prompt=
+  fi
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '
+  PS1='\[\e[1;32m\][\u@\h \W]\$\[\e[0m\] '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+  # set variable identifying the chroot you work in (used in the prompt below)
+  if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+  fi
+  PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 
-## complex prompt {{{
+# https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh
+for f in "$HOME/.git-prompt.sh" "$HOME/.dotfiles/git-prompt.sh" ; do
+  __require $f && break
+done; unset f
+
+if type -t __git_ps1 >/dev/null 2>&1; then
+  PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
+fi
+
+## Add by Allex Wang, 2011/05/08
 ## http://bash.cyberciti.biz/guide/Changing_bash_prompt
+__ps1_cwd() {
+  # How many characters of the $PWD should be kept
+  local maxlen=15 dir=${PWD##*/}
+  local p=${PWD/#$HOME/\~}
+  local parts=(`echo ${p} | tr "/" " "`)
+  # Indicate that there has been dir truncation
+  local trunc_symbol="${parts[0]}/..."
+  [ "${trunc_symbol:0:1}" = "~" ] || trunc_symbol="/${trunc_symbol}"
+  maxlen=$(( ( maxlen < ${#dir} ) ? ${#dir} : maxlen ))
+  local offset=$(( ${#p} - maxlen ))
+  if [ ${offset} -gt "0" ]; then
+    p=${p:$offset:$maxlen}
+    p=${trunc_symbol}/${p#*/}
+  fi
+  printf $p
+}
 
-bash_prompt_command() {
-    # How many characters of the $PWD should be kept
-    local pwdmaxlen=20
-    # Indicate that there has been dir truncation
-    local trunc_symbol=".."
-    local dir=${PWD##*/}
-    pwdmaxlen=$(( ( pwdmaxlen < ${#dir} ) ? ${#dir} : pwdmaxlen ))
-    NEW_PWD=${PWD/#$HOME/\~}
-    local pwdoffset=$(( ${#NEW_PWD} - pwdmaxlen ))
-    if [ ${pwdoffset} -gt "0" ]
-    then
-        NEW_PWD=${NEW_PWD:$pwdoffset:$pwdmaxlen}
-        NEW_PWD=${trunc_symbol}/${NEW_PWD#*/}
-    fi
+__ps1_init() {
+  # 27 = 033 = 0x1b = ^[ = \e
+  local c_reset="\[\e[0m\]" # unsets color to term's fg color
 
-    # Additionally get current git branch name
-    local branch=""
-    if [ -d .git ]; then
-        read branch <.git/HEAD
-        [[ $branch < g ]] && branch=${branch::7} || branch=${branch/*\/}
+  # regular colors
+  local k="\[\e[0;30m\]" # black
+  local r="\[\e[0;31m\]" # red
+  local g="\[\e[0;32m\]" # green
+  local y="\[\e[0;33m\]" # yellow
+  local b="\[\e[0;34m\]" # blue
+  local m="\[\e[0;35m\]" # magenta
+  local c="\[\e[0;36m\]" # cyan
+  local w="\[\e[0;37m\]" # white
+
+  # emphasized (bolded) colors
+  local em_k="\[\e[1;30m\]"
+  local em_r="\[\e[1;31m\]"
+  local em_g="\[\e[1;32m\]"
+  local em_y="\[\e[1;33m\]"
+  local em_b="\[\e[1;34m\]"
+  local em_m="\[\e[1;35m\]"
+  local em_c="\[\e[1;36m\]"
+  local em_w="\[\e[1;37m\]"
+
+  # background colors
+  local b_k="\[\e[40m\]"
+  local b_r="\[\e[41m\]"
+  local b_g="\[\e[42m\]"
+  local b_y="\[\e[43m\]"
+  local b_b="\[\e[44m\]"
+  local b_m="\[\e[45m\]"
+  local b_c="\[\e[46m\]"
+  local b_w="\[\e[47m\]"
+
+  local prompt_delimit='\\$'
+  local u_c=$c
+
+  if [ $UID -eq "0" ]; then
+    prompt_delimit='#'
+    u_c=$r # root's color
+  fi
+
+  local _user="\u"
+  local _pwd="${em_g}\$(__ps1_cwd)" # \W
+  local _git_ps1=
+
+  if [ -n "${SSH_CLIENT:-$SSH_TTY}" ]; then
+    # show current connection ip if hostname is 'localhost'
+    if [ "${hostname%%.*}" = "localhost" ]; then
+      ip=`echo ${SSH_CONNECTION}|cut -f3 -d ' '`
+      _user="\u@${ip:-\h}"
     else
-        branch=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
+      _user="\u@\h"
     fi
-    if [ -n "$branch" ]; then
-        branch=":$branch"
-    fi
-    GIT_BRANCH=$branch
-}
-bash_prompt() {
-    local NONE="\[\033[0m\]"    # unsets color to term's fg color
- 
-    # regular colors
-    local K="\[\033[0;30m\]"    # black
-    local R="\[\033[0;31m\]"    # red
-    local G="\[\033[0;32m\]"    # green
-    local Y="\[\033[0;33m\]"    # yellow
-    local B="\[\033[0;34m\]"    # blue
-    local M="\[\033[0;35m\]"    # magenta
-    local C="\[\033[0;36m\]"    # cyan
-    local W="\[\033[0;37m\]"    # white
- 
-    # emphasized (bolded) colors
-    local EMK="\[\033[1;30m\]"
-    local EMR="\[\033[1;31m\]"
-    local EMG="\[\033[1;32m\]"
-    local EMY="\[\033[1;33m\]"
-    local EMB="\[\033[1;34m\]"
-    local EMM="\[\033[1;35m\]"
-    local EMC="\[\033[1;36m\]"
-    local EMW="\[\033[1;37m\]"
- 
-    # background colors
-    local BGK="\[\033[40m\]"
-    local BGR="\[\033[41m\]"
-    local BGG="\[\033[42m\]"
-    local BGY="\[\033[43m\]"
-    local BGB="\[\033[44m\]"
-    local BGM="\[\033[45m\]"
-    local BGC="\[\033[46m\]"
-    local BGW="\[\033[47m\]"
- 
-    local UC=$W                 # user's color
-    [ $UID -eq "0" ] && UC=$R   # root's color
- 
-    PS1="${EMG}\u@\h ${EMB}\${NEW_PWD}${EMM}\${GIT_BRANCH}${UC}> ${NONE}"
+  fi
+
+  if type -t __git_ps1 >/dev/null 2>&1; then
+    _git_ps1="\$(__git_ps1 \" ${em_c}(%s)${c_reset}\" 2>/dev/null)"
+  fi
+
+  PS1="${m}${_user}${c_reset} ${_pwd}${_git_ps1} ${u_c}${prompt_delimit}${c_reset} "
 }
 
-if [ "$color_prompt" = yes ]; then
-    # init it by setting PROMPT_COMMAND
-    PROMPT_COMMAND=bash_prompt_command
-    bash_prompt
-else
-    unset bash_prompt_command
-fi
-unset bash_prompt
+[ "$color_prompt" = yes ] && __ps1_init || unset __ps1_cwd
 
-## END complex prompt }}}
+unset __ps1_init color_prompt force_color_prompt
 
-unset color_prompt force_color_prompt
+## END PS1 }}}
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
+__require ~/.bash_aliases
+__require ~/.bash_local
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
-fi
-
-# Adding Git Autocomplete to Bash
-if [ -f "$HOME/.dotfiles/git-completion.bash" ]; then
-    source "$HOME/.dotfiles/git-completion.bash"
+  . /etc/bash_completion
 fi
 
 # Make Terminal’s autocompletion case-insensitive
@@ -183,8 +190,27 @@ bind 'set completion-ignore-case On'
 # Cycle through autocomplete options in Ubuntu’s Terminal with the TAB key
 bind '"\C-i" menu-complete'
 
-if [ -f ~/.bash_local ]; then
-    . ~/.bash_local
+# Adding Git Autocomplete to Bash
+__require "$HOME/.dotfiles/git-completion.bash"
+
+# Adding mvn Autocomplete to Bash <https://github.com/juven/maven-bash-completion>
+__require "$HOME/.dotfiles/maven_bash_completion.bash"
+
+unset -f __require
+
+if [ -n "$SSH_TTY" ] && type cowsay>/dev/null 2>&1
+then
+  # Show a random terminal welcome ascii message By Allex Wang
+  fortune | cowsay -f $(cowsay -l | tail -n +2 | tr " " "\n" | shuf -n1)
 fi
 
-unset -f cmd_exists
+PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+# cleanup $PATH
+export PATH="`echo -n $PATH | awk -v RS=: -v ORS=: '!arr[$0]++'`"
+
+# Don't Match Useless Files in Filename Completion
+# <https://docstore.mik.ua/orelly/unix3/upt/ch28_07.htm>
+# <https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html>
+export FIGNORE=".swp:.tmp:.pyc:.o:"
+

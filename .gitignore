@@ -1,12 +1,17 @@
 # Github: https://raw.githubusercontent.com/allex/dotfiles/master/.gitignore
 # git config --global core.excludesfile '~/.gitignore'
 # see http://groups.google.com/group/peepcode/browse_thread/thread/fe6f9c1fc9d6e725
+# http://git-scm.com/docs/gitignore
 
 .git
 .svn
 .hg
-.zip
-.gz
+.lock-wscript
+.wafpickle-N
+
+*.zip
+*.gz
+*.tgz
 
 .DS_Store
 
@@ -24,9 +29,7 @@ nbproject
 .nbproject/*
 nbproject/*
 nbproject/private/
-build/
 nbbuild/
-dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
@@ -45,15 +48,29 @@ nb-configuration.xml
 *.swp
 *.tmp
 *.save
+*.log
 .sass*
+.settings
 
 .netrwhist
 .session.vim
-t.*
+
+**/*.map
+**/.*-cache
 
 node_modules/*
 logs/*
 npm-debug.log
+package-lock.json
+yarn.lock
+tmp.*
+config.gypi
 
-.*-cache
 .project
+.vscode
+.tern-project
+.build_*
+
+*.bak
+/target
+[a-z0-9].*

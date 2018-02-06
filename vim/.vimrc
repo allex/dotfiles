@@ -5,7 +5,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.7
-" Last Modified: Fri Nov 03, 2017 09:14
+" Last Modified: Wed Feb 07, 2018 17:24
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -26,13 +26,14 @@
 " helpers {{{1
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim" | finish | endif
-
-" Helper functions
-fun! Exec(com)
+fun! s:run(com)
     exec 'sil! ' . a:com
 endfun
 fun! s:load(file)
     if filereadable(a:file) | exec 'so ' a:file | endif
+endfun
+fun! s:exists_plugin(name)
+    return !empty(globpath(&rtp, '**/' . a:name))
 endfun
 " }}}
 
@@ -162,7 +163,7 @@ fun! s:SetColor(...)
         " use default instead.'
         let c='desert'
     endif
-    call Exec('colo ' . l:c)
+    call s:run('colo ' . l:c)
     hi clear Normal
     hi clear NonText
     hi Normal ctermbg=NONE
@@ -210,10 +211,6 @@ noremap <Leader>bg :call <SID>ToggleBG()<CR>
 " For more colorschemes http://vimcolorschemetest.googlecode.com/svn/
 set t_Co=256
 set tw=85
-
-if exists('$TMUX')
-    set term=screen-256color
-endif
 
 if has("gui_running")
     set lines=35
@@ -318,10 +315,10 @@ if has('win32')
 endif
 " }}}
 
-" plugins {{{1
+" Plugins {{{1
 
 " NerdTree {{{2
-if isdirectory(expand("~/.vim/bundle/nerdtree"))
+if s:exists_plugin("nerdtree")
     nmap <silent> <F10> :NERDTreeToggle<CR>
 
     let NERDTreeMinimalUI=1
@@ -339,7 +336,7 @@ endif
 " }}}
 
 " ctrlp {{{2
-if isdirectory(expand("~/.vim/bundle/ctrlp.vim"))
+if s:exists_plugin("ctrlp.vim")
     let g:ctrlp_map = '<c-p>'
     let g:ctrlp_cmd = 'CtrlP'
     let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', '.git', '.svn', '.config']
@@ -352,13 +349,41 @@ endif
 " }}}
 
 " editorconfig {{{2
-if isdirectory(expand("~/.vim/bundle/editorconfig-vim"))
+if s:exists_plugin("editorconfig-vim")
     let g:EditorConfig_exclude_patterns = [ "^tarfile::" ]
 endif
 " }}}
 
+" ALE {{{2
+if s:exists_plugin("ale")
+
+    " Write this in your vimrc file
+    let g:ale_lint_on_text_changed = 'never'
+
+    " Run linters only when I save files and don't want linters to run on
+    " opening a file
+    let g:ale_lint_on_enter = 0
+    let g:ale_lint_on_save = 1
+    let g:ale_fix_on_save = 1
+
+    " Customize linters & fixers
+    let g:ale_linters = {
+                \   'javascript': ['standard']
+                \}
+    let g:ale_fixers = {
+                \   'javascript': ['standard'],
+                \   'scss': ['prettier']
+                \}
+    let g:ale_javascript_prettier_options = '--no-semi --single-quote --trailing-comma none'
+endif
+" }}}
+
+" misc {{{2
 let Tlist_Auto_Open=0
 let Tlist_Use_SingleClick=1
+
+" Mapping for the <F8> key to toggle the taglist window.
+nmap <silent> <F8> :TlistToggle<CR>
 
 " Additionally load gist.vim only if git installed.
 if !executable('git')
@@ -367,12 +392,10 @@ endif
 
 " auto compile scss, sass files
 let g:sass_compile_auto=0
+" }}}
 
 " Installation pathogen.vim (http://www.vim.org/scripts/script.php?script_id=2332)
 sil! call pathogen#infect()
-
-" Mapping for the <F8> key to toggle the taglist window.
-nmap <silent> <F8> :TlistToggle<CR>
 
 " }}}
 
@@ -437,7 +460,8 @@ map <silent> <Leader>p :set paste!<CR>
 
 map <silent> <F12> :conf q!<CR>
 
-" nmap <silent> <Leader>f :find<CR>
+" prettier formatter
+nnoremap <silent> <leader>f :silent %!prettier --stdin --trailing-comma all --single-quote<CR>
 
 " Vertical split then hop to new buffer
 nmap <silent> <Leader>h :new<CR>
@@ -473,12 +497,12 @@ cmap <silent> cwd lcd %:p:h<CR>:pwd<CR>
 cmap <silent> <Leader>cd :cd %:p:h<CR>:pwd<CR>
 
 " STRIP -- EMPTY LINE ENDINGS
-nmap <silent> _$ :call Exec("%s/\\s\\+$//e")<CR>
-vmap <silent> _$ :call Exec("s/\\s\\+$//e")<CR>
+nmap <silent> _$ :call s:run("%s/\\s\\+$//e")<CR>
+vmap <silent> _$ :call s:run("s/\\s\\+$//e")<CR>
 
 " STRIP -- EMPTY LINE BEGINNINGS
-nmap <silent> _^ :call Exec("%s/^\\s\\+//e")<CR>
-vmap <silent> _^ :call Exec("s/^\\s\\+//e")<CR>
+nmap <silent> _^ :call s:run("%s/^\\s\\+//e")<CR>
+vmap <silent> _^ :call s:run("s/^\\s\\+//e")<CR>
 
 " Easily change between backslash and forward slash with <Leader>/ or <Leader>\
 nmap <silent> <Leader>/ :let tmp=@/<CR>:s:\\:/:ge<CR>:let @/=tmp<CR>
@@ -529,14 +553,11 @@ endfun
 " }}}
 
 " autocommands {{{1
-" Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
-    " build-in autocmd {{{
+    " builtin autocmd {{{
+
     " Enable file type detection.
-    " Use the default filetype settings, so that mail gets 'tw' set to 78,
-    " 'cindent' is on in C files, etc.
-    " Also load indent files, to automatically do language-dependent indenting.
     filetype plugin indent on
 
     " Put these in an autocmd group, so that we can delete them easily.
@@ -588,18 +609,13 @@ if has("autocmd")
     " }}}
 
     " Last Modified {{{
-
-    " If buffer modified, update any 'Last modified: ' in the first 20 lines.
-    " 'Last modified: ' can have up to 10 characters before (they are retained).
-    " Restores cursor and window position using save_cursor variable. ('ul' is alias
-    " for 'undolevels').
-
     com! -nargs=0 NOMOD :let b:nomod = 1
     com! -nargs=0 MOD   :let b:nomod = 0
-
     au BufWritePre * call s:UpdateLastModified()
 
-    " Update last modified section
+    " Upload file modifier stetement near in the first 20 lines.
+    " Restores cursor and window position using save_cursor variable. ('ul' is alias
+    " for 'undolevels').
     fun! s:UpdateLastModified()
         if exists('b:nomod') && b:nomod
             return
@@ -614,11 +630,11 @@ if has("autocmd")
             call setpos('.', cur_pos)
         endif
     endfun
-
     " }}}
 
-    " Enable tab switch
+    " Enable tab switch {{{
     au VimEnter * call s:BufPos_Initialize()
+
     fun! s:BufPos_Initialize()
         for i in range(1, 9)
             exe "map \<C-" . i . "\> :call BufPos_ActivateBuffer(" . i . ")<CR>"
@@ -638,6 +654,7 @@ if has("autocmd")
         endfor
         echo "No buffer!"
     endfun
+    " }}}
 
     " Reads the template file into new buffer.
     au BufNewFile * call s:loadTemplate()
@@ -671,25 +688,16 @@ if has("autocmd")
         endif
     endfunction
 
-    " for hex editing
-    augroup Binary
-      au!
-      au BufReadPre  *.bin let &bin=1
-      au BufReadPost *.bin if &bin | %!xxd
-      au BufReadPost *.bin set ft=xxd | endif
-      au BufWritePre *.bin if &bin | %!xxd -r
-      au BufWritePre *.bin endif
-      au BufWritePost *.bin if &bin | %!xxd
-      au BufWritePost *.bin set nomod | endif
-    augroup END
+    " for HEX editing
+    au BufReadPre  *.bin let &bin=1
+    au BufReadPost *.bin if &bin | %!xxd
+    au BufReadPost *.bin set ft=xxd | endif
+    au BufWritePre *.bin if &bin | %!xxd -r
+    au BufWritePre *.bin endif
+    au BufWritePost *.bin if &bin | %!xxd
+    au BufWritePost *.bin set nomod | endif
 
-    if has("autocmd") && exists("+omnifunc")
-      autocmd Filetype *
-            \	if &omnifunc == "" |
-            \		setlocal omnifunc=syntaxcomplete#Complete |
-            \	endif
-        endif
-    endif
+endif
 " }}}
 
 " customize function / commond {{{1
@@ -816,7 +824,7 @@ fun! s:AppendModeline()
     call append(line("$"), l:modeline)
     $s/\s\s*/ /
 endfun
-nnoremap <silent> <Leader>ml <SID>:call s:AppendModeline()<CR>
+nnoremap <Leader>ml <SID>:call s:AppendModeline()<CR>
 " }}}
 
 " customizes {{{1

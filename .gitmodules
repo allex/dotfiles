@@ -1,36 +1,60 @@
-[submodule "vim/.vim/bundle/scss-syntax.vim"]
-	path = vim/.vim/bundle/scss-syntax.vim
+[submodule "vim/.vim/pack/bundle/start/scss-syntax.vim"]
+	path = vim/.vim/pack/bundle/start/scss-syntax.vim
 	url = git://github.com/cakebaker/scss-syntax.vim.git
-[submodule "vim/.vim/bundle/webapi-vim"]
-	path = vim/.vim/bundle/webapi-vim
+[submodule "vim/.vim/pack/bundle/start/webapi-vim"]
+	path = vim/.vim/pack/bundle/start/webapi-vim
 	url = git://github.com/mattn/webapi-vim.git
-[submodule "vim/.vim/bundle/gist-vim"]
-	path = vim/.vim/bundle/gist-vim
+[submodule "vim/.vim/pack/bundle/start/gist-vim"]
+	path = vim/.vim/pack/bundle/start/gist-vim
 	url = git://github.com/mattn/gist-vim.git
-[submodule "vim/.vim/bundle/vcscommand"]
-	path = vim/.vim/bundle/vcscommand
+[submodule "vim/.vim/pack/bundle/start/vcscommand"]
+	path = vim/.vim/pack/bundle/start/vcscommand
 	url = git://repo.or.cz/vcscommand.git
-[submodule "vim/.vim/bundle/vim-css3-syntax"]
-	path = vim/.vim/bundle/vim-css3-syntax
+[submodule "vim/.vim/pack/bundle/start/vim-css3-syntax"]
+	path = vim/.vim/pack/bundle/start/vim-css3-syntax
 	url = git://github.com/hail2u/vim-css3-syntax.git
-[submodule "vim/.vim/bundle/jshint.vim"]
-	path = vim/.vim/bundle/jshint.vim
-	url = git://github.com/walm/jshint.vim.git
-[submodule "vim/.vim/bundle/xmledit"]
-	path = vim/.vim/bundle/xmledit
+[submodule "vim/.vim/pack/bundle/start/xmledit"]
+	path = vim/.vim/pack/bundle/start/xmledit
 	url = git://github.com/sukima/xmledit.git
-[submodule "vim/.vim/bundle/vim-fakeclip"]
-	path = vim/.vim/bundle/vim-fakeclip
-	url = https://github.com/kana/vim-fakeclip.git
-[submodule "vim/.vim/bundle/nerdcommenter"]
-	path = vim/.vim/bundle/nerdcommenter
+[submodule "vim/.vim/pack/bundle/start/nerdcommenter"]
+	path = vim/.vim/pack/bundle/start/nerdcommenter
 	url = https://github.com/scrooloose/nerdcommenter.git
-[submodule "vim/.vim/bundle/editorconfig-vim"]
-	path = vim/.vim/bundle/editorconfig-vim
+[submodule "vim/.vim/pack/bundle/start/nerdtree"]
+	path = vim/.vim/pack/bundle/start/nerdtree
+	url = https://github.com/scrooloose/nerdtree.git
+[submodule "vim/.vim/pack/bundle/start/editorconfig-vim"]
+	path = vim/.vim/pack/bundle/start/editorconfig-vim
 	url = https://github.com/editorconfig/editorconfig-vim.git
-[submodule "vim/.vim/bundle/supertab"]
-	path = vim/.vim/bundle/supertab
+[submodule "vim/.vim/pack/bundle/start/supertab"]
+	path = vim/.vim/pack/bundle/start/supertab
 	url = https://github.com/ervandew/supertab.git
-[submodule "vim/.vim/bundle/vim-colors-solarized"]
-	path = vim/.vim/bundle/vim-colors-solarized
+[submodule "vim/.vim/pack/bundle/start/vim-colors-solarized"]
+	path = vim/.vim/pack/bundle/start/vim-colors-solarized
 	url = https://github.com/altercation/vim-colors-solarized.git
+[submodule "vim/.vim/pack/bundle/start/ale"]
+	path = vim/.vim/pack/bundle/start/ale
+	url = https://github.com/w0rp/ale.git
+[submodule "vim/.vim/pack/bundle/start/ctrlp.vim"]
+	path = vim/.vim/pack/bundle/start/ctrlp.vim
+	url = https://github.com/ctrlpvim/ctrlp.vim.git
+[submodule "vim/.vim/pack/bundle/start/dash.vim"]
+	path = vim/.vim/pack/bundle/start/dash.vim
+	url = https://github.com/rizzatti/dash.vim.git
+[submodule "vim/.vim/pack/bundle/start/sass-compile.vim"]
+	path = vim/.vim/pack/bundle/start/sass-compile.vim
+	url = https://github.com/allex/sass-compile.vim.git
+[submodule "vim/.vim/pack/bundle/start/vim-babel"]
+	path = vim/.vim/pack/bundle/start/vim-babel
+	url = https://github.com/jbgutierrez/vim-babel.git
+[submodule "vim/.vim/pack/bundle/start/vim-coffee-script"]
+	path = vim/.vim/pack/bundle/start/vim-coffee-script
+	url = https://github.com/kchmck/vim-coffee-script.git
+[submodule "vim/.vim/pack/bundle/start/vim-dirdiff"]
+	path = vim/.vim/pack/bundle/start/vim-dirdiff
+	url = git://github.com/will133/vim-dirdiff
+[submodule "vim/.vim/pack/bundle/start/vim-javascript"]
+	path = vim/.vim/pack/bundle/start/vim-javascript
+	url = https://github.com/pangloss/vim-javascript.git
+[submodule "vim/.vim/pack/bundle/opt/vim-fakeclip"]
+	path = vim/.vim/pack/bundle/opt/vim-fakeclip
+	url = https://github.com/kana/vim-fakeclip.git

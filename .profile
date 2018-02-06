@@ -1,5 +1,8 @@
 # vim: et:ts=2:sw=2:sts=2:ff=unix:fdm=marker:
 
+# ignore tmux
+# [ -n "$TMUX" ] && return
+
 # ~/.profile: executed by the command interpreter for login shells.
 # This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
 # exists.
@@ -27,7 +30,7 @@ pathmunge () {
 
 # Idetify OS
 export OS=`uname -s | sed -e 's/  */-/g;y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
-export OSVERSION=`expr "$(uname -r)" : '[^0-9]*\([0-9]*\.[0-9]*\)'`
+export OSVER=`expr "$(uname -r)" : '[^0-9]*\([0-9]*\.[0-9]*\)'`
 
 export EDITOR="vim"
 
@@ -43,31 +46,44 @@ export ANT_HOME="/usr/local/ant"
 export M2_HOME="/usr/local/maven"
 
 # Node
-export NODE_PATH=$HOME/.node_libraries:$HOME/node_modules:$NODE_PATH
+export NODE_PATH=$HOME/.node_libraries:$HOME/node_modules:$NODE_PATH:/usr/local/nodejs/lib/node_modules
+export NODE_ENV="production"
 
-pathmunge "$HOME/node_modules/.bin"
-pathmunge "./node_modules/.bin"
-pathmunge "/usr/local/nodejs/bin"
+pathmunge /usr/local/bin
+pathmunge /usr/local/sbin
+
+# Use GNU Command instead of BSD
+pathmunge /usr/local/coreutils/bin
+
+pathmunge /usr/local/nodejs/bin
 
 # Python
 export PYTHONPATH=$HOME/local/python-packages
 pathmunge $PYTHONPATH after
 
-# Use GNU Command instead of BSD
-pathmunge /usr/local/coreutils/bin
-
 # Set PATH so it includes user's private bin
 pathmunge $HOME/bin
+pathmunge $HOME/.bin
+pathmunge $HOME/.yarn-global/node_modules/.bin
+pathmunge $HOME/node_modules/.bin after
+pathmunge ./node_modules/.bin after
+pathmunge ./bin
 
-# Show a random terminal welcome ascii message
-if type cowsay>/dev/null 2>&1; then
-  # fortune | cowsay -f $(ls /usr/share/cowsay | shuf -n1)
-  fortune | cowsay -f $(cowsay -l | tail -n +2 | tr " " "\n" | shuf -n1)
-fi
+# Go
+export GOPATH=$HOME/local/go/packages
+pathmunge $GOPATH/bin
 
 # Include .bashrc if running bash.
 if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
   . "$HOME/.bashrc"
 fi
 
+[ "$GIT_DEPLOY_KEY" ] || GIT_DEPLOY_KEY="$HOME/.ssh/id_rsa"
+
 unset -f pathmunge
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+

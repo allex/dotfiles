@@ -14,15 +14,11 @@ esac
 
 $ln $dir/vim/.vimrc $HOME/.vimrc
 $ln $dir/vim/.vim $HOME/.vim
-
 $ln $dir/.bashrc $HOME/.bashrc
 $ln $dir/.bash_aliases $HOME/.bash_aliases
 $ln $dir/.bash_logout $HOME/.bash_logout
 $ln $dir/.profile $HOME/.profile
-
 $ln $dir/.gitconfig $HOME/.gitconfig
 $ln $dir/.gitignore $HOME/.gitignore
-$ln $dir/.jshintrc $HOME/.jshintrc
-$ln $dir/.jshintignore $HOME/.jshintignore
 
 echo "OK!"
