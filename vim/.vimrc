@@ -497,12 +497,10 @@ cmap <silent> cwd lcd %:p:h<CR>:pwd<CR>
 cmap <silent> <Leader>cd :cd %:p:h<CR>:pwd<CR>
 
 " STRIP -- EMPTY LINE ENDINGS
-nmap <silent> _$ :call s:run("%s/\\s\\+$//e")<CR>
-vmap <silent> _$ :call s:run("s/\\s\\+$//e")<CR>
+nmap <silent> <Leader>$ :call <SID>run("%s/\\s\\+$//e \| s/\\s\\+$//e")<CR>
 
 " STRIP -- EMPTY LINE BEGINNINGS
-nmap <silent> _^ :call s:run("%s/^\\s\\+//e")<CR>
-vmap <silent> _^ :call s:run("s/^\\s\\+//e")<CR>
+nmap <silent> <Leader>^ :call <SID>run("%s/^\\s\\+//e \| s/^\\s\\+//e")<CR>
 
 " Easily change between backslash and forward slash with <Leader>/ or <Leader>\
 nmap <silent> <Leader>/ :let tmp=@/<CR>:s:\\:/:ge<CR>:let @/=tmp<CR>
@@ -760,9 +758,6 @@ set ssop=buffers,sesdir,tabpages,winpos,winsize
 com! -nargs=? Save call s:SaveSession(<f-args>)
 com! -nargs=? LoadSession call s:LoadSession(<f-args>)
 
-" F6 to restores the session.
-nmap <F6> :LoadSession <CR>
-
 "
 " functions to save and load current workspace session.
 " Author: Allex Wang (http://iallex.com)
@@ -824,7 +819,7 @@ fun! s:AppendModeline()
     call append(line("$"), l:modeline)
     $s/\s\s*/ /
 endfun
-nnoremap <Leader>ml <SID>:call s:AppendModeline()<CR>
+nnoremap <Leader>ml :call <SID>AppendModeline()<CR>
 " }}}
 
 " customizes {{{1
