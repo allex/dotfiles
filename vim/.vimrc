@@ -5,7 +5,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.7
-" Last Modified: Wed Feb 07, 2018 17:24
+" Last Modified: Thu Feb 22, 2018 16:38
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -323,8 +323,6 @@ if s:exists_plugin("nerdtree")
 
     let NERDTreeMinimalUI=1
     let NERDTreeQuitOnOpen=1
-
-    " colored NERD Tree
     let NERDChristmasTree=1
     let NERDTreeHighlightCursorline=1
     let NERDTreeShowHidden=1
@@ -332,6 +330,11 @@ if s:exists_plugin("nerdtree")
 
     " Add a space after the left delimiter and before the right delimiter, like this: /* int foo=2; */
     let NERDSpaceDelims=1
+
+    " Fix some filetype delimiter with spaces
+    let NERDCustomDelimiters={
+                \   'python': { 'left': '#', 'leftAlt': '#' }
+                \ }
 endif
 " }}}
 
@@ -339,7 +342,7 @@ endif
 if s:exists_plugin("ctrlp.vim")
     let g:ctrlp_map = '<c-p>'
     let g:ctrlp_cmd = 'CtrlP'
-    let g:ctrlp_root_markers = ['pom.xml', '.p4ignore', '.git', '.svn', '.config']
+    let g:ctrlp_root_markers = [ 'pom.xml', '.p4ignore', '.git', '.svn', '.config', 'python-packages', 'package.json' ]
     let g:ctrlp_working_path_mode = 'ra'
     let g:ctrlp_custom_ignore = {
         \ 'dir':  '\.git$\|\.hg$\|\.svn$\|bower_components\|node_modules',
@@ -590,14 +593,14 @@ if has("autocmd")
             syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
         endfun
 
-        let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
+        let &l:fillchars=substitute(&l:fillchars, ',\?fold:.', '', 'gi')
         fun! MyFoldText()
             " for now, just don't try if version isn't 7 or higher
             if v:version < 701
                 return foldtext()
             endif
             " clear fold from fillchars to set it up the way we want later
-            let &l:fillchars=substitute(&l:fillchars,',\?fold:.','','gi')
+            let &l:fillchars=substitute(&l:fillchars, ',\?fold:.', '', 'gi')
             let l:foldtext=getline(v:foldstart)
             let l:foldtext=substitute(l:foldtext, '\/[\/\*]\+\s*', '', '')
             return substitute(l:foldtext, '{.*', '{...}', '')
