@@ -5,7 +5,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.7
-" Last Modified: Thu Feb 22, 2018 16:38
+" Last Modified: Sat Feb 24, 2018 17:10
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -452,11 +452,17 @@ if has("gui_running")
 endif
 
 " Tab navigation
+"
 map tn :tabnext<CR>
 map tp :tabprevious<CR>
 map td :tabnew
 map te :tabedit
 map tc :tabclose<CR>
+
+" move the current tab
+noremap <A-Left>  :-tabmove<cr>
+noremap <A-Right> :+tabmove<cr>
+
 
 ",p toggle paste mode
 map <silent> <Leader>p :set paste!<CR>
