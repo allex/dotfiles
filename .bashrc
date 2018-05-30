@@ -190,6 +190,10 @@ bind 'set completion-ignore-case On'
 # Cycle through autocomplete options in Ubuntu’s Terminal with the TAB key
 bind '"\C-i" menu-complete'
 
+# <C-l> clear screen
+# bind -m vi-insert "\C-l":clear-screen
+bind -x '"\C-l": clear;'
+
 # Adding Git Autocomplete to Bash
 __require "$HOME/.dotfiles/git-completion.bash"
 

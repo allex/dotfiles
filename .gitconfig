@@ -11,7 +11,7 @@
 #
 # GistID: debabf5f064ceadb86aa025928e04aa4
 # GistURL: https://gist.github.com/debabf5f064ceadb86aa025928e04aa4
-# Last Modified: Wed Feb 07, 2018 18:09
+# Last Modified: Mon May 14, 2018 17:38
 
 [color]
   ui = auto
@@ -61,6 +61,8 @@
   outgoing = !sh -c 'git fetch && git log --graph --boundary --left-right --cherry-pick --decorate FETCH_HEAD..HEAD'
   i = "!f(){ [ -n \"$GIT_PREFIX\" ] && cd \"$GIT_PREFIX\"; git init && git add -A && git commit \"$@\"; };f"
   alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
+  tgz = "archive --format=tgz -o latest.tgz HEAD"
+  ls-subtree = "!f(){ git log | grep git-subtree-dir | tr -d ' ' | cut -d : -f2 | sort | uniq | xargs -I {} bash -c \"if [ -d $(git rev-parse --show-toplevel)/{} ] ; then echo {}; fi\"; };f"
 
 [core]
   # deactivate LF will be replaced by CRLF

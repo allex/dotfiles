@@ -26,7 +26,6 @@ alias zcat='gunzip -c'
 
 alias diskspace="sudo du -k `pwd` | sort -n"
 alias dig="dig +noall +answer"
-alias glg="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr | %cn)%Creset' --abbrev-commit --date=relative"
 
 # enable color support of ls and also add handy aliases
 if type -t dircolors &>/dev/null; then
@@ -192,27 +191,24 @@ psgrep() {
   fi
 }
 
-# Wrap scp to check for missing colons
-scp() {
-  if (($# >= 2)) && [[ $* != *:* ]] ; then
-    printf 'scp: Missing colon, probably an error\n' >&2
-    return 1
-  fi
-  command scp -o GSSAPIAuthentication=no "$@"
-}
-
-# Extends with specified shortcut completion with host prefix and default user
+#
+# Helper function for auto prefix ssh, scp host
 # Author: Allex Wang (allex.wxn@gmail.com)
 # MIT Licensed
-# GistID: 0f844bbe583a1e40548d
-# GistURL: https://gist.github.com/allex/0f844bbe583a1e40548d
-ssh() {
-  local user host=$1
-  local m=`grep -Po '\w+@[^ ]+' <<< "$host"`
+#
+__autoprefix_ssh_hosts() {
+  local len=0 level diff user host m
+  host=$1
+  m=`grep -Po '\w+@[^: ]+' <<< "$host"`
   if [ "$m" ]; then
     read user host <<< "`echo $m|tr '@' ' '`"
   fi
-  if [[ "$host" =~ ^[0-9]+$ ]]; then
+  host=${host##.}
+  host=${host%%.}
+  level=`printf $host |sed "s#[0-9]*##g"`
+  [ -n "$level" ] && len=${#level}
+  diff=$((3-${len}))
+  if [[ "$host" =~ ^[0-9.]+$ ]] && [ $diff -ne 0 ]; then
     local x k v u prefix
     local config=$HOME/.ssh/config
     if [[ -r $config ]]; then
@@ -231,16 +227,66 @@ ssh() {
       done < "$config"
       # auto fix the default host prefix and user if not config specified.
       if [ $fix -eq 1 ]; then
-        set -- "$user@$prefix.$host"
+        prefix=( $(printf "$prefix" |tr '.' '\n') )
+        prefix=( ${prefix[@]:0:$diff} )
+        local n h=''
+        for n in "${prefix[@]}"; do h=${h}.${n}; done
+        host="${h##.}.$host"
+        printf "$user@$host"
+        return
       fi
     fi
   fi
-  local args=('-o GSSAPIAuthentication=no')
+  printf "${user:+${user}@}${host}"
+}
+
+# Extends with specified shortcut completion with host prefix and default user
+# Author: Allex Wang (allex.wxn@gmail.com)
+# MIT Licensed
+# GistID: 0f844bbe583a1e40548d
+# GistURL: https://gist.github.com/allex/0f844bbe583a1e40548d
+ssh() {
+  local host command p parsed args=('-o GSSAPIAuthentication=no')
+  while [ $# -gt 0 ]; do
+    p=$1
+    [ x"$p" = x"--" ] && break
+    shift
+    case "$p" in
+      -v | -T)
+        args+=("$p")
+        continue
+        ;;
+      -*)
+        args+=("$p")
+        case "$1" in -* | "") continue ;; esac
+        args+=("$1")
+        shift
+        ;;
+      *)
+        if ! [ $parsed ]; then
+          parsed=1
+          args+=("$(__autoprefix_ssh_hosts $p)")
+        else
+          args+=("$p")
+        fi
+        ;;
+    esac
+  done
+  set -- "${args[@]:-}"
   if type -t ssh-pearl >/dev/null 2>&1; then
     ssh-pearl "$args" "$@"
   else
     /usr/bin/ssh "$args" "$@"
   fi
+}
+
+scp() {
+  # check for missing colons
+  if (($# >= 2)) && [[ $* != *:* ]] ; then
+    printf 'scp: Missing colon, probably an error\n' >&2
+    return 1
+  fi
+  command scp -o GSSAPIAuthentication=no "$@"
 }
 
 # Completion for ssh/sftp/ssh-copy-id with config hostnames
@@ -302,5 +348,27 @@ __git_cmd=`which git 2>/dev/null`; [ -n "${__git_cmd}" ] && \
     git add .gitignore
     git ci -m "initializing repo" .gitignore
   }
+
+  # quote () {
+  #   local quoted=${1//\'/\'\\\'\'};
+  #   printf "'%s'" "$quoted"
+  # }
+
+  # build git alias based on ~/.gitconfig
+  # sessionrc="$HOME/.bashrc.tmp"
+  # cat /dev/null > "$sessionrc"
+  # arr=(`git config --list 2>/dev/null |grep 'alias\.' |sed "s#^alias.\([^=]*\)=.*#\1#"`)
+  # for a in ${arr[@]}
+  # do
+  #   b=`git config --get alias.$a`
+  #   if ! [[ ${b} =~ ^! ]]; then
+  #     b="git ${b}"
+  #   else
+  #     b="${b:1}"
+  #   fi
+  #   echo "alias g$a=$(quote "$b")" >>"$sessionrc"
+  # done
+  # source "$sessionrc"
+
 }
 

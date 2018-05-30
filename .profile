@@ -46,7 +46,7 @@ export ANT_HOME="/usr/local/ant"
 export M2_HOME="/usr/local/maven"
 
 # Node
-export NODE_PATH=$HOME/.node_libraries:$HOME/node_modules:$NODE_PATH:/usr/local/nodejs/lib/node_modules
+export NODE_PATH=$HOME/.node_libraries:$HOME/node_modules:$NODE_PATH:/usr/local/nodejs/lib/node_modules:/usr/local/node-modules/lib/node_modules
 export NODE_ENV="production"
 
 pathmunge /usr/local/bin
@@ -56,6 +56,7 @@ pathmunge /usr/local/sbin
 pathmunge /usr/local/coreutils/bin
 
 pathmunge /usr/local/nodejs/bin
+pathmunge /usr/local/node-modules/bin
 
 # Python
 export PYTHONPATH=$HOME/local/python-packages
