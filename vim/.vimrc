@@ -5,7 +5,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.7
-" Last Modified: Sat Feb 24, 2018 17:10
+" Last Modified: Wed May 30, 2018 12:20
 "
 " For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
 "
@@ -218,10 +218,8 @@ if has("gui_running")
     set tw=100
     if has("win32")
         sil! colo torte
-        " set guifont=Lucida_Console:h10:cANSI
     else
         sil! colo darkdevel
-        " set guifont=Monospace\ 9
     endif
 endif
 
@@ -381,6 +379,14 @@ if s:exists_plugin("ale")
 endif
 " }}}
 
+" typescript {{{2
+" https://github.com/leafgarland/typescript-vim
+if s:exists_plugin("typescript-vim")
+    autocmd QuickFixCmdPost [^l]* nested cwindow
+    autocmd QuickFixCmdPost    l* nested lwindow
+endif
+" }}}
+
 " misc {{{2
 let Tlist_Auto_Open=0
 let Tlist_Use_SingleClick=1
@@ -470,7 +476,7 @@ map <silent> <Leader>p :set paste!<CR>
 map <silent> <F12> :conf q!<CR>
 
 " prettier formatter
-nnoremap <silent> <leader>f :silent %!prettier --stdin --trailing-comma all --single-quote<CR>
+nnoremap <silent> <Leader>f :silent %!prettier --stdin --trailing-comma all --single-quote<CR>
 
 " Vertical split then hop to new buffer
 nmap <silent> <Leader>h :new<CR>
@@ -531,9 +537,9 @@ nmap <F4> :w<CR>:make<CR>:cw<CR>
 
 " More convenient copy/paste for the + register
 noremap <Leader>y "+y
-noremap <leader>Y "+Y
-noremap <leader>p "+p
-noremap <leader>P "+P
+noremap <Leader>Y "+Y
+noremap <Leader>p "+p
+noremap <Leader>P "+P
 
 " Selecting
 "
