@@ -1,6 +1,8 @@
 # ~/.bash_logout: executed by bash(1) when login shell exits.
 # Author: Allex Wang (allex.wxn@gmail.com)
 
+exit
+
 # ubuntu
 if [ -f "$HOME/.xsession-errors" ]; then
   rm -f "$HOME/.xsession-errors*"

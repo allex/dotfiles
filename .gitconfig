@@ -7,11 +7,11 @@
 # NOTE: This is a common config file, localize config to `~/.gitconfig.local`
 #
 # Installation:
-# sh> wget -O ~/.gitconfig https://git.io/vbrfa
+# sh> wget -O ~/.gitconfig https://git.io/fAHS5
 #
 # GistID: debabf5f064ceadb86aa025928e04aa4
 # GistURL: https://gist.github.com/debabf5f064ceadb86aa025928e04aa4
-# Last Modified: Mon May 14, 2018 17:38
+# Last Modified: Thu Sep 20, 2018 14:00
 
 [color]
   ui = auto
@@ -33,18 +33,20 @@
 [alias]
   st = status --porcelain --ignore-submodules=dirty -s
   ci = commit
+  df = diff -b
   br = branch
   co = checkout
-  df = diff -b
   dt = difftool
   ls = ls-files
-  amend = commit --amend
+  amend = "!f() { git add -u; git ci --amend \"$@\"; };f"
   pom = push origin master
   pl = pull --rebase
   rbc = rebase --continue
   l = log --stat --format=format:'"%C(yellow)%h %C(cyan)%an %C(blue)(%cn) %C(cyan)%ai\n%C(green)%s\n%b%N"'
   ll = log --stat --abbrev-commit
   lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %C(bold green)(%cr | %an)%Creset' --abbrev-commit --date=relative # --all --topo-order
+  lf = "!f() { git lg --first-parent ${*/--first-parent/}; };f"
+  sh = "!f() { git show \"$@\" -- ':!dist'; };f"
   shlog = log --pretty=\"%Cgreen%h%Creset - %Cred%ci%Creset - %s (%Cred%an%Creset)\"
   fshow = !sh -c 'git show --pretty="format:" --name-only $1 | grep -v "^$" | uniq'
   vim   = !sh -c 'vim `git fshow $1`'
@@ -54,6 +56,10 @@
   rmbranch = "!f(){ git branch -D ${1} && git push origin --delete ${1}; };f"
   rmtag = "!f(){ git tag -d ${1} && git push origin :${1}; };f"
   up = "!f(){ args=\"$@\"; [ -n \"$args\" ] || { args=\"origin `git rev-parse --abbrev-ref HEAD`\"; } ; git clean -nfX; git fetch --prune origin \"+refs/tags/*:refs/tags/*\" && git fetch -p && git remote update origin -p && git pull $args && git submodule update --init; git submodule foreach -q 'branch=\"$(git config -f $toplevel/.gitmodules submodule.$name.branch)\"; branch=${branch:-master}; git fetch origin -upfv +$branch:$branch && git checkout -f $branch'; };f"
+
+  # Misc
+  find = "!f() { git lg --color --source -S \"$@\"; };f"
+
   # privalige alias
   deploy = "!f(){ git-cli-deploy \"$@\"; };f"
   release = "!f(){ (:;export PATH="/usr/local/nodejs/bin/:$PATH";git-release \"$@\") };f"
@@ -63,6 +69,7 @@
   alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
   tgz = "archive --format=tgz -o latest.tgz HEAD"
   ls-subtree = "!f(){ git log | grep git-subtree-dir | tr -d ' ' | cut -d : -f2 | sort | uniq | xargs -I {} bash -c \"if [ -d $(git rev-parse --show-toplevel)/{} ] ; then echo {}; fi\"; };f"
+  show-rev-number = !sh -c 'git rev-list --reverse HEAD | nl | awk \"{ if(\\$1 == "$0") { print \\$2 }}\"'
 
 [core]
   # deactivate LF will be replaced by CRLF

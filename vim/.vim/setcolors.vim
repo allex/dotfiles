@@ -34,7 +34,7 @@ function! s:SetColors(args)
   elseif a:args == 'all'
     let paths = split(globpath(&runtimepath, 'colors/*.vim'), "\n")
     let s:mycolors = map(paths, 'fnamemodify(v:val, ":t:r")')
-    echo 'List of colors set from all installed color schemes'
+    echo 'List of ' . len(s:mycolors) . ' colors set from all installed color schemes'
   elseif a:args == 'my'
     let c1 = 'default elflord peachpuff desert256 breeze morning'
     let c2 = 'darkblue gothic aqua earth black_angus relaxedgreen'
@@ -49,8 +49,8 @@ function! s:SetColors(args)
   endif
 endfunction
 
-command! -nargs=* SetColors call s:SetColors('<args>')
-command! -nargs=* NextColor call NextColor('<args>')
+com! -nargs=* SetColors call s:SetColors(<f-args>)
+com! -nargs=* NextColor call NextColor(<f-args>)
 
 " Set next/previous/random (how = 1/-1/0) color from our list of colors.
 " The 'random' index is actually set from the current time in seconds.
@@ -101,7 +101,7 @@ function! s:NextColor(how, echo_color)
     echo 'Error: colorscheme not found:' join(missing)
   endif
   if (a:echo_color)
-    echo '[' . l:current . ']' . s:mycolors[current]
+    echo '[' . (l:current + 1) . '/' . len(s:mycolors) . ']' . s:mycolors[current]
   endif
 endfunction
 

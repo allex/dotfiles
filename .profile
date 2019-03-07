@@ -14,12 +14,10 @@ pathmunge () {
     *:"$1":*)
       ;;
     *)
-      if [ -d $1 ]; then
-        if [ "$2" = "after" ] ; then
-          PATH=$PATH:$1
-        else
-          PATH=$1:$PATH
-        fi
+      if [ "$2" = "after" ] ; then
+        PATH=$PATH:$1
+      else
+        PATH=$1:$PATH
       fi
   esac
 }
@@ -58,10 +56,6 @@ pathmunge /usr/local/coreutils/bin
 pathmunge /usr/local/nodejs/bin
 pathmunge /usr/local/node-modules/bin
 
-# Python
-export PYTHONPATH=$HOME/local/python-packages
-pathmunge $PYTHONPATH after
-
 # Set PATH so it includes user's private bin
 pathmunge $HOME/bin
 pathmunge $HOME/.bin
@@ -74,6 +68,10 @@ pathmunge ./bin
 export GOPATH=$HOME/local/go/packages
 pathmunge $GOPATH/bin
 
+# python
+export PYTHONPATH=$HOME/local/python/2.7/site-packages
+pathmunge "$PYTHONPATH"
+
 # Include .bashrc if running bash.
 if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
   . "$HOME/.bashrc"
@@ -81,10 +79,9 @@ fi
 
 [ "$GIT_DEPLOY_KEY" ] || GIT_DEPLOY_KEY="$HOME/.ssh/id_rsa"
 
+pathmunge "$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
 unset -f pathmunge
 
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-
-
+# remove duplicate entries
+export PATH=`printf %s "$PATH" | awk -v RS=: -v ORS=: '!arr[$0]++'`

@@ -17,18 +17,14 @@ __require() {
 # Colors
 CLICOLOR=1
 
-# GREP_OPTIONS='--color=auto'
-
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
 HISTCONTROL=ignoredups:ignorespace
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
-HISTIGNORE="&:ls:cd:[bf]g:exit:q:..:...:ll:la:l:h:history"
-HISTTIMEFORMAT="%d/%m/%y %T "
-#HISTTIMEFORMAT='%Y-%m-%d %H:%M:%S '
+HISTIGNORE='&:ls:cd:[bf]g:exit:q:..:...:ll:la:l:h:history'
+HISTTIMEFORMAT='%d/%m/%y %T '
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -148,6 +144,7 @@ __ps1_init() {
   local _git_ps1=
 
   if [ -n "${SSH_CLIENT:-$SSH_TTY}" ]; then
+    local hostname=`hostname`
     # show current connection ip if hostname is 'localhost'
     if [ "${hostname%%.*}" = "localhost" ]; then
       ip=`echo ${SSH_CONNECTION}|cut -f3 -d ' '`
@@ -205,16 +202,37 @@ unset -f __require
 if [ -n "$SSH_TTY" ] && type cowsay>/dev/null 2>&1
 then
   # Show a random terminal welcome ascii message By Allex Wang
-  fortune | cowsay -f $(cowsay -l | tail -n +2 | tr " " "\n" | shuf -n1)
+  fortune | cowsay -f $(cowsay -l | tail -n +2 | tr " " "\n" | shuf -n1) | lolcat
 fi
-
-PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-
-# cleanup $PATH
-export PATH="`echo -n $PATH | awk -v RS=: -v ORS=: '!arr[$0]++'`"
 
 # Don't Match Useless Files in Filename Completion
 # <https://docstore.mik.ua/orelly/unix3/upt/ch28_07.htm>
 # <https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html>
 export FIGNORE=".swp:.tmp:.pyc:.o:"
 
+PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+# cleanup $PATH
+export PATH="`echo -n $PATH | awk -v RS=: -v ORS=: '!arr[$0]++'`"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# Use fd (https://github.com/sharkdp/fd) instead of the default find
+# command for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fd $FD_OPTS . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type d $FD_OPTS . "$1"
+}
+
+export FD_OPTS="--hidden -d 10 --exclude '.git' --ignore-file $HOME/.gitignore"
+export FZF_DEFAULT_COMMAND="fd --type f $FD_OPTS"
+export FZF_DEFAULT_OPTS="--bind ctrl-f:page-down,ctrl-b:page-up"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS="--preview 'head -100 {}'"

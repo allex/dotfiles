@@ -1,5 +1,4 @@
 # vim: ft=sh:ff=unix:fdm=marker:et:sw=2:ts=2:sts=2:
-
 # ~/.bash_aliases
 # author: Allex Wang (allex.wxn@gmail.com)
 
@@ -47,7 +46,6 @@ if type -t dircolors &>/dev/null; then
   fi
 
 else
-
   if [ "$OS" = "darwin" ]; then
     export LSCOLORS=gxfxcxdxbxegedabagacad
 
@@ -56,8 +54,7 @@ else
   fi
 fi
 
-[ -n "$(which nvim 2>/dev/null)" ] && { alias vi="nvim"; alias vim=nvim; } || alias vi=vim
-[ "$(id -u)" != "0" ] && alias service='sudo service'
+[ -n "$(which nvim 2>/dev/null)" ] && { alias vi="nvim"; } || alias vi=vim
 
 # set easy_install profile path
 [ -x "$(which easy_install 2>/dev/null)" ] && alias easy_install="$(which easy_install) --install-dir=$PYTHONPATH"
@@ -82,9 +79,9 @@ unset __uname
 
 __node_cmd=`which node 2>/dev/null`; [ -n "${__node_cmd}" ] && \
 {
-  # Enable all of node features locked by `--harmony*', i.e. ES6
-  # By Allex Wang <https://nodejs.org/en/docs/es6/>
+  # Enable all of harmony, experimental feautues. i.e. import await-repl (by @allex_wang)
   __node_harmony_args=`${__node_cmd} --v8-options |\grep -- "--harmony" |cut -d" " -f3 |xargs`
+  __node_harmony_args="${__node_harmony_args} --experimental-repl-await --experimental-vm-modules --experimental-worker"
   node() {
     local f="$1"
     if [ -f "$f" ] && [[ "$f" =~ .coffee$ ]]; then
@@ -92,6 +89,9 @@ __node_cmd=`which node 2>/dev/null`; [ -n "${__node_cmd}" ] && \
     else
       ${__node_cmd} ${__node_harmony_args} "$@";
     fi
+  }
+  node-inspect() {
+    (node --inspect --inspect-brk "$@")
   }
 }
 
@@ -154,9 +154,6 @@ x() {
   esac
 }
 
-# generate dots aliases by allex
-n=6; dot='.'; while (( n > 0 )); do dot=".${dot}"; eval "alias $dot='__cd $dot'"; ((n-=1)); done; unset n dot
-
 # cd enhancments
 __cd() {
   if   [[ "x$*" == "x..." ]]; then
@@ -172,10 +169,49 @@ __cd() {
   fi
 }
 
+# Generate shortcuts dots, ., .., ..., .... aliases
+n=4; dot='.'
+{
+  while (( n > 0 )); do dot=".${dot}"; eval "alias $dot='__cd $dot'"; ((n-=1)); done;
+}
+unset n dot
+
 [ ! -x "$(which pidof 2>/dev/null)" ] && \
 {
-  pidof() { echo `ps -ef | grep $1 | awk '{print$2}'`; }
+  pidof() { echo `ps -ef | \grep $1 | awk '{print$2}'`; }
 }
+
+# Enhance grep with usefull excludes and `GREP_ARGS` env | MIT licensed by allex <http://iallex.com/>
+__grep() {
+  if [ $# -gt 0 ]; then
+    local c x t="$PWD"
+    while [ -n "$t" ]; do
+      if [ -d "$t/.git" ]; then
+        x="$t/.gitignore"
+        break
+      else
+        t="${t%*/*}"
+        [ "$t" = "${t//\/}" ] && break
+      fi
+    done
+    c=(-I --color=auto --exclude-dir={.svn,.git,.*cache,*.tmp,dist,node_modules} --exclude={*.lock,.*.tmp})
+    [ -s "$x" ] && {
+      t="$HOME/.gitignore"
+      [ -f "$t" ] && c+=(--exclude-from "$t")
+      c+=(--exclude-from "$x")
+    }
+    [ -n "$GREP_ARGS" ] && c+=("${GREP_ARGS[@]}")
+    c+=("$@")
+    shopt -qo xtrace && echo "${c[@]}"
+    set -- "${c[@]}"
+  fi
+  if [ ! -t 0 ]; then
+    \grep -v grep | \grep "$@"
+  else
+    \grep "$@"
+  fi
+}
+alias grep="__grep"
 
 ##############################
 #
@@ -184,10 +220,11 @@ __cd() {
 ##############################
 
 psgrep() {
+  c="ps aux |\grep '$1' |\grep -v grep |awk '{print \$2}'"
   if [ "$2" = "kill" ]; then
-    ps aux | \grep "$1" | \grep -v grep | awk '{print $2}' | xargs kill -9;
+    eval $c |xargs kill -9
   else
-    ps aux | \grep "$1" | \grep -v grep | awk '{print $2}';
+    eval $c
   fi
 }
 
@@ -196,10 +233,25 @@ psgrep() {
 # Author: Allex Wang (allex.wxn@gmail.com)
 # MIT Licensed
 #
+__find_ssh_prefix () {
+  while read t k v
+  do
+    if [ "$t" == "#def" ]; then
+      case "$k" in
+        USERNAME) user=${user:-$v} ;;
+        PREFIX)   prefix=$v ;;
+      esac
+    elif [[ "$t" == "Host" && "$k" == "$host" ]]; then
+      fix=0
+      break
+    fi
+  done < <(cat ~/.ssh/config |\grep "^#def")
+}
+
 __autoprefix_ssh_hosts() {
   local len=0 level diff user host m
   host=$1
-  m=`grep -Po '\w+@[^: ]+' <<< "$host"`
+  m=`\grep -Po '\w+@[^: ]+' <<< "$host"`
   if [ "$m" ]; then
     read user host <<< "`echo $m|tr '@' ' '`"
   fi
@@ -240,21 +292,24 @@ __autoprefix_ssh_hosts() {
   printf "${user:+${user}@}${host}"
 }
 
-# Extends with specified shortcut completion with host prefix and default user
+# Enhances with auto completion with host prefix and default user
+#
 # Author: Allex Wang (allex.wxn@gmail.com)
 # MIT Licensed
+#
 # GistID: 0f844bbe583a1e40548d
 # GistURL: https://gist.github.com/allex/0f844bbe583a1e40548d
+#
 ssh() {
-  local host command p parsed args=('-o GSSAPIAuthentication=no')
+  local host commands p parsed args=(-o GSSAPIAuthentication=no)
+  commands=()
   while [ $# -gt 0 ]; do
     p=$1
-    [ x"$p" = x"--" ] && break
     shift
+    [ x"$p" = x"--" ] && break
     case "$p" in
       -v | -T)
         args+=("$p")
-        continue
         ;;
       -*)
         args+=("$p")
@@ -267,16 +322,19 @@ ssh() {
           parsed=1
           args+=("$(__autoprefix_ssh_hosts $p)")
         else
-          args+=("$p")
+          commands+=("$p")
         fi
         ;;
     esac
   done
-  set -- "${args[@]:-}"
+  for p in "$@"; do
+    commands+=("$p")
+  done
+  set -- "${args[@]:-}" -- "${commands[@]}"
   if type -t ssh-pearl >/dev/null 2>&1; then
-    ssh-pearl "$args" "$@"
+    ssh-pearl "$@"
   else
-    /usr/bin/ssh "$args" "$@"
+    command ssh "$@"
   fi
 }
 
@@ -311,7 +369,6 @@ __comp_ssh() {
   # Generate completion reply
   COMPREPLY=( $(compgen -W "${hosts[*]}" -- "$word") )
 }
-
 complete -o default -F __comp_ssh \
   ssh sftp ssh-copy-id scp
 
@@ -348,27 +405,8 @@ __git_cmd=`which git 2>/dev/null`; [ -n "${__git_cmd}" ] && \
     git add .gitignore
     git ci -m "initializing repo" .gitignore
   }
-
-  # quote () {
-  #   local quoted=${1//\'/\'\\\'\'};
-  #   printf "'%s'" "$quoted"
-  # }
-
-  # build git alias based on ~/.gitconfig
-  # sessionrc="$HOME/.bashrc.tmp"
-  # cat /dev/null > "$sessionrc"
-  # arr=(`git config --list 2>/dev/null |grep 'alias\.' |sed "s#^alias.\([^=]*\)=.*#\1#"`)
-  # for a in ${arr[@]}
-  # do
-  #   b=`git config --get alias.$a`
-  #   if ! [[ ${b} =~ ^! ]]; then
-  #     b="git ${b}"
-  #   else
-  #     b="${b:1}"
-  #   fi
-  #   echo "alias g$a=$(quote "$b")" >>"$sessionrc"
-  # done
-  # source "$sessionrc"
-
 }
 
+ip() {
+  ifconfig |grep 'inet '|awk '{if($2!="127.0.0.1")print $2}'
+}

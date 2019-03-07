@@ -1,13 +1,14 @@
-" vim: set ft=vim fdm=marker et ff=unix tw=80 sw=4:
+" vim: set ft=vim fdm=marker et ff=unix tw=80 sw=2:
 " =================================================================================
-"
 " .vimrc file
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
-" Version: 1.7
-" Last Modified: Wed May 30, 2018 12:20
+" Version: 1.8.0
+" Last Modified: Fri Mar 08, 2019 15:21
 "
-" For details see https://github.com/allex/dotfiles/blob/master/vim/.vimrc
+" Released under the MIT License.
+"
+" For details see <https://github.com/allex/dotfiles/blob/master/vim/.vimrc>
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -15,25 +16,17 @@
 "  for MS-DOS and Win32:  $VIM\_vimrc
 "       for OpenVMS:  sys$login:.vimrc
 "
-" Usage:
-"
-"  $ git clone https://github.com/allex/dotfiles.git ~/.dotfiles
-"  $ ln -sfh ~/.dotfiles/vim/.vim ~/.vim
-"  $ ln -sfh ~/.dotfiles/vim/.vimrc ~/.vimrc
-"
 " =================================================================================
 
-" helpers {{{1
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim" | finish | endif
+
+" helpers {{{1
 fun! s:run(com)
-    exec 'sil! ' . a:com
+  exec 'sil! ' . a:com
 endfun
 fun! s:load(file)
-    if filereadable(a:file) | exec 'so ' a:file | endif
-endfun
-fun! s:exists_plugin(name)
-    return !empty(globpath(&rtp, '**/' . a:name))
+  if filereadable(a:file) | exec 'so ' a:file | endif
 endfun
 " }}}
 
@@ -73,9 +66,9 @@ set novisualbell
 
 " Indentation / tab replacement stuff
 " Also we can use `:Sts [num]` set the tab size realtime
-set ts=4
-set sts=4
-set sw=4                        " > and < move block by 4 spaces in visual mode
+set ts=2
+set sts=2
+set sw=2                        " > and < move block by 2 spaces in visual mode
 set et                          " expand tabs to spaces
 set ai                          " auto indent, usefull when using the 'o' or 'O' command.
 set si                          " do smart autoindenting when starting a new line Works for C-like programs
@@ -93,9 +86,9 @@ set mls=5                       " enabled modelines
 " Format the statusline
 set statusline=\ %m%r%h%w<%r%{__get_cur_dir()}%h>\%=\[%{&ft},%{&ff},%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ [%l,%v,0x%B\/%L,%p%%]
 fun! __get_cur_dir()
-    let p = substitute(getcwd(), fnameescape($HOME), "~", "g")
-    let f = expand("%f")
-    return p . "/" . f
+  let p = substitute(getcwd(), fnameescape($HOME), "~", "g")
+  let f = expand("%f")
+  return p . "/" . f
 endfun
 
 " Low priority filename suffixes for filename completion,
@@ -111,19 +104,19 @@ let mapleader=","
 
 " Shared the clipbrd whith other application such as X11.
 if has('unnamedplus') " When possible use + register for copy-paste
-    set clipboard=unnamed,unnamedplus
+  set clipboard=unnamed,unnamedplus
 else " On mac and Windows, use * register for copy-paste
-    set clipboard=unnamed
+  set clipboard=unnamed
 endif
 
 if has("win32")
-    set rtp+=~/.vim
+  set rtp+=~/.vim
 endif
 
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
-    " set mouse=a
-    set selectmode=mouse
+  " set mouse=a
+  set selectmode=mouse
 endif
 
 " Don't use Ex mode, use Q for formatting
@@ -136,75 +129,71 @@ inoremap <C-U> <C-G>u<C-U>
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
-    if version >= 600 | syntax enable | else | syntax on | endif
-    set hlsearch
+  if version >= 600 | syntax enable | else | syntax on | endif
+  set hlsearch
 endif
 
-" ctags {{{2
-set tags=./.tags;/,~/.vimtags
-
-" Make tags placed in .git/tags file available in all levels of a repository
-let gitroot = substitute(system('git rev-parse --show-toplevel 2>/dev/null'), '[\n\r]', '', 'g')
-if gitroot != ''
-    let &tags = &tags . ',' . gitroot . '/.git/ctags'
-endif
-
-" Index ctags from any project, including those outside Rails
-com! MakeTags :!ctags -f ./.tags -R .
-" }}}
+" :MakeTags - Command for build index ctags from any project
+fun! s:MakeTags()
+  let root_dir = getbufvar('%', 'rootDir')
+  if empty(root_dir)
+    let root_dir = '.'
+  endif
+  let tag_file = resolve(root_dir . '/.tags')
+  exec '!ctags -f ' . tag_file . ' -R . &'
+  exec ':set tags=./tags,' . tag_file
+endfun
+com! -nargs=0 MakeTags :sil call s:MakeTags()
 
 fun! s:SetColor(...)
-    if a:0 > 1
-        set background=a:2
-    endif
-    let c=a:1
-    if empty(globpath(&rtp, '**/colors/' . l:c . '.vim'))
-        echoerr l:c . "not found"
-        " use default instead.'
-        let c='desert'
-    endif
-    call s:run('colo ' . l:c)
-    hi clear Normal
-    hi clear NonText
-    hi Normal ctermbg=NONE
-    hi NonText ctermbg=NONE
-    set nocursorline
+  if a:0 > 1
+    set background=a:2
+  endif
+  let c=a:1
+  if empty(globpath(&rtp, '**/colors/' . l:c . '.vim'))
+    echoerr l:c . "not found"
+    let c='desert'
+  endif
+  call s:run('colo ' . l:c)
+  hi clear Normal
+  hi clear NonText
+  hi Normal ctermbg=NONE
+  hi NonText ctermbg=NONE
+  set nocursorline
 endfun
 
 " :SetColor completion implement
 let s:allcolors = []
 fun! SetColorComplete(A, L, P)
-    if len(s:allcolors) == 0
-        let list = split(globpath(&rtp, '**/colors/*.vim'), '\n')
-        let i = 0
-        for p in list
-            let list[i] = substitute(p, '.*/\|.vim', '', 'g')
-            let i += 1
-        endfor
-        let s:allcolors = list
-    endif
-    let result = []
+  if len(s:allcolors) == 0
+    let list = split(globpath(&rtp, '**/colors/*.vim'), '\n')
     let i = 0
-    while (i < len(s:allcolors))
-        if (match(s:allcolors[i], a:A) == 0)
-            call add(result, s:allcolors[i])
-        endif
-        let i += 1
-    endwhile
-    return result
+    for p in list
+      let list[i] = substitute(p, '.*/\|.vim', '', 'g')
+      let i += 1
+    endfor
+    let s:allcolors = list
+  endif
+  let result = []
+  let i = 0
+  while (i < len(s:allcolors))
+    if (match(s:allcolors[i], a:A) == 0)
+      call add(result, s:allcolors[i])
+    endif
+    let i += 1
+  endwhile
+  return result
 endfun
-
 com! -nargs=+ -complete=customlist,SetColorComplete SetColor call s:SetColor(<f-args>)
 
 " Allow to trigger background
 fun! s:ToggleBG()
-    if &bg == "dark"
-        set bg=light
-    else
-        set bg=dark
-    endif
+  if &bg == "dark"
+    set bg=light
+  else
+    set bg=dark
+  endif
 endfun
-
 noremap <Leader>bg :call <SID>ToggleBG()<CR>
 
 " Set colorscheme
@@ -212,16 +201,29 @@ noremap <Leader>bg :call <SID>ToggleBG()<CR>
 set t_Co=256
 set tw=85
 
+" colorscheme {{{
 if has("gui_running")
-    set lines=35
-    set co=150
-    set tw=100
-    if has("win32")
-        sil! colo torte
-    else
-        sil! colo darkdevel
-    endif
+  set lines=40
+  set co=165
+  set tw=120
+  set transparency=12
+  sil! colo torte
+elseif exists('$ITERM_PROFILE')
+  if $ITERM_PROFILE =~? 'light'
+    set background=light
+  else
+    set background=dark
+  endif
+  let mycolors = {
+        \ "dark": [ "peaksea", "ir_black", "molokai", "solarized" ],
+        \ "light": [ "default", "delek", "desert", "morning", "ekvoli", "fnaqevan", "ironman", "ocenlight", "soso", "vc"  ] }
+  if &t_Co >= 8 && $TERM !~ 'linux'
+    call s:SetColor("solarized")
+  endif
+else
+  call s:SetColor("desert")
 endif
+" }}}
 
 " locale
 let $LANG='en_US.UTF-8'
@@ -233,31 +235,30 @@ let &termencoding=&encoding
 set encoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,latin1,gbk,gb2312
 if &modifiable
-    set fileencoding=utf-8
+  set fileencoding=utf-8
 endif
 if has("multi_byte")
-    " CJK environment detection and corresponding setting
-    if v:lang =~ "^zh_CN"
-        set fileencodings=cp936
-    elseif v:lang =~ "^zh_TW"
-        set encoding=big5
-        set fileencodings=big5
-    elseif v:lang =~ "^ko"
-        set fileencodings=euc-kr
-    elseif v:lang =~ "^ja_JP"
-        set fileencodings=euc-jp
-    endif
-
-    " Detect UTF-8 locale, and replace CJK setting if needed
-    if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
-        set fileencodings=utf-8,latin1
-    endif
-    if v:lang =~? '^\(zh\)\|\(ja\)\|\(ko\)'
-        set ambiwidth=double
-    endif
-    set formatoptions+=mM
+  " CJK environment detection and corresponding setting
+  if v:lang =~ "^zh_CN"
+    set fileencodings=cp936
+  elseif v:lang =~ "^zh_TW"
+    set encoding=big5
+    set fileencodings=big5
+  elseif v:lang =~ "^ko"
+    set fileencodings=euc-kr
+  elseif v:lang =~ "^ja_JP"
+    set fileencodings=euc-jp
+  endif
+  " Detect UTF-8 locale, and replace CJK setting if needed
+  if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
+    set fileencodings=utf-8,latin1
+  endif
+  if v:lang =~? '^\(zh\)\|\(ja\)\|\(ko\)'
+    set ambiwidth=double
+  endif
+  set formatoptions+=mM
 else
-    echoerr "Sorry, this version of (g)vim was not compiled with multi_byte!"
+  echoerr "Sorry, this version of (g)vim was not compiled with multi_byte!"
 endif
 " }}}
 
@@ -267,7 +268,7 @@ endif
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
 if !exists(":DiffOrig")
-    command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
 endif
 
 set diffopt+=vertical
@@ -276,155 +277,146 @@ set diffopt+=iwhite " ignore whitespace
 " diff buffers in current window
 com! -nargs=0 Diff :sil! call s:ToggleDiff()
 fun! s:ToggleDiff()
-    if exists('b:diff') && b:diff
-        let b:diff = 0
-        windo diffoff | set nowrap
-    else
-        let b:diff = 1
-        windo diffoff | diffthis
-    endif
+  if exists('b:diff') && b:diff
+    let b:diff = 0
+    windo diffoff | set nowrap
+  else
+    let b:diff = 1
+    windo diffoff | diffthis
+  endif
 endfun
 
 if has('win32')
-    set diffexpr=MyDiff()
-    fun! MyDiff()
-        let opt='-a --binary '
-        if &diffopt =~ 'icase' | let opt=opt . '-i ' | endif
-        if &diffopt =~ 'iwhite' | let opt=opt . '-b ' | endif
-        let arg1=v:fname_in
-        if arg1 =~ ' ' | let arg1='"' . arg1 . '"' | endif
-        let arg2=v:fname_new
-        if arg2 =~ ' ' | let arg2='"' . arg2 . '"' | endif
-        let arg3=v:fname_out
-        if arg3 =~ ' ' | let arg3='"' . arg3 . '"' | endif
-        let eq=''
-        if $VIMRUNTIME =~ ' '
-            if &sh =~ '\<cmd'
-                let cmd='""' . $VIMRUNTIME . '\diff"'
-                let eq='"'
-            else
-                let cmd=substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-            endif
-        else
-            let cmd=$VIMRUNTIME . '\diff'
-        endif
-        sil! exec '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
-    endfun
+  set diffexpr=MyDiff()
+  fun! MyDiff()
+    let opt='-a --binary '
+    if &diffopt =~ 'icase' | let opt=opt . '-i ' | endif
+    if &diffopt =~ 'iwhite' | let opt=opt . '-b ' | endif
+    let arg1=v:fname_in
+    if arg1 =~ ' ' | let arg1='"' . arg1 . '"' | endif
+    let arg2=v:fname_new
+    if arg2 =~ ' ' | let arg2='"' . arg2 . '"' | endif
+    let arg3=v:fname_out
+    if arg3 =~ ' ' | let arg3='"' . arg3 . '"' | endif
+    let eq=''
+    if $VIMRUNTIME =~ ' '
+      if &sh =~ '\<cmd'
+        let cmd='""' . $VIMRUNTIME . '\diff"'
+        let eq='"'
+      else
+        let cmd=substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+      endif
+    else
+      let cmd=$VIMRUNTIME . '\diff'
+    endif
+    sil! exec '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+  endfun
+endif
+
+if &diff
+  map <leader>1 :diffget LOCAL<CR>
+  map <leader>2 :diffget BASE<CR>
+  map <leader>3 :diffget REMOTE<CR>
 endif
 " }}}
 
 " Plugins {{{1
 
-" NerdTree {{{2
-if s:exists_plugin("nerdtree")
-    nmap <silent> <F10> :NERDTreeToggle<CR>
-
-    let NERDTreeMinimalUI=1
-    let NERDTreeQuitOnOpen=1
-    let NERDChristmasTree=1
-    let NERDTreeHighlightCursorline=1
-    let NERDTreeShowHidden=1
-    let NERDTreeIgnore=['\.sass-cache', '\.DS_Store','\.pdf', '.beam', '\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
-
-    " Add a space after the left delimiter and before the right delimiter, like this: /* int foo=2; */
-    let NERDSpaceDelims=1
-
-    " Fix some filetype delimiter with spaces
-    let NERDCustomDelimiters={
-                \   'python': { 'left': '#', 'leftAlt': '#' }
-                \ }
-endif
-" }}}
-
-" ctrlp {{{2
-if s:exists_plugin("ctrlp.vim")
-    let g:ctrlp_map = '<c-p>'
-    let g:ctrlp_cmd = 'CtrlP'
-    let g:ctrlp_root_markers = [ 'pom.xml', '.p4ignore', '.git', '.svn', '.config', 'python-packages', 'package.json' ]
-    let g:ctrlp_working_path_mode = 'ra'
-    let g:ctrlp_custom_ignore = {
-        \ 'dir':  '\.git$\|\.hg$\|\.svn$\|bower_components\|node_modules',
-        \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$'
-        \ }
-endif
-" }}}
-
-" editorconfig {{{2
-if s:exists_plugin("editorconfig-vim")
-    let g:EditorConfig_exclude_patterns = [ "^tarfile::" ]
-endif
-" }}}
-
-" ALE {{{2
-if s:exists_plugin("ale")
-
-    " Write this in your vimrc file
-    let g:ale_lint_on_text_changed = 'never'
-
-    " Run linters only when I save files and don't want linters to run on
-    " opening a file
-    let g:ale_lint_on_enter = 0
-    let g:ale_lint_on_save = 1
-    let g:ale_fix_on_save = 1
-
-    " Customize linters & fixers
-    let g:ale_linters = {
-                \   'javascript': ['standard']
-                \}
-    let g:ale_fixers = {
-                \   'javascript': ['standard'],
-                \   'scss': ['prettier']
-                \}
-    let g:ale_javascript_prettier_options = '--no-semi --single-quote --trailing-comma none'
-endif
-" }}}
-
-" typescript {{{2
-" https://github.com/leafgarland/typescript-vim
-if s:exists_plugin("typescript-vim")
-    autocmd QuickFixCmdPost [^l]* nested cwindow
-    autocmd QuickFixCmdPost    l* nested lwindow
-endif
-" }}}
-
-" misc {{{2
+" taglist vars
 let Tlist_Auto_Open=0
 let Tlist_Use_SingleClick=1
 
-" Mapping for the <F8> key to toggle the taglist window.
+" mapping for the <F8> key to toggle the taglist window.
 nmap <silent> <F8> :TlistToggle<CR>
-
-" Additionally load gist.vim only if git installed.
-if !executable('git')
-    let g:loaded_gist_vim=1
-endif
 
 " auto compile scss, sass files
 let g:sass_compile_auto=0
-" }}}
 
-" Installation pathogen.vim (http://www.vim.org/scripts/script.php?script_id=2332)
-sil! call pathogen#infect()
+" NerdTree
+nmap <silent> <F10> :NERDTreeToggle<CR>
+let NERDTreeMinimalUI=1
+let NERDTreeQuitOnOpen=1
+let NERDChristmasTree=1
+let NERDTreeHighlightCursorline=1
+let NERDTreeShowHidden=1 " <Shift-i> toggle hidden files
+let NERDTreeIgnore=[
+      \ '\.sass-cache', '\.DS_Store','\.pdf', '.beam', '\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$'
+      \ ]
+" add a space after the left delimiter and before the right delimiter, like this: /* int foo=2; */
+let NERDSpaceDelims=1
+" Fix some filetype delimiter with spaces
+let NERDCustomDelimiters={
+      \   'python': { 'left': '#', 'leftAlt': '#' }
+      \ }
 
-" }}}
+" ctrlp
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_root_markers = [ 'pom.xml', '.p4ignore', '.git', '.svn', '.config', 'python-packages', 'package.json' ]
+let g:ctrlp_autoignore_file = '.ctrlpignore'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_custom_ignore = {
+      \ 'dir':  '\.git$\|\.hg$\|\.svn$\|bower_components\|node_modules',
+      \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$'
+      \ }
 
-" colorscheme {{{
-if exists('$ITERM_PROFILE')
-    if $ITERM_PROFILE =~? 'light'
-        set background=light
-    else
-        set background=dark
-    endif
-    let mycolors = {
-                \ "dark": [ "peaksea", "ir_black", "molokai", "solarized" ],
-                \ "light": [ "default", "delek", "desert", "morning", "ekvoli", "fnaqevan", "ironman", "ocenlight", "soso", "vc"  ] }
-    if &t_Co >= 8 && $TERM !~ 'linux'
-        call s:SetColor("solarized")
-    endif
-endif
-" }}}
+" editorconfig
+let g:EditorConfig_exclude_patterns = [ "^tarfile::" ]
 
-" shortcuts {{{1
+" ALE
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_save = 0
+let g:ale_fix_on_save = 0
+
+" only run linters named in ale_linters settings.
+let g:ale_linters_explicit = 1
+
+" customize linters & fixers
+let g:ale_linters = {
+      \   'javascript': ['standard']
+      \ }
+let g:ale_fixers = {
+      \   'javascript': ['standard'],
+      \   'scss': ['prettier']
+      \ }
+let g:ale_javascript_prettier_options = '--no-semi --single-quote --trailing-comma none'
+
+" vim-javascript
+" https://github.com/pangloss/vim-javascript
+" https://github.com/jelera/vim-javascript-syntax
+" https://github.com/othree/yajs.vim
+
+" syntastic
+fun! __get_synt_stats()
+  try
+    return type(function("SyntasticStatuslineFlag")) == v:t_func ? SyntasticStatuslineFlag() : ''
+  catch | endtry
+endfun
+set statusline+=%#warningmsg#%{__get_synt_stats()}%*
+nmap <silent> <Leader>nn :silent :lnext<CR>
+
+let g:syntastic_debug = 0
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 1
+
+let g:syntastic_typescript_checkers=['tsc', 'tslint'] " *.ts
+let g:syntastic_javascript_checkers=['eslint'] " *.js
+let g:syntastic_javascript_eslint_args = "--ignore-pattern '!**/.fssrc.js' -c ~/.eslintrc"
+let g:syntastic_css_checkers=['stylelint'] " *.css
+
+" fzf
+" https://github.com/junegunn/fzf#usage-as-vim-plugin
+let &rtp .= ',/usr/local/opt/fzf'
+map <c-p> :FZF<CR>
+
+" gist
+com! -nargs=0 Gistf :!gist.sh %
+" }}}1
+
+" mappings {{{1
 "
 " Note <Leader> is the user modifier key (like g is the vim modifier key)
 " One can change it from the default of \ using: let mapleader = ","
@@ -440,21 +432,19 @@ map <silent> <A-l> <C-w>>
 
 " guioptions
 if has("gui_running")
-
-    " Initial guioptions
-    set guioptions+=c       " use console dialogs, not the gui ones
-    set guioptions-=T       " don't show the toolbar
-    set guioptions-=m       " don't show the menu
-    set guioptions-=r       " don't need right scrollbar
-    set guioptions-=L       " don't show left scrollbar
-    set guioptions+=a       " able to paste into other applications
-
-    " Toggle the toolbar and menu
-    if has('gui_gtk')
-        map <silent> <F3> :if &guioptions=~# 'T' \| set guioptions-=T \| else \| set guioptions+=T \| endif<CR>
-    else
-        map <silent> <F2> :if &guioptions=~# 'm' \| set guioptions-=m \| else \| set guioptions+=m \| endif<CR>
-    endif
+  " Initial guioptions
+  set guioptions+=c       " use console dialogs, not the gui ones
+  set guioptions-=T       " don't show the toolbar
+  set guioptions-=m       " don't show the menu
+  set guioptions-=r       " don't need right scrollbar
+  set guioptions-=L       " don't show left scrollbar
+  set guioptions+=a       " able to paste into other applications
+  " Toggle the toolbar and menu
+  if has('gui_gtk')
+    map <silent> <F3> :if &guioptions=~# 'T' \| set guioptions-=T \| else \| set guioptions+=T \| endif<CR>
+  else
+    map <silent> <F2> :if &guioptions=~# 'm' \| set guioptions-=m \| else \| set guioptions+=m \| endif<CR>
+  endif
 endif
 
 " Tab navigation
@@ -468,7 +458,6 @@ map tc :tabclose<CR>
 " move the current tab
 noremap <A-Left>  :-tabmove<cr>
 noremap <A-Right> :+tabmove<cr>
-
 
 ",p toggle paste mode
 map <silent> <Leader>p :set paste!<CR>
@@ -488,8 +477,8 @@ nmap <Leader>w :w!<CR>
 
 " sudo write this
 if executable('sudo')
-    nmap <silent> <Leader>s :w !sudo tee % > /dev/null<CR>
-    cmap W! silent w !sudo tee % >/dev/null <CR>
+  nmap <silent> <Leader>s :w !sudo tee % > /dev/null<CR>
+  cmap W! silent w !sudo tee % >/dev/null <CR>
 endif
 
 " Move easily between split windows
@@ -556,8 +545,6 @@ nnoremap vv ^vg_
 iab DATE <C-R>=strftime("%d %B %Y, %X")<CR>
 
 com! -nargs=? ESLintFix call s:ESLintFix()
-nnoremap <Leader>el :ESLintFix<CR>
-
 fun! s:ESLintFix()
   execute "!eslint --fix %"
   edit! %
@@ -568,167 +555,166 @@ endfun
 " autocommands {{{1
 if has("autocmd")
 
-    " builtin autocmd {{{
+  " builtin autocmd {{{
 
-    " Enable file type detection.
-    filetype plugin indent on
+  " Enable file type detection.
+  filetype plugin indent on
 
-    " Put these in an autocmd group, so that we can delete them easily.
-    augroup vimrcEx
-        au!
+  " Put these in an autocmd group, so that we can delete them easily.
+  augroup vimrcEx
+    au!
 
-        " For all text files set 'textwidth' to 78 characters.
-        au FileType text setlocal tw=78
+    " For all text files set 'textwidth' to 78 characters.
+    au FileType text setlocal tw=78
 
-        " When editing a file, always jump to the last known cursor position.
-        " Don't do it when the position is invalid or when inside an event
-        " handler (happens when dropping a file on gvim).
-        " Also don't do it when the mark is in the first line, that is the
-        " default position when opening a file.
-        au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid or when inside an event
+    " handler (happens when dropping a file on gvim).
+    " Also don't do it when the mark is in the first line, that is the
+    " default position when opening a file.
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
-    augroup END
-    " }}}
+  augroup END
+  " }}}
 
-    " folding {{{
-    augroup codeFolding
-        au!
+  " folding {{{
+  augroup codeFolding
+    au!
 
-        au FileType javascript set commentstring=//\ %s
-        au FileType javascript call s:InitJSFolderOpts()
+    au FileType javascript set commentstring=//\ %s
+    au FileType javascript call s:InitJSFolderOpts()
 
-        fun! s:InitJSFolderOpts()
-            setlocal fdm=marker
-            setlocal fdl=0 " Always start editing with all folds closed (value zero)
-            setlocal fdls=0
-            setlocal foldtext=MyFoldText()
-            syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
-        endfun
+    fun! s:InitJSFolderOpts()
+      setlocal fdm=marker
+      setlocal fdl=0 " Always start editing with all folds closed (value zero)
+      setlocal fdls=0
+      setlocal foldtext=MyFoldText()
+      syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
+    endfun
 
-        let &l:fillchars=substitute(&l:fillchars, ',\?fold:.', '', 'gi')
-        fun! MyFoldText()
-            " for now, just don't try if version isn't 7 or higher
-            if v:version < 701
-                return foldtext()
-            endif
-            " clear fold from fillchars to set it up the way we want later
-            let &l:fillchars=substitute(&l:fillchars, ',\?fold:.', '', 'gi')
-            let l:foldtext=getline(v:foldstart)
-            let l:foldtext=substitute(l:foldtext, '\/[\/\*]\+\s*', '', '')
-            return substitute(l:foldtext, '{.*', '{...}', '')
-        endfun
+    let &l:fillchars=substitute(&l:fillchars, ',\?fold:.', '', 'gi')
+    fun! MyFoldText()
+      " for now, just don't try if version isn't 7 or higher
+      if v:version < 701
+        return foldtext()
+      endif
+      " clear fold from fillchars to set it up the way we want later
+      let &l:fillchars=substitute(&l:fillchars, ',\?fold:.', '', 'gi')
+      let l:foldtext=getline(v:foldstart)
+      let l:foldtext=substitute(l:foldtext, '\/[\/\*]\+\s*', '', '')
+      return substitute(l:foldtext, '{.*', '{...}', '')
+    endfun
 
-    augroup END
-    " }}}
+  augroup END
+  " }}}
 
-    " Last Modified {{{
-    com! -nargs=0 NOMOD :let b:nomod = 1
-    com! -nargs=0 MOD   :let b:nomod = 0
-    au BufWritePre * call s:UpdateLastModified()
+  " Last Modified {{{
+  com! -nargs=0 NOMOD :let b:nomod = 1
+  com! -nargs=0 MOD   :let b:nomod = 0
+  au BufWritePre * call s:UpdateLastModified()
 
-    " Upload file modifier stetement near in the first 20 lines.
-    " Restores cursor and window position using save_cursor variable. ('ul' is alias
-    " for 'undolevels').
-    fun! s:UpdateLastModified()
-        if exists('b:nomod') && b:nomod
-            return
+  " Upload file modifier stetement near in the first 20 lines.
+  " Restores cursor and window position using save_cursor variable. ('ul' is alias
+  " for 'undolevels').
+  fun! s:UpdateLastModified()
+    if exists('b:nomod') && b:nomod
+      return
+    endif
+    if &modified
+      let tstr = 'Last Modified: '
+      let cur_pos = getpos('.')
+      let n = min([30, line('$')])
+      keepjumps exe '1,' . n . 's#^\(.\{,10}' . tstr . '\).*#\1' . strftime('%a %b %d, %Y %H:%M') . '#e'
+      call histdel('search', -1)
+      let @/ = histget('/', -1)
+      call setpos('.', cur_pos)
+    endif
+  endfun
+  " }}}
+
+  " Enable tab switch {{{
+  au VimEnter * call s:BufPos_Initialize()
+
+  fun! s:BufPos_Initialize()
+    for i in range(1, 9)
+      exe "map \<C-" . i . "\> :call BufPos_ActivateBuffer(" . i . ")<CR>"
+    endfor
+    exe "map \<C-0\> :call BufPos_ActivateBuffer(10)<CR>"
+  endfun
+  fun! BufPos_ActivateBuffer(num)
+    let l:count=1
+    for i in range(1, bufnr("$"))
+      if buflisted(i) && getbufvar(i, "&modifiable")
+        if l:count == a:num
+          exe "buffer " . i
+          return
         endif
-        if &modified
-            let tstr = 'Last Modified: '
-            let cur_pos = getpos('.')
-            let n = min([30, line('$')])
-            keepjumps exe '1,' . n . 's#^\(.\{,10}' . tstr . '\).*#\1' . strftime('%a %b %d, %Y %H:%M') . '#e'
-            call histdel('search', -1)
-            let @/ = histget('/', -1)
-            call setpos('.', cur_pos)
-        endif
-    endfun
-    " }}}
+        let l:count=l:count + 1
+      endif
+    endfor
+    echo "No buffer!"
+  endfun
+  " }}}
 
-    " Enable tab switch {{{
-    au VimEnter * call s:BufPos_Initialize()
+  " Reads the template file into new buffer.
+  au BufNewFile * call s:loadTemplate()
+  fun! s:loadTemplate()
+    sil! 0r ~/.vim/skel/%:e.tpl
+  endfun
 
-    fun! s:BufPos_Initialize()
-        for i in range(1, 9)
-            exe "map \<C-" . i . "\> :call BufPos_ActivateBuffer(" . i . ")<CR>"
-        endfor
-        exe "map \<C-0\> :call BufPos_ActivateBuffer(10)<CR>"
-    endfun
-    fun! BufPos_ActivateBuffer(num)
-        let l:count=1
-        for i in range(1, bufnr("$"))
-            if buflisted(i) && getbufvar(i, "&modifiable")
-                if l:count == a:num
-                    exe "buffer " . i
-                    return
-                endif
-                let l:count=l:count + 1
-            endif
-        endfor
-        echo "No buffer!"
-    endfun
-    " }}}
-
-    " Reads the template file into new buffer.
-    au BufNewFile * call s:loadTemplate()
-    fun! s:loadTemplate()
-        sil! 0r ~/.vim/skel/%:e.tpl
-    endfun
-
-    " Disable syntax highlight if filesize is greater than 1M
-    au BufRead,BufNew *
+  " Disable syntax highlight if filesize is greater than 1M
+  au BufRead,BufNew *
         \ if getfsize(expand('<afile>')) > 1000000 |
         \   setl syntax=off |
         \ endif
 
-    " Customize filetypes
-    au FileType ruby,eruby,yaml set ai ts=2 sw=2 sts=2 et
+  " Customize filetypes
+  au FileType ruby,eruby,yaml set ai ts=2 sw=2 sts=2 et
 
-    " Fold current HTML tag mapping: zf
-    au FileType html,xml nnoremap zf Vatzf
+  " Fold current HTML tag mapping: zf
+  au FileType html,xml nnoremap zf Vatzf
 
-    au BufNewFile,BufReadPost *.coffee setl shiftwidth=2 expandtab
-    au BufRead,BufNewFile *.es setf javascript
-    au BufRead,BufNewFile *.node setf javascript
-    au BufRead,BufNewFile *.ejs setf html
-    au BufRead,BufNewFile *.vue setf html
+  au BufNewFile,BufReadPost *.coffee setl shiftwidth=2 expandtab
+  au BufRead,BufNewFile *.es setf javascript
+  au BufRead,BufNewFile *.node setf javascript
+  au BufRead,BufNewFile *.ejs setf html
+  au BufRead,BufNewFile *.vue setf html
 
-    " fix nodejs interpreter
-    au BufNewFile,BufRead * call s:DetectNodejs()
-    function! s:DetectNodejs()
-        if getline(1) =~ '^#!.*\<node\>'
-            set filetype=javascript
-        endif
-    endfunction
+  " fix nodejs interpreter
+  au BufNewFile,BufRead * call s:DetectNodejs()
+  function! s:DetectNodejs()
+    if getline(1) =~# '^#!.*/bin/\(env\s\+\)\?node\>'
+      set filetype=javascript
+    endif
+  endfunction
 
-    " for HEX editing
+  " for HEX editing
+  augroup Binary
+    au!
     au BufReadPre  *.bin let &bin=1
-    au BufReadPost *.bin if &bin | %!xxd
-    au BufReadPost *.bin set ft=xxd | endif
-    au BufWritePre *.bin if &bin | %!xxd -r
-    au BufWritePre *.bin endif
-    au BufWritePost *.bin if &bin | %!xxd
-    au BufWritePost *.bin set nomod | endif
+    au BufReadPost *.bin if &bin | exec "%!xxd" | set ft=xxd | endif
+    au BufWritePre *.bin if &bin | exec "%!xxd -r" | endif
+    au BufWritePost *.bin if &bin | exec "%!xxd" | set nomod | endif
+  augroup END
 
 endif
 " }}}
 
 " customize function / commond {{{1
-
 " Sts() {{{2
 com! -nargs=? Sts call s:Sts(<f-args>)
 
 " Set shift tab size by sts, ts, sw, (default tabsize: 2)
 " author: Allex Wang (http://iallex.com)
 fun! s:Sts(...)
-    let l:n = 2
-    if a:0 > 0
-        let l:n = a:1
-    endif
-    set et
-    let &ts=l:n
-    let &sw=l:n
-    let &sts=l:n
+  let l:n = 2
+  if a:0 > 0
+    let l:n = a:1
+  endif
+  set et
+  let &ts=l:n
+  let &sw=l:n
+  let &sts=l:n
 endfun
 
 " Reset() {{{2
@@ -736,35 +722,12 @@ com! -nargs=0 Reset call <SID>ForgetUndo()
 
 " clear the undo history
 fun! s:ForgetUndo()
-    let old_ul = &undolevels
-    set undolevels=-1
-    exe "sil! normal a \<BS>\<Esc>"
-    w
-    let &undolevels = old_ul
-    unlet old_ul
-endfun
-
-" Grep() {{{2
-com! -nargs=* Grep call s:Grep(<f-args>)
-
-" Deep serach by a specific pattern
-fun! s:Grep(...)
-    "
-    " Native vimgrep function extendssion, some regular-expression will be
-    " escaped.
-    " Author: Allex Wang (http://iallex.com)
-    "
-    if a:0 > 0
-        let word = a:1
-    else
-        let word = expand("<cword>")
-    endif
-    if a:0 > 1
-        let ext = a:2
-    else
-        let ext = expand('%:e')
-    endif
-    exec 'sil! vimgrep /' . escape(l:word, "*+./[]") . '/j **/*.' . l:ext | copen
+  let old_ul = &undolevels
+  set undolevels=-1
+  exe "sil! normal a \<BS>\<Esc>"
+  w
+  let &undolevels = old_ul
+  unlet old_ul
 endfun
 
 " Save() / LoadSession() {{{2
@@ -778,69 +741,73 @@ com! -nargs=? LoadSession call s:LoadSession(<f-args>)
 " Author: Allex Wang (http://iallex.com)
 "
 fun! s:LoadSession(...)
-    let fname = '.session.vim'
-    if a:0 > 0
-        let fname = a:1
-    endif
-    let sfile = expand('%:p:h') . '/' . fname
-    if !filereadable(sfile)
-        let sfile = getcwd() . '/' . fname
-    endif
-    if filereadable(sfile)
-        exec 'sil! so ' . sfile
-    else
-        echo 'session file (' . sfile . ') not exists'
-    endif
+  let fname = '.~vimrc'
+  if a:0 > 0
+    let fname = a:1
+  endif
+  let sfile = expand('%:p:h') . '/' . fname
+  if !filereadable(sfile)
+    let sfile = getcwd() . '/' . fname
+  endif
+  if filereadable(sfile)
+    exec 'sil! so ' . sfile
+  else
+    echo 'session file (' . sfile . ') not exists'
+  endif
 endfun
 fun! s:SaveSession(...)
-    let fname = '.session.vim'
-    if a:0 > 0
-        let fname = a:1
-    endif
-    let sfile = getcwd() . '/' . fname
-    exec 'sil! mks! ' . sfile
-    echo 'session saved: ' . sfile
+  let fname = '.~vimrc'
+  if a:0 > 0
+    let fname = a:1
+  endif
+  let sfile = getcwd() . '/' . fname
+  exec 'sil! mks! ' . sfile
+  echo 'session saved: ' . sfile
 endfun
+
 " }}}1
 
 " functions {{{1
 
 " From an idea by Michael Naumann
 fun! s:VisualSearch(dir) range
-    let l:saved_reg=@"
-    exec "normal! vgvy"
+  let l:saved_reg=@"
+  exec "normal! vgvy"
 
-    let l:pattern=escape(@", '\\/.*$^~[]')
-    let l:pattern=substitute(l:pattern, "\n$", "", "")
+  let l:pattern=escape(@", '\\/.*$^~[]')
+  let l:pattern=substitute(l:pattern, "\n$", "", "")
 
-    if a:dir == 'b'
-        exec "normal ?" . l:pattern . "^M"
-    else
-        exec "normal /" . l:pattern . "^M"
-    endif
+  if a:dir == 'b'
+    exec "normal ?" . l:pattern . "^M"
+  else
+    exec "normal /" . l:pattern . "^M"
+  endif
 
-    let @/=l:pattern
-    let @"=l:saved_reg
+  let @/=l:pattern
+  let @"=l:saved_reg
 endfun
 
 " Append a vim modeline to the end of the file
 " Use substitute() instead of printf() to handle '%%s' modeline in LaTeX
 " files.
 fun! s:AppendModeline()
-    let l:modeline = printf(" vim: set fdm=%s ts=%d sw=%d sts=%d tw=%d %set :",
+  let l:modeline = printf(" vim: set fdm=%s ts=%d sw=%d sts=%d tw=%d %set :",
         \ &fdm,
         \ &tabstop, &shiftwidth, &sts, &textwidth, &expandtab ? '' : 'no')
-    let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
-    call append(line("$"), l:modeline)
-    $s/\s\s*/ /
+  let l:modeline = substitute(&commentstring, "%s", l:modeline, "")
+  call append(line("$"), l:modeline)
+  $s/\s\s*/ /
 endfun
 nnoremap <Leader>ml :call <SID>AppendModeline()<CR>
+
 " }}}
 
-" customizes {{{1
+" localize cfgs {{{1
 
 " filetype extends
 call s:load($HOME . "/.vim/filetype.vim")
 
 " Load customize .vimrc additionally
 call s:load($HOME . "/.vimrc.local")
+
+" }}}

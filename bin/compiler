@@ -4,17 +4,17 @@
 # see https://github.com/allex/etc/blob/master/bin/closure
 
 # Author: Allex (allex.wxn@gmail.com)
-# Last Modified: Sat Nov 28, 2015 03:03PM
+# Last Modified: Mon Feb 11, 2019 16:25
 
 type java >/dev/null 2>&1 || { echo >&2 "Java not installed. Aborting."; exit 1; }
 
-EXEC_DIR=`dirname $0`
-COMPILER="$EXEC_DIR/compiler.jar"
+JAVA_LIB=$HOME/local/jars
+COMPILER="$JAVA_LIB/compiler.jar"
 
 [ -r "$COMPILER" ] || COMPILER="$LIB/compiler.jar"
 [ ! -r $COMPILER ] && { echo "Error: Unable to access jarfile compiler.jar"; exit 1; }
 
-GCC="java -Xms64m -Xmx128m -Djava.library.path=$EXEC_DIR/lib -jar $COMPILER"
+GCC="java -Xms64m -Xmx128m -Djava.library.path=$JAVA_LIB -jar $COMPILER"
 
 # for more see http://code.google.com/p/closure-compiler/wiki/Warnings
 ARGS="--charset UTF-8 --language_in ECMASCRIPT5_STRICT"

@@ -53,7 +53,7 @@ nb-configuration.xml
 .settings
 
 .netrwhist
-.session.vim
+.~vimrc
 
 **/*.map
 **/.*-cache
