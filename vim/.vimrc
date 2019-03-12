@@ -413,7 +413,19 @@ let &rtp .= ',/usr/local/opt/fzf'
 map <c-p> :FZF<CR>
 
 " gist
-com! -nargs=0 Gistf :!gist.sh %
+func s:Gistf(...) range
+  " get current source file path
+  let file = expand('%:p')
+  if file == ''
+    let file = expand('<afile>')
+  endif
+  let gist_id=''
+  if a:0 > 0
+    let gist_id = a:1
+  endif
+  echo system('echo '.shellescape(join(getline(a:firstline, a:lastline), "\n")).'|gist.sh "'.file.'" "'.gist_id.'"')
+endfun
+com! -range=% -nargs=? Gistf :<line1>,<line2>call s:Gistf(<f-args>)
 " }}}1
 
 " mappings {{{1
@@ -682,11 +694,11 @@ if has("autocmd")
 
   " fix nodejs interpreter
   au BufNewFile,BufRead * call s:DetectNodejs()
-  function! s:DetectNodejs()
+  fun! s:DetectNodejs()
     if getline(1) =~# '^#!.*/bin/\(env\s\+\)\?node\>'
       set filetype=javascript
     endif
-  endfunction
+  endfun
 
   " for HEX editing
   augroup Binary
