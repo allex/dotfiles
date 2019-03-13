@@ -4,7 +4,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.8.0
-" Last Modified: Fri Mar 08, 2019 15:21
+" Last Modified: Wed Mar 13, 2019 23:44
 "
 " Released under the MIT License.
 "
@@ -412,20 +412,45 @@ let g:syntastic_css_checkers=['stylelint'] " *.css
 let &rtp .= ',/usr/local/opt/fzf'
 map <c-p> :FZF<CR>
 
-" gist
-func s:Gistf(...) range
+" gist enhance (by allex_wang | MIT licensed)
+com! -range=% -nargs=? Gistf :call s:Gist('commit', <line1>, <line2>, <f-args>)
+com! -nargs=? GistDiff :call s:Gist('diff', <line1>, <line2>, <f-args>)
+func! s:Gist(type, line1, line2, ...) abort
+  redraw
   " get current source file path
   let file = expand('%:p')
   if file == ''
     let file = expand('<afile>')
   endif
-  let gist_id=''
-  if a:0 > 0
-    let gist_id = a:1
+  let gist_id = ''
+  if a:0 > 3
+    let gist_id = a:4
   endif
-  echo system('echo '.shellescape(join(getline(a:firstline, a:lastline), "\n")).'|gist.sh "'.file.'" "'.gist_id.'"')
+  echohl Normal | echo "Gist syncing ..."
+  let scmd = {'commit': 'commit', 'diff': 'view',}[a:type]
+  let cmd_output = system('echo '.shellescape(join(getline(a:line1, a:line2), "\n")).'|gist.sh -c '.scmd.' "'.file.'" "'.gist_id.'"')
+  redraw
+  if v:shell_error && cmd_output != ""
+    echohl WarningMsg | echon cmd_output
+    return
+  endif
+  if a:type == 'diff'
+    let ftype = &filetype
+    " Check out the revision to a temp file
+    let tmpfile = tempname()
+    call writefile(split(cmd_output, "\n", 1), tmpfile, 'b')
+    " Begin diff
+    exe "vert diffsplit" . tmpfile
+    exe "set filetype=" . ftype
+    set foldmethod=diff
+    wincmd l
+    call delete(tmpfile)
+  else
+    let cmd_output = substitute(cmd_output, "\n*$", "", "")
+    echohl Normal | echon cmd_output
+  endif
 endfun
-com! -range=% -nargs=? Gistf :<line1>,<line2>call s:Gistf(<f-args>)
+
 " }}}1
 
 " mappings {{{1
