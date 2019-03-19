@@ -1,10 +1,9 @@
 " vim: set ft=vim fdm=marker et ff=unix tw=80 sw=2:
 " =================================================================================
-" .vimrc file
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.8.0
-" Last Modified: Wed Mar 13, 2019 23:44
+" Last Modified: Thu Mar 21, 2019 09:35
 "
 " Released under the MIT License.
 "
@@ -12,10 +11,19 @@
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
-"         for Amiga:  s:.vimrc
-"  for MS-DOS and Win32:  $VIM\_vimrc
-"       for OpenVMS:  sys$login:.vimrc
+"     for Amiga:  s:.vimrc
+"     for MS-DOS and Win32:  $VIM\_vimrc
+"     for OpenVMS:  sys$login:.vimrc
 "
+" For NVim compatible
+"
+" ```sh
+" cat <<EOF > $HOME/.config/nvim/init.vim
+" set runtimepath^=~/.vim runtimepath+=~/.vim/after
+" let &packpath = &runtimepath
+" source ~/.vimrc
+" EOF
+" ```
 " =================================================================================
 
 " When started as "evim", evim.vim will already have done these settings.
@@ -151,7 +159,7 @@ fun! s:SetColor(...)
   endif
   let c=a:1
   if empty(globpath(&rtp, '**/colors/' . l:c . '.vim'))
-    echoerr l:c . "not found"
+    echoerr l:c . " not found"
     let c='desert'
   endif
   call s:run('colo ' . l:c)
@@ -409,7 +417,7 @@ let g:syntastic_css_checkers=['stylelint'] " *.css
 
 " fzf
 " https://github.com/junegunn/fzf#usage-as-vim-plugin
-let &rtp .= ',/usr/local/opt/fzf'
+set rtp+=/usr/local/opt/fzf
 map <c-p> :FZF<CR>
 
 " gist enhance (by allex_wang | MIT licensed)

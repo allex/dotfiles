@@ -72,16 +72,18 @@ pathmunge $GOPATH/bin
 export PYTHONPATH=$HOME/local/python/2.7/site-packages
 pathmunge "$PYTHONPATH"
 
+# ruby
+pathmunge /usr/local/ruby*/bin
+pathmunge "$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+unset -f pathmunge
+
 # Include .bashrc if running bash.
 if [ -n "$BASH_VERSION" ] && [ -f "$HOME/.bashrc" ]; then
   . "$HOME/.bashrc"
 fi
 
 [ "$GIT_DEPLOY_KEY" ] || GIT_DEPLOY_KEY="$HOME/.ssh/id_rsa"
-
-pathmunge "$HOME/.rvm/bin" # Add RVM to PATH for scripting
-
-unset -f pathmunge
 
 # remove duplicate entries
 export PATH=`printf %s "$PATH" | awk -v RS=: -v ORS=: '!arr[$0]++'`

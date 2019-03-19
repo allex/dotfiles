@@ -213,6 +213,18 @@ export FIGNORE=".swp:.tmp:.pyc:.o:"
 PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
+## Install Homebrew’s completions
+if type brew &>/dev/null; then
+  for COMPLETION in $(brew --prefix)/etc/bash_completion.d/*
+  do
+    [[ -f $COMPLETION ]] && source "$COMPLETION"
+  done
+  if [[ -f $(brew --prefix)/etc/profile.d/bash_completion.sh ]];
+  then
+    source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+  fi
+fi
+
 # cleanup $PATH
 export PATH="`echo -n $PATH | awk -v RS=: -v ORS=: '!arr[$0]++'`"
 
