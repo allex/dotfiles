@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.8.0
-" Last Modified: Thu Mar 21, 2019 09:35
+" Last Modified: Mon Nov 25, 2019 10:48
 "
 " Released under the MIT License.
 "
@@ -207,7 +207,7 @@ noremap <Leader>bg :call <SID>ToggleBG()<CR>
 " Set colorscheme
 " For more colorschemes http://vimcolorschemetest.googlecode.com/svn/
 set t_Co=256
-set tw=85
+set tw=150
 
 " colorscheme {{{
 if has("gui_running")
@@ -357,16 +357,10 @@ let NERDCustomDelimiters={
       \   'python': { 'left': '#', 'leftAlt': '#' }
       \ }
 
-" ctrlp
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
-let g:ctrlp_root_markers = [ 'pom.xml', '.p4ignore', '.git', '.svn', '.config', 'python-packages', 'package.json' ]
-let g:ctrlp_autoignore_file = '.ctrlpignore'
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\.git$\|\.hg$\|\.svn$\|bower_components\|node_modules',
-      \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$'
-      \ }
+" rooter (seems as ctrlp)
+let g:rooter_patterns = ['.git', '.git/', 'package.json', '.hg/', '.bzr/', '.svn/',
+  \ 'pom.xml', '.p4ignore', '.config', 'python-packages', 'Gemfile', 'Makefile']
+let g:rooter_silent_chdir = 1
 
 " editorconfig
 let g:EditorConfig_exclude_patterns = [ "^tarfile::" ]
@@ -414,6 +408,15 @@ let g:syntastic_typescript_checkers=['tsc', 'tslint'] " *.ts
 let g:syntastic_javascript_checkers=['eslint'] " *.js
 let g:syntastic_javascript_eslint_args = "--ignore-pattern '!**/.fssrc.js' -c ~/.eslintrc"
 let g:syntastic_css_checkers=['stylelint'] " *.css
+
+autocmd FileType typescript let b:syntastic_typescript_tslint_args =
+    \ get(g:, 'syntastic_typescript_tslint_args', '') .
+    \ FindConfig('-c', 'tslint.json', expand('<afile>:p:h', 1))
+
+function! FindConfig(prefix, what, where)
+    let cfg = findfile(a:what, escape(a:where, ' ') . ';')
+    return cfg !=# '' ? ' ' . a:prefix . ' ' . shellescape(cfg) : ''
+endfunction
 
 " fzf
 " https://github.com/junegunn/fzf#usage-as-vim-plugin
@@ -595,6 +598,8 @@ fun! s:ESLintFix()
   edit! %
 endfun
 
+" Helper command for load all of colorschemes lazy optionally.
+com! -nargs=? SetColors exec "source ~/.vim/setcolors.vim | :SetColors all"
 " }}}
 
 " autocommands {{{1
@@ -723,7 +728,6 @@ if has("autocmd")
   au BufRead,BufNewFile *.es setf javascript
   au BufRead,BufNewFile *.node setf javascript
   au BufRead,BufNewFile *.ejs setf html
-  au BufRead,BufNewFile *.vue setf html
 
   " fix nodejs interpreter
   au BufNewFile,BufRead * call s:DetectNodejs()

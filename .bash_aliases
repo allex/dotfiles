@@ -12,6 +12,7 @@ alias cd..='cd ..'
 alias md='mkdir -p'
 alias curl='/usr/bin/curl -k'
 alias q='exit'
+alias g='git'
 
 # some more ls aliases
 alias ll='ls -lh'
@@ -91,7 +92,19 @@ __node_cmd=`which node 2>/dev/null`; [ -n "${__node_cmd}" ] && \
     fi
   }
   node-inspect() {
-    (node --inspect --inspect-brk "$@")
+    local cmd="$1"
+    if [ ! -f "$cmd" ]; then
+      # detect cmd full path
+      local args=("${@}")
+      args[0]=`which "$cmd"`
+      local items=
+      for i in "${args[@]}"
+      do
+        items="$items \"$i\""
+      done
+      eval set -- $items
+    fi
+    node --inspect --inspect-brk "$@"
   }
 }
 
@@ -408,5 +421,6 @@ __git_cmd=`which git 2>/dev/null`; [ -n "${__git_cmd}" ] && \
 }
 
 ip() {
+  # networksetup -setmanualwithdhcprouter WI-FI 192.168.0.66
   ifconfig |grep 'inet '|awk '{if($2!="127.0.0.1")print $2}'
 }

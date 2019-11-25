@@ -34,10 +34,9 @@ export EDITOR="vim"
 
 # JDK
 if [ "$OS" = "darwin" ]; then
-  export JAVA_HOME=$(/usr/libexec/java_home)
-else
-  export JAVA_HOME="/usr/local/java/jdk"
+  JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
 fi
+export JAVA_HOME=${JAVA_HOME:-/usr/local/java/jdk}
 
 # ANT
 export ANT_HOME="/usr/local/ant"
@@ -49,6 +48,7 @@ export NODE_ENV="production"
 
 pathmunge /usr/local/bin
 pathmunge /usr/local/sbin
+pathmunge /usr/local/git/bin
 
 # Use GNU Command instead of BSD
 pathmunge /usr/local/coreutils/bin
@@ -65,7 +65,9 @@ pathmunge ./node_modules/.bin after
 pathmunge ./bin
 
 # Go
+
 export GOPATH=$HOME/local/go/packages
+pathmunge /usr/local/go/bin
 pathmunge $GOPATH/bin
 
 # python
@@ -87,3 +89,17 @@ fi
 
 # remove duplicate entries
 export PATH=`printf %s "$PATH" | awk -v RS=: -v ORS=: '!arr[$0]++'`
+
+##
+# Your previous /Users/allex/.profile file was backed up as /Users/allex/.profile.macports-saved_2019-06-25_at_10:12:27
+##
+
+# MacPorts Installer addition on 2019-06-25_at_10:12:27: adding an appropriate PATH variable for use with MacPorts.
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+# Finished adapting your PATH environment variable for use with MacPorts.
+
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
+# dismiss macos default interactive shell is now zsh
+export BASH_SILENCE_DEPRECATION_WARNING=1

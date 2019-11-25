@@ -1,15 +1,20 @@
 " Change the color scheme from a list of color scheme names.
+"
 " Version 2010-09-12 from http://vim.wikia.com/wiki/VimTip341
+"
 " Fixes by Allex Wang (allex.wxn@gmail.com)
+"
 " Press key:
 "   F8                next scheme
 "   Shift-F8          previous scheme
 "   Alt-F8            random scheme
+"
 " Set the list of color schemes used by the above (default is 'all'):
 "   :SetColors all              (all $VIMRUNTIME/colors/*.vim)
 "   :SetColors my               (names built into script)
 "   :SetColors blue slate ron   (these schemes)
 "   :SetColors                  (display current scheme names)
+"
 " Set the current color scheme based on time of day:
 "   :SetColors now
 
@@ -34,7 +39,7 @@ function! s:SetColors(args)
   elseif a:args == 'all'
     let paths = split(globpath(&runtimepath, 'colors/*.vim'), "\n")
     let s:mycolors = map(paths, 'fnamemodify(v:val, ":t:r")')
-    echo 'List of ' . len(s:mycolors) . ' colors set from all installed color schemes'
+    echo len(s:mycolors) . ' colors are loaded, use F8 to switch colorscheme.'
   elseif a:args == 'my'
     let c1 = 'default elflord peachpuff desert256 breeze morning'
     let c2 = 'darkblue gothic aqua earth black_angus relaxedgreen'
@@ -101,7 +106,7 @@ function! s:NextColor(how, echo_color)
     echo 'Error: colorscheme not found:' join(missing)
   endif
   if (a:echo_color)
-    echo '[' . (l:current + 1) . '/' . len(s:mycolors) . ']' . s:mycolors[current]
+    echo '[' . (l:current + 1) . '/' . len(s:mycolors) . '] ' . s:mycolors[current]
   endif
 endfunction
 

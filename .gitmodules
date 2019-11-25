@@ -67,3 +67,9 @@
 [submodule "vim/.vim/pack/bundle/start/syntastic"]
 	path = vim/.vim/pack/bundle/start/syntastic
 	url = https://github.com/vim-syntastic/syntastic.git
+[submodule "vim/.vim/pack/bundle/start/vim-vue"]
+	path = vim/.vim/pack/bundle/start/vim-vue
+	url = https://github.com/posva/vim-vue.git
+[submodule "vim/.vim/pack/bundle/start/vim-rooter"]
+	path = vim/.vim/pack/bundle/start/vim-rooter
+	url = git://github.com/allex/vim-rooter.git

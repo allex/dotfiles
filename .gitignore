@@ -15,20 +15,23 @@
 
 .DS_Store
 
-# IntelliJ - PhpStorm and PyCharm
+# Editor directories and files
 .idea
-.idea/
-.idea/*
+.vscode
+.project
+.tern-project
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
 *.iml
 *.ipr
 *.iws
 
 # Netbeans
-nbproject
 .nbproject
-.nbproject/*
-nbproject/*
-nbproject/private/
+nbproject
 nbbuild/
 nbdist/
 nbactions.xml
@@ -66,11 +69,14 @@ yarn.lock
 tmp.*
 config.gypi
 
-.project
-.vscode
-.tern-project
 .build_*
 
 *.bak
 /target
 [a-z0-9].*
+
+# local env files
+.env.local
+.env.*.local
+
+.*_cache

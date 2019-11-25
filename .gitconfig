@@ -11,7 +11,7 @@
 #
 # GistID: debabf5f064ceadb86aa025928e04aa4
 # GistURL: https://gist.github.com/debabf5f064ceadb86aa025928e04aa4
-# Last Modified: Tue Mar 19, 2019 14:28
+# Last Modified: Tue Aug 27, 2019 09:31
 
 [color]
   ui = auto
@@ -32,20 +32,23 @@
 
 [alias]
   st = status --porcelain --ignore-submodules=dirty -s
-  ci = commit
+  ci = commit --allow-empty-message
   df = diff -b
   br = branch
   co = checkout
   dt = difftool
   ls = ls-files
-  amend = "!f() { git add -u; git ci --amend \"$@\"; };f"
+  amend = "!f() { test -z \"$(git diff --cached --name-only)\" && git add -u; git ci --amend \"$@\"; };f"
+  fixup = "!f() { TARGET=$(git rev-parse \"$1\"); git commit --fixup=$TARGET ${@:2} && EDITOR=true git rebase -i --autostash --autosquash $TARGET^; }; f"
   pom = push origin master
   pl = pull --rebase
+  pushf = push --force-with-lease
   rbc = rebase --continue
   l = log --stat --format=format:'"%C(yellow)%h %C(cyan)%an %C(blue)(%cn) %C(cyan)%ai\n%C(green)%s\n%b%N"'
   ll = log --stat --abbrev-commit
-  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %C(bold green)(%cr | %an)%Creset' --abbrev-commit --date=relative # --all --topo-order
+  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %C(bold green)(%ar | %an)%Creset' --abbrev-commit --date=relative # --all --topo-order
   lf = "!f() { git lg --first-parent ${*/--first-parent/}; };f"
+  lp = "!f() { git lg -p \"$@\"; }; f"
   sh = "!f() { git show \"$@\" -- ':!dist'; };f"
   shlog = log --pretty=\"%Cgreen%h%Creset - %Cred%ci%Creset - %s (%Cred%an%Creset)\"
   fshow = !sh -c 'git show --pretty="format:" --name-only $1 | grep -v "^$" | uniq'
