@@ -33,7 +33,8 @@
 	url = https://github.com/altercation/vim-colors-solarized.git
 [submodule "vim/.vim/pack/bundle/start/ale"]
 	path = vim/.vim/pack/bundle/start/ale
-	url = https://github.com/w0rp/ale.git
+	url = https://github.com/allex/ale.git
+	branch = dev
 [submodule "vim/.vim/pack/bundle/start/dash.vim"]
 	path = vim/.vim/pack/bundle/start/dash.vim
 	url = https://github.com/rizzatti/dash.vim.git

@@ -3,7 +3,7 @@
 "
 " Author: Allex Wang <allex.wxn@gmail.com>
 " Version: 1.8.0
-" Last Modified: Mon Nov 25, 2019 10:48
+" Last Modified: Tue Dec 03, 2019 10:11
 "
 " Released under the MIT License.
 "
@@ -365,10 +365,15 @@ let g:rooter_silent_chdir = 1
 " editorconfig
 let g:EditorConfig_exclude_patterns = [ "^tarfile::" ]
 
+" vim-javascript
+" https://github.com/pangloss/vim-javascript
+" https://github.com/jelera/vim-javascript-syntax
+" https://github.com/othree/yajs.vim
+
 " ALE
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_enter = 0
-let g:ale_lint_on_save = 0
+let g:ale_lint_on_save = 1
 let g:ale_fix_on_save = 0
 
 " only run linters named in ale_linters settings.
@@ -376,18 +381,15 @@ let g:ale_linters_explicit = 1
 
 " customize linters & fixers
 let g:ale_linters = {
-      \   'javascript': ['standard']
+      \   'javascript': ['standard'],
+      \   'typescript': ['tslint']
       \ }
 let g:ale_fixers = {
       \   'javascript': ['standard'],
+      \   'typescript': ['tslint'],
       \   'scss': ['prettier']
       \ }
 let g:ale_javascript_prettier_options = '--no-semi --single-quote --trailing-comma none'
-
-" vim-javascript
-" https://github.com/pangloss/vim-javascript
-" https://github.com/jelera/vim-javascript-syntax
-" https://github.com/othree/yajs.vim
 
 " syntastic
 fun! __get_synt_stats()
